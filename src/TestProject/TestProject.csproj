@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <OutputType>Exe</OutputType>
+	<LangVersion>preview</LangVersion>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\GeneratedFiles</CompilerGeneratedFilesOutputPath>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageId>TestProject</PackageId>
+  </PropertyGroup>
+	
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild> <!-- Generates a package at build -->
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<PlatformTarget>x64</PlatformTarget> <!-- Do not include the generator as a lib dependency -->
+	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.Experimental" Version="7.0.0-preview.2.22152.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Overloader\Overloader.csproj" ReferenceOutputAssembly="true" OutputItemType="Analyzer" />
+  </ItemGroup>
+	
+<!--  <Target Name="RemoveSystemRuntimeFromRefPack" BeforeTargets="_HandlePackageFileConflicts" Condition="'@(Reference -&gt; WithMetadataValue('NugetPackageId', 'System.Runtime.Experimental'))' != ''">-->
+<!--    <ItemGroup>-->
+<!--      <Reference Remove="@(Reference)" Condition="$([System.String]::Copy(%(Reference.Identity)).Contains('System.Runtime.dll')) and&#xD;&#xA;                            '%(Reference.NuGetPackageId)' == 'Microsoft.NETCore.App.Ref'" />-->
+<!--    </ItemGroup>-->
+<!--  </Target>-->
+
+</Project>

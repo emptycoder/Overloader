@@ -1,7 +1,7 @@
 <h1 align="center">Overloader</h1>
 
-Overloader is the open-source source generator that allow speed up code creating for different types.
-That is kind of templete extension for C#.
+Overloader is the open-source source generator that provide unsafe generics.
+Generator create overloads for already created methods.
 
 ### Capabilities
 - param replacement
