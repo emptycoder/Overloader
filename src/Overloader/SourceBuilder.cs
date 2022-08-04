@@ -9,53 +9,47 @@ public sealed class SourceBuilder
 	private const string NestedUpStr = "{";
 	private const string NestedDownStr = "}";
 	private const string DefaultHeader = @"";
-	
-	private uint _nestedLevel;
 	private readonly StringBuilder _sb = new(DefaultHeader);
+
+	private uint _nestedLevel;
 
 	public SourceBuilder AppendUsings(IEnumerable<SyntaxNode> usings)
 	{
 		foreach (var @using in usings)
-			AppendLine(@using.ToFullString());
-		
+			Append(@using.ToFullString(), 1);
+
 		return this;
 	}
 
-	public SourceBuilder AppendLine(string? str = null)
+	public SourceBuilder Append(string? str, sbyte breakCount = 0, char breakChar = '\n')
 	{
 		AppendNestingByTabs();
-		_sb.AppendLine(str ?? string.Empty);
-		
-		return this;
-	}
+		_sb.Append(str?.Trim() ?? string.Empty);
+		for (int index = 0; index < breakCount; index++)
+			_sb.Append(breakChar);
 
-	public SourceBuilder Append(string str)
-	{
-		AppendNestingByTabs();
-		_sb.Append(str);
-		
 		return this;
 	}
 
 	public SourceBuilder AppendLineAndNestedIncrease(string str)
 	{
-		AppendLine(str);
+		Append(str, 1);
 		NestedIncrease();
-		
+
 		return this;
 	}
 
-	public SourceBuilder AppendLineAndNestedDecrease(string str)
+	public SourceBuilder AppendLineAndNestedDecrease(string? str = null)
 	{
-		AppendLine(str);
+		Append(str, 1);
 		NestedDecrease();
-		
+
 		return this;
 	}
 
 	public SourceBuilder NestedIncrease()
 	{
-		AppendLine(NestedUpStr);
+		Append(NestedUpStr, 1);
 		_nestedLevel++;
 
 		return this;
@@ -65,21 +59,21 @@ public sealed class SourceBuilder
 	{
 		if (_nestedLevel == 0)
 			throw new Exception("Minimum nested level has been reached");
-		AppendLine(NestedDownStr);
 		_nestedLevel--;
-		
+		Append(NestedDownStr, 1);
+
 		return this;
 	}
 
 	public string ToStringAndClear()
 	{
 		if (_nestedLevel != 0) throw new Exception($"Nesting must be completed (Increase/Decrease): {_nestedLevel}");
-		
+
 		string result = _sb.ToString();
 		_nestedLevel = 0;
 		_sb.Clear();
 		_sb.Append(DefaultHeader);
-		
+
 		return result;
 	}
 

@@ -9,7 +9,8 @@
 	<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\GeneratedFiles</CompilerGeneratedFilesOutputPath>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PackageId>TestProject</PackageId>
+    <PackageId>ExampleProject</PackageId>
+    <RootNamespace>TestProject</RootNamespace>
   </PropertyGroup>
 	
 	<PropertyGroup>

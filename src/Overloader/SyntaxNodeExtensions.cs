@@ -1,10 +1,9 @@
-﻿using System.Reflection.Metadata;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Overloader.Utils;
+namespace Overloader;
 
 public static class SyntaxNodeExtensions
 {
@@ -52,12 +51,17 @@ public static class SyntaxNodeExtensions
 		return nameSpace;
 	}
 
-	public static bool TryGetAttribute(this ParameterSyntax syntaxNode, string attrName, out AttributeSyntax? attr)
+	public static bool TryGetTAttr(this ParameterSyntax syntaxNode,
+		Compilation compilation,
+		ITypeSymbol? type,
+		out AttributeSyntax? attr)
 	{
 		foreach (var attrList in syntaxNode.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
-			if (!attribute.Name.ToString().Equals(attrName)) continue;
+			if (!attribute.Name.ToString().Equals(AttributeNames.TAttr)) continue;
+			if (attribute.ArgumentList is {Arguments.Count: > 1} && (type is null || !SymbolEqualityComparer.Default.Equals(
+				    attribute.ArgumentList.Arguments[1].GetType(compilation), type))) continue;
 
 			attr = attribute;
 			return true;
@@ -76,18 +80,11 @@ public static class SyntaxNodeExtensions
 		_ => throw new ArgumentException("Unknown attribute.")
 	};
 
+	public static string GetInnerText(this ExpressionSyntax expressionSyntax) =>
+		expressionSyntax.GetText().GetInnerText();
+
 	public static string GetInnerText(this SourceText sourceText) =>
 		sourceText.GetSubText(new TextSpan(1, sourceText.Length - 2)).ToString();
-
-	public static bool ContainsAttrInParams(this MethodDeclarationSyntax method, params string[] attrName)
-	{
-		foreach (var parameter in method.ParameterList.Parameters)
-		foreach (var attributeList in parameter.AttributeLists)
-		foreach (var attribute in attributeList.Attributes)
-			if (attrName.Contains(attribute.Name.ToString())) return true;
-
-		return false;
-	}
 
 	public static SyntaxNode GetTopParent(this SyntaxNode syntax)
 	{
@@ -96,5 +93,35 @@ public static class SyntaxNodeExtensions
 			topNode = topNode.Parent;
 
 		return topNode;
+	}
+
+	public static ITypeSymbol GetType(this AttributeArgumentSyntax type, Compilation compilation) =>
+		GetType(type.Expression, compilation);
+
+	public static ITypeSymbol GetType(this CSharpSyntaxNode node, Compilation compilation)
+	{
+		if (node is TypeOfExpressionSyntax typeOfExpressionSyntax)
+			node = typeOfExpressionSyntax.Type;
+
+		var semanticModel = compilation.GetSemanticModel(node.SyntaxTree);
+		return semanticModel.GetTypeInfo(node).Type ??
+		       throw new ArgumentException("Type not found.");
+	}
+
+	public static Dictionary<ITypeSymbol, Formatter> GetFormatters(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	{
+		var dict = new Dictionary<ITypeSymbol, Formatter>(attributeSyntaxes.Count, SymbolEqualityComparer.Default);
+
+		foreach (var formatterSyntax in attributeSyntaxes)
+		{
+			var args = formatterSyntax.ArgumentList?.Arguments ??
+			           throw new ArgumentException("Argument list can't be null.");
+			var type = args[0].GetType(compilation).OriginalDefinition;
+			string customFormatterData = args[1].Expression.GetInnerText();
+
+			dict.Add(type, Formatter.CreateFromString(compilation, customFormatterData));
+		}
+
+		return dict;
 	}
 }
