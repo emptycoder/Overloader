@@ -1,6 +1,8 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedParameter.Local
 
+using System.Runtime.CompilerServices;
+
 namespace Overloader;
 
 public static class AttributeNames
@@ -16,6 +18,7 @@ public static class AttributeNames
 	public static readonly string ChangeAccessModifierAttr = nameof(ChangeAccessModifierAttribute).Replace("Attribute", "");
 }
 
+// TODO: Attribute usages
 public sealed class PartialOverloadsAttribute : Attribute
 {
 	public PartialOverloadsAttribute(params Type[] types) { }
