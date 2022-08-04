@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
 
-namespace Overloader;
+namespace Overloader.Entities;
 
-public sealed class SourceBuilder
+public class SourceBuilder
 {
 	private const string PaddingStr = "\t";
 	private const string NestedUpStr = "{";

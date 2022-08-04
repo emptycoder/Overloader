@@ -2,8 +2,9 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Overloader.Entities;
 
-namespace Overloader;
+namespace Overloader.Utils;
 
 public static class SyntaxNodeExtensions
 {
@@ -52,16 +53,15 @@ public static class SyntaxNodeExtensions
 	}
 
 	public static bool TryGetTAttr(this ParameterSyntax syntaxNode,
-		Compilation compilation,
-		ITypeSymbol? type,
+		IGeneratorProps props,
 		out AttributeSyntax? attr)
 	{
 		foreach (var attrList in syntaxNode.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
 			if (!attribute.Name.ToString().Equals(AttributeNames.TAttr)) continue;
-			if (attribute.ArgumentList is {Arguments.Count: > 1} && (type is null || !SymbolEqualityComparer.Default.Equals(
-				    attribute.ArgumentList.Arguments[1].GetType(compilation), type))) continue;
+			if (attribute.ArgumentList is {Arguments.Count: > 1} &&
+			    (props.Template is null || attribute.ArgumentList.Arguments[1].EqualsToTemplate(props))) continue;
 
 			attr = attribute;
 			return true;
@@ -124,4 +124,7 @@ public static class SyntaxNodeExtensions
 
 		return dict;
 	}
+
+	public static bool EqualsToTemplate(this AttributeArgumentSyntax arg, IGeneratorProps props) =>
+		SymbolEqualityComparer.Default.Equals(arg.GetType(props.Compilation), props.Template);
 }

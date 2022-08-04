@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Overloader;
+namespace Overloader.Entities;
 
 public readonly struct TypeEntrySyntax
 {

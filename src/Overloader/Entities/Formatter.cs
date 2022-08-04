@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Overloader.Enums;
 
-namespace Overloader;
+namespace Overloader.Entities;
 
 public readonly struct Formatter
 {
@@ -48,7 +48,6 @@ public readonly struct Formatter
 		int startOfParamsObjectPos = data.IndexOf('{', startOfGenericParamsPos);
 		int endOfGenericParamsPos = data.LastIndexOf('>', startOfParamsObjectPos);
 
-		// TODO:
 
 		return default;
 	}

@@ -1,6 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using Overloader;
+using TestProject;
+
 [assembly:CustomOverload(typeof(Vector2<>), @"
 <T> {
 	X: T,
@@ -10,18 +12,17 @@ using Overloader;
 	}
 }")]
 
-
 var test = TestProject.Vector2FExtension.Sum();
 Console.WriteLine("TEST");
 
-public struct Vector2<T>
-{
-	public double X;
-	public double Y { get; set; }
-}
-
 namespace TestProject
 {
+	public struct Vector2<T>
+	{
+		public double X;
+		public double Y { get; set; }
+	}
+
 	[NewClassOverload("2D", "2F", typeof(float))]
 	public static partial class Vector2DExtension
 	{
