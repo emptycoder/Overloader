@@ -6,9 +6,9 @@ using Overloader.Enums;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class GenerateTypeOverloads : IChainObj
+internal sealed class GenerateTypeOverloads : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder gsb)
+	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
 		if (gsb.Store.OverloadMap is null || !gsb.Store.IsSmthChanged || gsb.Template is null) return ChainResult.NextChainMember;
 

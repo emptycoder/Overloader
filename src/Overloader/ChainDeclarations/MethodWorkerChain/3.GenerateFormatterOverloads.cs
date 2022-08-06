@@ -5,9 +5,9 @@ using Overloader.Enums;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class GenerateFormatterOverloads : IChainObj
+internal sealed class GenerateFormatterOverloads : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder gsb)
+	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
 		if (gsb.Store.OverloadMap is null || !gsb.Store.IsAnyFormatter) return ChainResult.NextChainMember;
 

@@ -3,11 +3,11 @@ using Overloader.ChainDeclarations.MethodWorkerChain;
 
 namespace Overloader.ChainDeclarations;
 
-public class Chains
+public static class Chains
 {
-	public static readonly IChainObj Main = new Main();
-
-	public static readonly IChainObj[] MethodWorkers =
+	internal static readonly IChainObj Main = new Main();
+	
+	internal static readonly IChainObj[] MethodWorkers =
 	{
 		new AnalyzeMethodAttributes(),
 		new AnalyzeMethodParams(),

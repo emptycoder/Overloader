@@ -4,7 +4,7 @@ using Overloader.Enums;
 
 namespace Overloader.Entities;
 
-public readonly struct Formatter
+internal readonly struct Formatter
 {
 	private readonly (Template Action, object Data)[] _genericParams;
 	private readonly (string Name, Template Action, object Data)[] _params;

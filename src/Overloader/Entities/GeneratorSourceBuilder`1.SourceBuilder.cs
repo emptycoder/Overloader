@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Overloader.Entities;
 
-public partial record GeneratorSourceBuilder
+internal partial record GeneratorSourceBuilder
 {
 	private const string PaddingStr = "\t";
 	private const string NestedUpStr = "{";

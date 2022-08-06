@@ -1,6 +1,6 @@
 ﻿namespace Overloader.Enums;
 
-public enum Template
+internal enum Template
 {
 	Template,
 	Type,

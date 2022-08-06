@@ -5,7 +5,7 @@ using Overloader.Enums;
 
 namespace Overloader.Entities;
 
-public sealed class StoreDictionary : IDisposable
+internal sealed class StoreDictionary : IDisposable
 {
 	public bool IsAnyFormatter;
 	public bool IsSmthChanged;

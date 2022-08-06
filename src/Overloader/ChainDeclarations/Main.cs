@@ -6,9 +6,9 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations;
 
-public class Main : IChainObj
+internal class Main : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder gsb)
+	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
 		var entry = (TypeEntrySyntax) gsb.Entry;
 		gsb.AppendUsings(entry.Syntax.GetTopParent().DescendantNodes().Where(node => node is UsingDirectiveSyntax))

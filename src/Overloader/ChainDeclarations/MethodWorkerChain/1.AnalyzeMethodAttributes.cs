@@ -7,9 +7,9 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class AnalyzeMethodAttributes : IChainObj
+internal sealed class AnalyzeMethodAttributes : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder gsb)
+	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		// Analyze method attributes

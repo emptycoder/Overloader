@@ -2,7 +2,7 @@
 
 namespace Overloader.Entities;
 
-public readonly struct TypeEntrySyntax
+internal readonly struct TypeEntrySyntax
 {
 	public readonly TypeDeclarationSyntax Syntax;
 	public readonly List<(string ClassName, AttributeArgumentSyntax TypeSyntax)> OverloadTypes = new();

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Overloader.Entities;
 
-public partial record GeneratorSourceBuilder : IGeneratorProps, IDisposable
+internal partial record GeneratorSourceBuilder : IGeneratorProps, IDisposable
 {
 	private TypeSyntax? _typeSyntax;
 

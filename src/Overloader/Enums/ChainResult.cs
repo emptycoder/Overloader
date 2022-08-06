@@ -1,6 +1,6 @@
 ﻿namespace Overloader.Enums;
 
-public enum ChainResult : sbyte
+internal enum ChainResult : sbyte
 {
 	NextChainMember,
 	BreakChain

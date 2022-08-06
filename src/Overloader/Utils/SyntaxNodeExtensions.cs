@@ -6,7 +6,7 @@ using Overloader.Entities;
 
 namespace Overloader.Utils;
 
-public static class SyntaxNodeExtensions
+internal static class SyntaxNodeExtensions
 {
 	public static string GetNamespace(this BaseTypeDeclarationSyntax syntax)
 	{
