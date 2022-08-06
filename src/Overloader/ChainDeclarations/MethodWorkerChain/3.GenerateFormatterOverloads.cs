@@ -5,16 +5,17 @@ using Overloader.Enums;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class GenerateFormatterOverloads : IChainObj<MethodDeclarationSyntax>
+public sealed class GenerateFormatterOverloads : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder<MethodDeclarationSyntax> gsb)
+	public ChainResult Execute(GeneratorSourceBuilder gsb)
 	{
-		if (!gsb.Store.IsAnyFormatter) return ChainResult.NextChainMember;
+		if (gsb.Store.OverloadMap is null || !gsb.Store.IsAnyFormatter) return ChainResult.NextChainMember;
 
+		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		// TODO: Insert attributes
-		gsb.Append($"{gsb.Entry.Modifiers.ToFullString()}{gsb.Entry.ReturnType.ToFullString()}{gsb.Entry.Identifier.ToFullString()}(");
+		gsb.Append($"{entry.Modifiers.ToFullString()}{entry.ReturnType.ToFullString()}{entry.Identifier.ToFullString()}(");
 		var replacementModifiers = new List<(string, string)>();
-		var parameters = gsb.Entry.ParameterList.Parameters;
+		var parameters = entry.ParameterList.Parameters;
 
 		for (int index = 0; index < parameters.Count; index++)
 		{
@@ -52,7 +53,7 @@ public sealed class GenerateFormatterOverloads : IChainObj<MethodDeclarationSynt
 		}
 
 		gsb.Append(")", 1);
-		gsb.WriteMethodBody(gsb.Entry, replacementModifiers);
+		gsb.WriteMethodBody(entry, replacementModifiers);
 
 		return ChainResult.NextChainMember;
 	}

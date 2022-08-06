@@ -3,7 +3,7 @@ using Overloader.Enums;
 
 namespace Overloader.ChainDeclarations.Abstractions;
 
-public interface IChainObj<T>
+public interface IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder<T> gsb);
+	public ChainResult Execute(GeneratorSourceBuilder gsb);
 }

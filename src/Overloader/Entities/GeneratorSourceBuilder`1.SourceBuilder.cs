@@ -3,35 +3,35 @@ using Microsoft.CodeAnalysis;
 
 namespace Overloader.Entities;
 
-public class SourceBuilder
+public partial record GeneratorSourceBuilder
 {
 	private const string PaddingStr = "\t";
 	private const string NestedUpStr = "{";
 	private const string NestedDownStr = "}";
 	private const string DefaultHeader = @"";
-	private readonly StringBuilder _sb = new(DefaultHeader);
 
+	private readonly StringBuilder _data = new(DefaultHeader);
 	private uint _nestedLevel;
 
-	public SourceBuilder AppendUsings(IEnumerable<SyntaxNode> usings)
+	public GeneratorSourceBuilder AppendUsings(IEnumerable<SyntaxNode> usings)
 	{
 		foreach (var @using in usings)
 			Append(@using.ToFullString(), 1);
 
-		return this;
+		return Append(string.Empty, 1);
 	}
 
-	public SourceBuilder Append(string? str, sbyte breakCount = 0, char breakChar = '\n')
+	public GeneratorSourceBuilder Append(string? str, sbyte breakCount = 0, char breakChar = '\n')
 	{
 		AppendNestingByTabs();
-		_sb.Append(str?.Trim() ?? string.Empty);
+		_data.Append(str?.Trim() ?? string.Empty);
 		for (int index = 0; index < breakCount; index++)
-			_sb.Append(breakChar);
+			_data.Append(breakChar);
 
 		return this;
 	}
 
-	public SourceBuilder AppendLineAndNestedIncrease(string str)
+	public GeneratorSourceBuilder AppendLineAndNestedIncrease(string str)
 	{
 		Append(str, 1);
 		NestedIncrease();
@@ -39,7 +39,7 @@ public class SourceBuilder
 		return this;
 	}
 
-	public SourceBuilder AppendLineAndNestedDecrease(string? str = null)
+	public GeneratorSourceBuilder AppendLineAndNestedDecrease(string? str = null)
 	{
 		Append(str, 1);
 		NestedDecrease();
@@ -47,7 +47,7 @@ public class SourceBuilder
 		return this;
 	}
 
-	public SourceBuilder NestedIncrease()
+	public GeneratorSourceBuilder NestedIncrease()
 	{
 		Append(NestedUpStr, 1);
 		_nestedLevel++;
@@ -55,7 +55,7 @@ public class SourceBuilder
 		return this;
 	}
 
-	public SourceBuilder NestedDecrease()
+	public GeneratorSourceBuilder NestedDecrease()
 	{
 		if (_nestedLevel == 0)
 			throw new Exception("Minimum nested level has been reached");
@@ -69,17 +69,19 @@ public class SourceBuilder
 	{
 		if (_nestedLevel != 0) throw new Exception($"Nesting must be completed (Increase/Decrease): {_nestedLevel}");
 
-		string result = _sb.ToString();
+		string result = _data.ToString();
 		_nestedLevel = 0;
-		_sb.Clear();
-		_sb.Append(DefaultHeader);
+		_data.Clear();
+		_data.Append(DefaultHeader);
 
 		return result;
 	}
 
+	public override string ToString() => _data.ToString();
+
 	private void AppendNestingByTabs()
 	{
 		for (int index = 0; index < _nestedLevel; index++)
-			_sb.Append(PaddingStr);
+			_data.Append(PaddingStr);
 	}
 }

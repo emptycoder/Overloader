@@ -11,6 +11,6 @@ public class Tests
 	[Test]
 	public void Test1()
 	{
-		var tester = new CSharpSourceGeneratorVerifier<OverloadsGenerator>.Test();
+		var generator = new CSharpSourceGeneratorVerifier<OverloadsGenerator>.Test();
 	}
 }

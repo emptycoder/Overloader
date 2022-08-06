@@ -4,37 +4,31 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Overloader.Entities;
 
-public sealed class GeneratorSourceBuilder<T> : SourceBuilder, IGeneratorProps, IDisposable
+public partial record GeneratorSourceBuilder : IGeneratorProps, IDisposable
 {
 	private TypeSyntax? _typeSyntax;
-	public StoreDictionary Store { get; private init; } = new();
+
+	public StoreDictionary Store { get; } = new();
 	public Dictionary<ITypeSymbol, Formatter> Formatters { get; init; } = default!;
 	public Dictionary<ITypeSymbol, Formatter> GlobalFormatters { get; init; } = default!;
-	public T Entry { get; init; } = default!;
-	public GeneratorExecutionContext Context { private get; init; }
+	public object Entry { get; init; } = default!;
+	public GeneratorExecutionContext Context { private get; init; } = default!;
 	public void Dispose() => Store.Dispose();
 	public string ClassName { get; init; } = default!;
-	public ITypeSymbol? Template { get; init; }
+	public ITypeSymbol? Template { get; init; } = default!;
 
 	public TypeSyntax? TemplateSyntax => _typeSyntax ??=
 		Template is not null ? SyntaxFactory.ParseTypeName(Template.Name) : default;
 
 	public Compilation Compilation => Context.Compilation;
 
-	public void AddToContext() => Context.AddSource(ClassName, ToString());
-
-	public GeneratorSourceBuilder<TEntry> With<TEntry>(TEntry entry) => new()
+	public void AddToContext()
 	{
-		Formatters = Formatters,
-		GlobalFormatters = GlobalFormatters,
-		Entry = entry,
-		ClassName = ClassName,
-		Template = Template,
-		Context = Context,
-		Store = Store
-	};
+		string generatedCode = ToString();
+		Context.AddSource(ClassName, generatedCode);
+	}
 
-	public GeneratorSourceBuilder<T> WriteMethodBody(MethodDeclarationSyntax method, IList<(string From, string To)>? replaceModifiers)
+	public GeneratorSourceBuilder WriteMethodBody(MethodDeclarationSyntax method, IList<(string From, string To)>? replaceModifiers)
 	{
 		// Body
 		if (method.ExpressionBody is not null)

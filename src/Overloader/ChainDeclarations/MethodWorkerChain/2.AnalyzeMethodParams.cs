@@ -8,14 +8,13 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class AnalyzeMethodParams : IChainObj<MethodDeclarationSyntax>
+public sealed class AnalyzeMethodParams : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder<MethodDeclarationSyntax> gsb)
+	public ChainResult Execute(GeneratorSourceBuilder gsb)
 	{
-		var parameters = gsb.Entry.ParameterList.Parameters;
+		var entry = (MethodDeclarationSyntax) gsb.Entry;
+		var parameters = entry.ParameterList.Parameters;
 		gsb.Store.OverloadMap = ArrayPool<(ParameterAction ParameterAction, ITypeSymbol Type)>.Shared.Rent(parameters.Count);
-		gsb.Store.IsSmthChanged = false;
-		gsb.Store.IsAnyFormatter = false;
 		for (int index = 0; index < parameters.Count; index++)
 		{
 			bool shouldBeReplaced = parameters[index].TryGetTAttr(gsb, out var attribute);

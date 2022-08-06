@@ -1,8 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedParameter.Local
 
-using System.Runtime.CompilerServices;
-
 namespace Overloader;
 
 public static class AttributeNames

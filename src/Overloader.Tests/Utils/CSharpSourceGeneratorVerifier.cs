@@ -11,6 +11,8 @@ public static class CSharpSourceGeneratorVerifier<TSourceGenerator>
 {
 	public class Test : CSharpSourceGeneratorTest<TSourceGenerator, NUnitVerifier>
 	{
+		public LanguageVersion LanguageVersion { get; set; } = LanguageVersion.Default;
+
 		protected override CompilationOptions CreateCompilationOptions()
 		{
 			var compilationOptions = base.CreateCompilationOptions();
@@ -18,20 +20,15 @@ public static class CSharpSourceGeneratorVerifier<TSourceGenerator>
 				compilationOptions.SpecificDiagnosticOptions.SetItems(GetNullableWarningsFromCompiler()));
 		}
 
-		public LanguageVersion LanguageVersion { get; set; } = LanguageVersion.Default;
-
 		private static ImmutableDictionary<string, ReportDiagnostic> GetNullableWarningsFromCompiler()
 		{
-			string[] args = { "/warnaserror:nullable" };
-			var commandLineArguments = CSharpCommandLineParser.Default.Parse(args, baseDirectory: Environment.CurrentDirectory, sdkDirectory: Environment.CurrentDirectory);
+			string[] args = {"/warnaserror:nullable"};
+			var commandLineArguments = CSharpCommandLineParser.Default.Parse(args, Environment.CurrentDirectory, Environment.CurrentDirectory);
 			var nullableWarnings = commandLineArguments.CompilationOptions.SpecificDiagnosticOptions;
 
 			return nullableWarnings;
 		}
 
-		protected override ParseOptions CreateParseOptions()
-		{
-			return ((CSharpParseOptions)base.CreateParseOptions()).WithLanguageVersion(LanguageVersion);
-		}
+		protected override ParseOptions CreateParseOptions() => ((CSharpParseOptions) base.CreateParseOptions()).WithLanguageVersion(LanguageVersion);
 	}
 }

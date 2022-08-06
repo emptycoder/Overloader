@@ -7,13 +7,14 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class AnalyzeMethodAttributes : IChainObj<MethodDeclarationSyntax>
+public sealed class AnalyzeMethodAttributes : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder<MethodDeclarationSyntax> gsb)
+	public ChainResult Execute(GeneratorSourceBuilder gsb)
 	{
+		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		// Analyze method attributes
-		gsb.Store.ReturnType = gsb.Entry.ReturnType;
-		foreach (var attrList in gsb.Entry.AttributeLists)
+		gsb.Store.ReturnType = entry.ReturnType;
+		foreach (var attrList in entry.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
 			string attrName = attribute.Name.GetName();

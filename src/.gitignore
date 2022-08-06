@@ -22,6 +22,9 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+# Remove all folders used for generator debug
+*.Generated/
+
 # Visual Studio 2015 cache/options directory
 .vs/
 .idea/

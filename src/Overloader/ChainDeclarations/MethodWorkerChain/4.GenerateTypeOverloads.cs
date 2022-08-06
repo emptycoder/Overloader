@@ -6,16 +6,17 @@ using Overloader.Enums;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class GenerateTypeOverloads : IChainObj<MethodDeclarationSyntax>
+public sealed class GenerateTypeOverloads : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder<MethodDeclarationSyntax> gsb)
+	public ChainResult Execute(GeneratorSourceBuilder gsb)
 	{
-		if (!gsb.Store.IsSmthChanged) return ChainResult.NextChainMember;
+		if (gsb.Store.OverloadMap is null || !gsb.Store.IsSmthChanged || gsb.Template is null) return ChainResult.NextChainMember;
 
-		var parameters = gsb.Entry.ParameterList.Parameters;
+		var entry = (MethodDeclarationSyntax) gsb.Entry;
+		var parameters = entry.ParameterList.Parameters;
 
 		// TODO: Insert attributes
-		gsb.Append($"{gsb.Entry.Modifiers.ToFullString()}{gsb.Store.ReturnType.ToFullString()}{gsb.Entry.Identifier.ToFullString()}(");
+		gsb.Append($"{entry.Modifiers.ToFullString()}{gsb.Store.ReturnType.ToFullString()}{entry.Identifier.ToFullString()}(");
 		for (int index = 0; index < parameters.Count; index++)
 		{
 			var mappedParam = gsb.Store.OverloadMap[index];
@@ -54,7 +55,7 @@ public sealed class GenerateTypeOverloads : IChainObj<MethodDeclarationSyntax>
 		}
 
 		gsb.Append(")", 1);
-		gsb.WriteMethodBody(gsb.Entry, null);
+		gsb.WriteMethodBody(entry, null);
 
 		return ChainResult.NextChainMember;
 	}

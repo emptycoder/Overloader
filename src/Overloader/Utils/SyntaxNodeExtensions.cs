@@ -125,6 +125,6 @@ public static class SyntaxNodeExtensions
 		return dict;
 	}
 
-	public static bool EqualsToTemplate(this AttributeArgumentSyntax arg, IGeneratorProps props) =>
+	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>
 		SymbolEqualityComparer.Default.Equals(arg.GetType(props.Compilation), props.Template);
 }

@@ -6,19 +6,20 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations;
 
-public class Main : IChainObj<TypeEntrySyntax>
+public class Main : IChainObj
 {
-	public ChainResult Execute(GeneratorSourceBuilder<TypeEntrySyntax> gsb)
+	public ChainResult Execute(GeneratorSourceBuilder gsb)
 	{
-		gsb.AppendUsings(gsb.Entry.Syntax.GetTopParent().DescendantNodes().Where(node => node is UsingDirectiveSyntax))
-			.Append($"namespace {gsb.Entry.Syntax.GetNamespace()};", 2);
+		var entry = (TypeEntrySyntax) gsb.Entry;
+		gsb.AppendUsings(entry.Syntax.GetTopParent().DescendantNodes().Where(node => node is UsingDirectiveSyntax))
+			.Append($"namespace {entry.Syntax.GetNamespace()};", 2);
 
 		// Declare class/struct/record signature
-		gsb.Append(gsb.Entry.Syntax.Modifiers.ToFullString(), 1, ' ')
-			.Append(gsb.Entry.Syntax.Keyword.ToFullString(), 1, ' ')
+		gsb.Append(entry.Syntax.Modifiers.ToFullString(), 1, ' ')
+			.Append(entry.Syntax.Keyword.ToFullString(), 1, ' ')
 			.AppendLineAndNestedIncrease(gsb.ClassName);
 
-		foreach (var member in gsb.Entry.Syntax.Members)
+		foreach (var member in entry.Syntax.Members)
 		{
 			if (member is not MethodDeclarationSyntax methodSyntax)
 			{
@@ -27,7 +28,7 @@ public class Main : IChainObj<TypeEntrySyntax>
 			}
 
 			foreach (var worker in Chains.MethodWorkers)
-				if (worker.Execute(gsb.With(methodSyntax)) == ChainResult.BreakChain)
+				if (worker.Execute(gsb with {Entry = methodSyntax}) == ChainResult.BreakChain)
 					break;
 		}
 

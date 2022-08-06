@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations;
 using Overloader.Entities;
 using Overloader.Utils;
-
 #if DEBUG
 using System.Diagnostics;
 #endif
@@ -28,46 +27,57 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		if (context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver
 		    || !syntaxReceiver.Candidates.Any()) return;
 
+#if !DEBUG
 		var tasks = new List<Task>();
 		var taskFactory = new TaskFactory();
+#endif
 		var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormatters(context.Compilation);
 		foreach (var candidate in syntaxReceiver.Candidates)
 		{
 			string candidateClassName = candidate.Syntax.Identifier.ValueText;
 			var formatters = candidate.FormatterSyntaxes.GetFormatters(context.Compilation);
-			tasks.Add(taskFactory.StartNew(obj =>
-				{
-					using var props = (GeneratorSourceBuilder<TypeEntrySyntax>) obj;
-					Chains.Main.Execute(props);
-					props.AddToContext();
-				},
-				new GeneratorSourceBuilder<TypeEntrySyntax>
+			var overloadCreation = new Action<object>(obj =>
+			{
+				using var props = (GeneratorSourceBuilder) obj;
+				Chains.Main.Execute(props);
+				props.AddToContext();
+			});
+			var formatterOverloadProps = new GeneratorSourceBuilder
+			{
+				Context = context,
+				Entry = candidate,
+				ClassName = candidateClassName,
+				GlobalFormatters = globalFormatters,
+				Formatters = formatters
+			};
+#if DEBUG
+			overloadCreation(formatterOverloadProps);
+#else
+			tasks.Add(taskFactory.StartNew(overloadCreation, formatterOverloadProps));
+#endif
+
+			foreach ((string className, var argSyntax) in candidate.OverloadTypes)
+			{
+				var genericWithFormatterOverloadProps = new GeneratorSourceBuilder
 				{
 					Context = context,
 					Entry = candidate,
-					ClassName = candidateClassName,
+					ClassName = className,
 					GlobalFormatters = globalFormatters,
-					Formatters = formatters
-				}));
-			foreach ((string className, var argSyntax) in candidate.OverloadTypes)
-				tasks.Add(taskFactory.StartNew(obj =>
-					{
-						using var props = (GeneratorSourceBuilder<TypeEntrySyntax>) obj;
-						Chains.Main.Execute(props);
-						props.AddToContext();
-					},
-					new GeneratorSourceBuilder<TypeEntrySyntax>
-					{
-						Context = context,
-						Entry = candidate,
-						ClassName = className,
-						GlobalFormatters = globalFormatters,
-						Formatters = formatters,
-						Template = argSyntax.GetType(context.Compilation)
-					}));
+					Formatters = formatters,
+					Template = argSyntax.GetType(context.Compilation)
+				};
+#if DEBUG
+				overloadCreation(genericWithFormatterOverloadProps);
+#else
+				tasks.Add(taskFactory.StartNew(overloadCreation, genericWithFormatterOverloadProps));
+#endif
+			}
 		}
 
+#if !DEBUG
 		tasks.ForEach(task => task.Wait());
+#endif
 	}
 
 	private sealed class SyntaxReceiver : ISyntaxReceiver

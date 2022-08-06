@@ -1,32 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 
-        <IsPackable>false</IsPackable>
+		<IsPackable>false</IsPackable>
 
-        <RootNamespace>TestProject</RootNamespace>
-    </PropertyGroup>
+		<RootNamespace>TestProject</RootNamespace>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.2.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.NUnit" Version="1.1.1" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
-        <PackageReference Include="NUnit" Version="3.13.3" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
-        <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
-        <PackageReference Include="coverlet.collector" Version="3.1.2">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.2.0"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.NUnit" Version="1.1.1"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0"/>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0"/>
+		<PackageReference Include="NUnit" Version="3.13.3"/>
+		<PackageReference Include="NUnit3TestAdapter" Version="4.2.1"/>
+		<PackageReference Include="NUnit.Analyzers" Version="3.3.0"/>
+		<PackageReference Include="coverlet.collector" Version="3.1.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Overloader\Overloader.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Overloader\Overloader.csproj"/>
+	</ItemGroup>
 
 </Project>

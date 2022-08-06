@@ -3,7 +3,7 @@
 using Overloader;
 using TestProject;
 
-[assembly:CustomOverload(typeof(Vector2<>), @"
+[assembly: CustomOverload(typeof(Vector2<>), @"
 <T> {
 	X: T,
 	Y: {
@@ -12,7 +12,7 @@ using TestProject;
 	}
 }")]
 
-var test = TestProject.Vector2FExtension.Sum();
+Vector2FExtension.Sum(123);
 Console.WriteLine("TEST");
 
 namespace TestProject
@@ -29,7 +29,7 @@ namespace TestProject
 		public static void Sum([T] double number)
 		{
 			//$ var test = Convert.ToSingle(number); : Single
-			var test = Convert.ToInt64(number);
+			long test = Convert.ToInt64(number);
 			//# "(byte)" -> "({typeSyntax})"
 			byte dd = (byte) test;
 		}

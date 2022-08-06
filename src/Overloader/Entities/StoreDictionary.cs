@@ -9,8 +9,8 @@ public sealed class StoreDictionary : IDisposable
 {
 	public bool IsAnyFormatter;
 	public bool IsSmthChanged;
-	public (ParameterAction ParameterAction, ITypeSymbol Type)[] OverloadMap;
-	public TypeSyntax ReturnType;
+	public (ParameterAction ParameterAction, ITypeSymbol Type)[]? OverloadMap;
+	public TypeSyntax ReturnType = default!;
 
 	public static StoreDictionary Shared => new();
 
