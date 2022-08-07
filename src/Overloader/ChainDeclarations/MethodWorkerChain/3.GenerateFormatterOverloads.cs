@@ -2,6 +2,7 @@
 using Overloader.ChainDeclarations.Abstractions;
 using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Formatters;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
@@ -42,10 +43,9 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 
 			void AppendFormatter(Formatter formatter)
 			{
-				for (int paramIndex = 0; paramIndex < formatter.ParamsCount; paramIndex++)
+				foreach (var formatterParam in formatter.Params)
 				{
-					var formatterParam = formatter.GetParamByIndex(paramIndex, gsb.Template);
-					gsb.Append($"{formatterParam.Type} {paramName}{formatterParam.Name}, ");
+					gsb.Append($"{formatterParam.GetType(gsb.Template)} {paramName}{formatterParam.Name}, ");
 					replacementModifiers.Add(($"{paramName}.{formatterParam.Name}",
 						$"{paramName}{formatterParam.Name}"));
 				}

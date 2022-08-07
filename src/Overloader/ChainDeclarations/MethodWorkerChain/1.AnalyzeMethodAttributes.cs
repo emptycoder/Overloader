@@ -31,6 +31,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 				{
 					case 0 when gsb.TemplateSyntax is not null:
 						gsb.Store.ReturnType = gsb.TemplateSyntax;
+						gsb.Store.IsSmthChanged = true;
 						break;
 					case 0:
 						break;
@@ -39,6 +40,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 					{
 						gsb.Store.ReturnType = SyntaxFactory.ParseTypeName(
 							attribute.ArgumentList!.Arguments[0].GetType(gsb.Compilation).Name);
+						gsb.Store.IsSmthChanged = true;
 						break;
 					}
 					default:

@@ -1,10 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Overloader.Formatters;
 
 namespace Overloader.Entities;
 
-internal partial record GeneratorSourceBuilder : IGeneratorProps, IDisposable
+internal partial record GeneratorSourceBuilder : IGeneratorProps
 {
 	private TypeSyntax? _typeSyntax;
 
@@ -12,21 +13,15 @@ internal partial record GeneratorSourceBuilder : IGeneratorProps, IDisposable
 	public Dictionary<ITypeSymbol, Formatter> Formatters { get; init; } = default!;
 	public Dictionary<ITypeSymbol, Formatter> GlobalFormatters { get; init; } = default!;
 	public object Entry { get; init; } = default!;
-	public GeneratorExecutionContext Context { private get; init; } = default!;
-	public void Dispose() => Store.Dispose();
+	public GeneratorExecutionContext Context { private get; init; }
 	public string ClassName { get; init; } = default!;
-	public ITypeSymbol? Template { get; init; } = default!;
+	public ITypeSymbol? Template { get; init; }
 
 	public TypeSyntax? TemplateSyntax => _typeSyntax ??=
 		Template is not null ? SyntaxFactory.ParseTypeName(Template.Name) : default;
 
 	public Compilation Compilation => Context.Compilation;
-
-	public void AddToContext()
-	{
-		string generatedCode = ToString();
-		Context.AddSource(ClassName, generatedCode);
-	}
+	public void AddToContext() => Context.AddSource(ClassName, ToString());
 
 	public GeneratorSourceBuilder WriteMethodBody(MethodDeclarationSyntax method, IList<(string From, string To)>? replaceModifiers)
 	{

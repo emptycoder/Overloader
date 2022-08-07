@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.Abstractions;
 using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Formatters;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
@@ -46,9 +47,9 @@ internal sealed class GenerateTypeOverloads : IChainObj
 			// ReSharper disable once VariableHidesOuterVariable
 			void AppendFormatter(INamedTypeSymbol originalType, Formatter formatter)
 			{
-				var @params = new ITypeSymbol[formatter.GenericParamsCount];
-				for (int paramIndex = 0; paramIndex < formatter.GenericParamsCount; paramIndex++)
-					@params[paramIndex] = formatter.GetGenericParamByIndex(paramIndex, gsb.Template) ??
+				var @params = new ITypeSymbol[formatter.GenericParams.Length];
+				for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
+					@params[paramIndex] = formatter.GenericParams[index].GetType(gsb.Template) ??
 					                      throw new Exception("Can't get type");
 				gsb.Append($"{originalType.Construct(@params).ToDisplayString()} {paramName}");
 			}

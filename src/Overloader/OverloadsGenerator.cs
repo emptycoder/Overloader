@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations;
 using Overloader.Entities;
@@ -10,6 +11,7 @@ using System.Diagnostics;
 
 namespace Overloader;
 
+// TODO: Check firstly DeclaredType formatter and after that OriginalType formatter
 [Generator]
 internal sealed class OverloadsGenerator : ISourceGenerator
 {
@@ -23,61 +25,79 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 	public void Execute(GeneratorExecutionContext context)
 	{
-		// TODO: Check for compilation lang
+		if (context.Compilation.Language is not "C#") return;
 		if (context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver
 		    || !syntaxReceiver.Candidates.Any()) return;
+		
+		System.Diagnostics.Debugger.Break();
 
+		try
+		{
 #if !DEBUG
 		var tasks = new List<Task>();
 		var taskFactory = new TaskFactory();
 #endif
-		var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormatters(context.Compilation);
-		foreach (var candidate in syntaxReceiver.Candidates)
-		{
-			string candidateClassName = candidate.Syntax.Identifier.ValueText;
-			var formatters = candidate.FormatterSyntaxes.GetFormatters(context.Compilation);
-			var overloadCreation = new Action<object>(obj =>
+			var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormatters(context.Compilation);
+			foreach (var candidate in syntaxReceiver.Candidates)
 			{
-				using var props = (GeneratorSourceBuilder) obj;
-				Chains.Main.Execute(props);
-				props.AddToContext();
-			});
-			var formatterOverloadProps = new GeneratorSourceBuilder
-			{
-				Context = context,
-				Entry = candidate,
-				ClassName = candidateClassName,
-				GlobalFormatters = globalFormatters,
-				Formatters = formatters
-			};
+				string candidateClassName = candidate.Syntax.Identifier.ValueText;
+				var formatters = candidate.FormatterSyntaxes.GetFormatters(context.Compilation);
+				var overloadCreation = new Action<object>(obj =>
+				{
+					var props = (GeneratorSourceBuilder) obj;
+					Chains.Main.Execute(props);
+					props.Store.Dispose();
+					props.AddToContext();
+				});
+				var formatterOverloadProps = new GeneratorSourceBuilder
+				{
+					Context = context,
+					Entry = candidate,
+					ClassName = candidateClassName,
+					GlobalFormatters = globalFormatters,
+					Formatters = formatters
+				};
 #if DEBUG
-			overloadCreation(formatterOverloadProps);
+				overloadCreation(formatterOverloadProps);
 #else
 			tasks.Add(taskFactory.StartNew(overloadCreation, formatterOverloadProps));
 #endif
 
-			foreach ((string className, var argSyntax) in candidate.OverloadTypes)
-			{
-				var genericWithFormatterOverloadProps = new GeneratorSourceBuilder
+				foreach ((string className, var argSyntax) in candidate.OverloadTypes)
 				{
-					Context = context,
-					Entry = candidate,
-					ClassName = className,
-					GlobalFormatters = globalFormatters,
-					Formatters = formatters,
-					Template = argSyntax.GetType(context.Compilation)
-				};
+					var genericWithFormatterOverloadProps = new GeneratorSourceBuilder
+					{
+						Context = context,
+						Entry = candidate,
+						ClassName = className,
+						GlobalFormatters = globalFormatters,
+						Formatters = formatters,
+						Template = argSyntax.GetType(context.Compilation)
+					};
 #if DEBUG
-				overloadCreation(genericWithFormatterOverloadProps);
+					overloadCreation(genericWithFormatterOverloadProps);
 #else
 				tasks.Add(taskFactory.StartNew(overloadCreation, genericWithFormatterOverloadProps));
 #endif
+				}
 			}
-		}
 
 #if !DEBUG
 		tasks.ForEach(task => task.Wait());
 #endif
+		}
+		catch (Exception ex)
+		{
+			context.ReportDiagnostic(Diagnostic.Create(
+				new DiagnosticDescriptor(
+					$"{nameof(Overloader)[0]}0001",
+					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)}",
+					ex.ToString(),
+					nameof(Overloader),
+					DiagnosticSeverity.Error,
+					isEnabledByDefault: true),
+				Location.None));
+		}
 	}
 
 	private sealed class SyntaxReceiver : ISyntaxReceiver

@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Overloader.Entities;
+using Overloader.Formatters;
 
 namespace Overloader.Utils;
 
@@ -83,9 +83,6 @@ internal static class SyntaxNodeExtensions
 	public static string GetInnerText(this ExpressionSyntax expressionSyntax) =>
 		expressionSyntax.GetText().GetInnerText();
 
-	public static string GetInnerText(this SourceText sourceText) =>
-		sourceText.GetSubText(new TextSpan(1, sourceText.Length - 2)).ToString();
-
 	public static SyntaxNode GetTopParent(this SyntaxNode syntax)
 	{
 		var topNode = syntax;
@@ -116,7 +113,7 @@ internal static class SyntaxNodeExtensions
 		{
 			var args = formatterSyntax.ArgumentList?.Arguments ??
 			           throw new ArgumentException("Argument list can't be null.");
-			var type = args[0].GetType(compilation).OriginalDefinition;
+			var type = args[0].GetType(compilation);
 			string customFormatterData = args[1].Expression.GetInnerText();
 
 			dict.Add(type, Formatter.CreateFromString(compilation, customFormatterData));
