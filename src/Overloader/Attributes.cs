@@ -30,7 +30,7 @@ public sealed class NewClassOverloadAttribute : Attribute
 
 public sealed class CustomOverloadAttribute : Attribute
 {
-	public CustomOverloadAttribute(Type type, string customOverload) { }
+	public CustomOverloadAttribute(Type type, object[] genericParams, object[] @params) { }
 }
 
 // ReSharper disable once InconsistentNaming

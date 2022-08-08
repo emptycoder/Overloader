@@ -1,8 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
 using Overloader.Formatters;
+using Overloader.Formatters.Params;
 
 namespace Overloader.Utils;
 
@@ -114,12 +116,58 @@ internal static class SyntaxNodeExtensions
 			var args = formatterSyntax.ArgumentList?.Arguments ??
 			           throw new ArgumentException("Argument list can't be null.");
 			var type = args[0].GetType(compilation);
-			string customFormatterData = args[1].Expression.GetInnerText();
+			Debugger.Break();
 
-			dict.Add(type, Formatter.CreateFromString(compilation, customFormatterData));
+			var genericParams = HandleParams(((ArrayCreationExpressionSyntax) args[1].Expression).Initializer, compilation, false);
+			var @params = HandleParams(((ArrayCreationExpressionSyntax) args[2].Expression).Initializer, compilation, true);
+
+			dict.Add(type, new Formatter(genericParams, @params));
 		}
 
 		return dict;
+	}
+
+	private static IParam[] HandleParams(InitializerExpressionSyntax? initializer, Compilation compilation, bool withNames)
+	{
+		if (initializer is null) return Array.Empty<IParam>();
+
+		var @params = withNames ? new IParam[initializer.Expressions.Count / 2] : new IParam[initializer.Expressions.Count];
+		string? name = null;
+
+		for (int index = 0, paramIndex = 0; index < initializer.Expressions.Count; index++)
+		{
+			if (withNames && index % 2 == 0)
+			{
+				if (initializer.Expressions[index] is not LiteralExpressionSyntax str) throw new ArgumentException();
+				name = str.GetInnerText();
+				continue;
+			}
+
+			switch (initializer.Expressions[index])
+			{
+				case LiteralExpressionSyntax str when str.GetInnerText() == "T":
+					@params[paramIndex++] = TemplateParam.Create(name);
+					break;
+				case TypeOfExpressionSyntax typeSyntax:
+					@params[paramIndex++] = TypeParam.Create(typeSyntax.GetType(compilation), name);
+					break;
+				case ImplicitArrayCreationExpressionSyntax @switch:
+					var expressions = @switch.Initializer.Expressions;
+					if (expressions.Count == 0 || expressions.Count % 2 != 0) throw new ArgumentException();
+
+					var switchDict = new Dictionary<ITypeSymbol, ITypeSymbol>(expressions.Count / 2, SymbolEqualityComparer.Default);
+					for (int switchParamIndex = 0; switchParamIndex < expressions.Count; switchParamIndex += 2)
+						switchDict.Add(expressions[switchParamIndex].GetType(compilation),
+							expressions[switchParamIndex + 1].GetType(compilation));
+
+					@params[paramIndex++] = SwitchParam.Create(switchDict, name);
+					break;
+				default:
+					throw new ArgumentException();
+			}
+		}
+
+		return @params;
 	}
 
 	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>

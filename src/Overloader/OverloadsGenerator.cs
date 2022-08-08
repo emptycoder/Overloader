@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations;
 using Overloader.Entities;
@@ -28,8 +27,6 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		if (context.Compilation.Language is not "C#") return;
 		if (context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver
 		    || !syntaxReceiver.Candidates.Any()) return;
-		
-		System.Diagnostics.Debugger.Break();
 
 		try
 		{
@@ -95,7 +92,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 					ex.ToString(),
 					nameof(Overloader),
 					DiagnosticSeverity.Error,
-					isEnabledByDefault: true),
+					true),
 				Location.None));
 		}
 	}

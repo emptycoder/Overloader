@@ -3,14 +3,18 @@
 using Overloader;
 using TestProject;
 
-[assembly: CustomOverload(typeof(Vector2<>), @"
-<T> {
-	X: T,
-	Y: {
-		float: double,
-		double: long
-	}
-}")]
+[assembly: CustomOverload(typeof(Vector2<>),
+	new object[] {"T"},
+	new object[]
+	{
+		"X", "T",
+		"Y", typeof(double),
+		"Z", new[]
+		{
+			typeof(float), typeof(double),
+			typeof(double), typeof(long)
+		}
+	})]
 
 Vector2FExtension.Sum(123);
 Console.WriteLine("TEST");
