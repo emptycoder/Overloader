@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Formatters;
+using Overloader.Utils;
 
 namespace Overloader.Entities;
 
@@ -25,7 +26,6 @@ internal partial record GeneratorSourceBuilder : IGeneratorProps
 
 	public GeneratorSourceBuilder WriteMethodBody(MethodDeclarationSyntax method, IList<(string From, string To)>? replaceModifiers)
 	{
-		// Body
 		if (method.ExpressionBody is not null)
 		{
 			Append(method.ExpressionBody.ArrowToken.ToFullString())
@@ -37,41 +37,44 @@ internal partial record GeneratorSourceBuilder : IGeneratorProps
 			NestedIncrease();
 			foreach (var statement in method.Body.Statements)
 			{
-				string strStatement;
-				switch (statement)
-				{
-					// case LocalDeclarationStatementSyntax localDeclarationStatementSyntax:
-					// 	mainSb.Append(string.Concat(statement.GetLeadingTrivia().ToFullString(), 
-					// 		localDeclarationStatementSyntax.Declaration.WithType(SyntaxFactory.ParseTypeName("double ")).ToFullString(),
-					// 		localDeclarationStatementSyntax.SemicolonToken.ToFullString()));
-					// 	continue;
-					// case ExpressionStatementSyntax expressionStatementSyntax:
-					// 	if (expressionStatementSyntax.Expression is not AssignmentExpressionSyntax assignmentExpressionSyntax) goto default;
-					// _sb.Append(string.Concat(assignmentExpressionSyntax.Left.ToFullString(),
-					// 	" = (", type.Name, ") (",
-					// 	assignmentExpressionSyntax.Right.ToFullString(),
-					// 	")",
-					// 	expressionStatementSyntax.SemicolonToken.ToFullString()));
-					// 	continue;
-					// case ReturnStatementSyntax returnStatementSyntax:
-					// 	if (method.ReturnType is not PredefinedTypeSyntax) goto default;
-					// _sb.Append(string.Concat(returnStatementSyntax.ReturnKeyword.ToFullString(),
-					// 	"(", type.Name, ") (",
-					// 	returnStatementSyntax.Expression?.ToFullString() ?? string.Empty,
-					// 	")",
-					// 	returnStatementSyntax.SemicolonToken.ToFullString()));
-					// continue;
-					default:
-						strStatement = statement.ToFullString();
-						break;
-				}
+				string strStatement = statement.WithoutLeadingTrivia().ToString();
+				if (statement.HasLeadingTrivia)
+					foreach (var syntaxTrivia in statement.GetLeadingTrivia())
+					{
+						switch (syntaxTrivia.Kind())
+						{
+							case SyntaxKind.SingleLineCommentTrivia:
+								var strTrivia = syntaxTrivia.ToString();
+								switch (strTrivia[2])
+								{
+									// Replace operation
+									case '#':
+										// var kv = strTrivia.SplitAsKV("->");
+										// strStatement = strStatement.Replace(kv.Key, kv.Value);
+										break;
+									// Change line operation
+									case '$':
+										// strStatement = strTrivia.Substring(3);
+										break;
+									default:
+										Append(strTrivia);
+										break;
+								}
+								break;
+							case SyntaxKind.WhitespaceTrivia:
+								break;
+							default:
+								Append(syntaxTrivia.ToString());
+								break;
+						}
+					}
 
 				// TODO: Create multiple replacer
 				if (replaceModifiers is not null)
 					foreach ((string from, string to) in replaceModifiers)
 						strStatement = strStatement.Replace(from, to);
 
-				Append(strStatement);
+				Append(strStatement, 1);
 			}
 
 			AppendLineAndNestedDecrease();

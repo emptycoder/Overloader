@@ -106,7 +106,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		{
 			if (syntaxNode is AttributeListSyntax attributeListSyntax)
 				foreach (var attribute in attributeListSyntax.Attributes)
-					if (attribute.Name.GetName() == AttributeNames.CustomOverloadAttr)
+					if (attribute.Name.GetName() == AttributeNames.FormatterAttr)
 						GlobalFormatterSyntaxes.Add(attribute);
 
 			if (syntaxNode is not TypeDeclarationSyntax {AttributeLists.Count: >= 1} declarationSyntax) return;
@@ -134,7 +134,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 					typeEntry.OverloadTypes.Add((className, args[2]));
 				}
-				else if (attrName == AttributeNames.CustomOverloadAttr)
+				else if (attrName == AttributeNames.FormatterAttr)
 				{
 					typeEntry.FormatterSyntaxes.Add(attribute);
 					continue;

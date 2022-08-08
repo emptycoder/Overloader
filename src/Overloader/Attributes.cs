@@ -3,12 +3,12 @@
 
 namespace Overloader;
 
-public static class AttributeNames
+internal static class AttributeNames
 {
 	public static readonly string PartialOverloadsAttr = nameof(PartialOverloadsAttribute).Replace("Attribute", "");
 	public static readonly string NewClassOverloadsAttr = nameof(NewClassOverloadAttribute).Replace("Attribute", "");
 
-	public static readonly string CustomOverloadAttr = nameof(CustomOverloadAttribute).Replace("Attribute", "");
+	public static readonly string FormatterAttr = nameof(FormatterAttribute).Replace("Attribute", "");
 
 	// ReSharper disable once InconsistentNaming
 	public static readonly string TAttr = nameof(TAttribute).Replace("Attribute", "");
@@ -28,9 +28,9 @@ public sealed class NewClassOverloadAttribute : Attribute
 	public NewClassOverloadAttribute(string nameRegex, string regexReplace, Type type) { }
 }
 
-public sealed class CustomOverloadAttribute : Attribute
+public sealed class FormatterAttribute : Attribute
 {
-	public CustomOverloadAttribute(Type type, object[] genericParams, object[] @params) { }
+	public FormatterAttribute(Type type, object[] genericParams, object[] @params) { }
 }
 
 // ReSharper disable once InconsistentNaming

@@ -3,7 +3,7 @@
 using Overloader;
 using TestProject;
 
-[assembly: CustomOverload(typeof(Vector2<>),
+[assembly: Formatter(typeof(Vector2<>),
 	new object[] {"T"},
 	new object[]
 	{
