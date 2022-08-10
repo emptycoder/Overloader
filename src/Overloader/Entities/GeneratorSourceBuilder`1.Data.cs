@@ -45,16 +45,27 @@ internal partial record GeneratorSourceBuilder : IGeneratorProps
 						{
 							case SyntaxKind.SingleLineCommentTrivia:
 								var strTrivia = syntaxTrivia.ToString();
+								var strTriviaSpan = strTrivia.AsSpan();
+								int separatorIndex = strTrivia.LastIndexOf(':');
+								var templateStr = Template?.ToDisplayString();
+								
+								if (separatorIndex != -1)
+								{
+									if (Template is null) continue;
+									if (templateStr != strTriviaSpan.Slice(separatorIndex + 1).Trim().ToString()) continue;
+									strTriviaSpan = strTriviaSpan.Slice(0, separatorIndex);
+								}
+								
 								switch (strTrivia[2])
 								{
 									// Replace operation
 									case '#':
-										// var kv = strTrivia.SplitAsKV("->");
-										// strStatement = strStatement.Replace(kv.Key, kv.Value);
+										var kv = strTriviaSpan.SplitAsKV("->");
+										strStatement = strStatement.Replace(kv.Key, kv.Value.Replace("${T}", templateStr));
 										break;
 									// Change line operation
 									case '$':
-										// strStatement = strTrivia.Substring(3);
+										strStatement = strTriviaSpan.Slice(3).Trim().ToString().Replace("${T}", templateStr);
 										break;
 									default:
 										Append(strTrivia);

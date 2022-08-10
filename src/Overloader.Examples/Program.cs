@@ -32,7 +32,7 @@ namespace TestProject
 	{
 		public static void Sum([T] double number)
 		{
-			//$ var test = Convert.ToSingle(number); : Single
+			//$ var test = Convert.ToSingle(number); : float
 			long test = Convert.ToInt64(number);
 			//# "(byte)" -> "({typeSyntax})"
 			byte dd = (byte) test;
