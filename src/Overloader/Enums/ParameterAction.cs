@@ -5,6 +5,5 @@ internal enum ParameterAction : byte
 	Nothing,
 	SimpleReplacement,
 	CustomReplacement,
-	FormatterReplacement,
-	GlobalFormatterReplacement
+	FormatterReplacement
 }

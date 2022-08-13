@@ -7,7 +7,7 @@ public static class StringExtensions
 	{
 		int separatorIndex = data.IndexOf(separator.AsSpan(), StringComparison.Ordinal);
 		if (separatorIndex == -1) throw new ArgumentException();
-		
+
 		var key = data.Slice(0, separatorIndex).ChangeBoundsByChar();
 		var value = data.Slice(separatorIndex + separator.Length).ChangeBoundsByChar();
 
@@ -21,7 +21,7 @@ public static class StringExtensions
 
 		int end = value.LastIndexOf(boundChar);
 		if (end == start) throw new ArgumentException();
-		
+
 		return value.Slice(start, end - start);
 	}
 }

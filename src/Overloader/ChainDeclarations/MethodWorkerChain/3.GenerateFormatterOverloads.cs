@@ -1,8 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.Abstractions;
+using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
 using Overloader.Enums;
-using Overloader.Formatters;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
@@ -14,46 +13,70 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		// TODO: Insert attributes
-		gsb.Append($"{entry.Modifiers.ToFullString()}{entry.ReturnType.ToFullString()}{entry.Identifier.ToFullString()}(");
+		gsb.AppendWith(entry.Modifiers.ToFullString(), " ")
+			.AppendWith(entry.ReturnType.ToFullString(), " ")
+			.Append(entry.Identifier.ToFullString())
+			.Append("(");
+
 		var replacementModifiers = new List<(string, string)>();
 		var parameters = entry.ParameterList.Parameters;
 
-		for (int index = 0; index < parameters.Count; index++)
+		if (parameters.Count > 0)
 		{
-			var mappedParam = gsb.Store.OverloadMap[index];
-			string paramName = parameters[index].Identifier.ToFullString();
-			switch (mappedParam.ParameterAction)
+			int index = 0;
+			AppendParam();
+			for (index = 1; index < parameters.Count; index++)
 			{
-				case ParameterAction.Nothing:
-					gsb.Append(paramName);
-					break;
-				case ParameterAction.SimpleReplacement:
-				case ParameterAction.CustomReplacement:
-					gsb.Append($"{mappedParam.Type.ToDisplayString()} {paramName}");
-					break;
-				case ParameterAction.FormatterReplacement:
-					AppendFormatter(gsb.Formatters[mappedParam.Type.OriginalDefinition]);
-					break;
-				case ParameterAction.GlobalFormatterReplacement:
-					AppendFormatter(gsb.GlobalFormatters[mappedParam.Type.OriginalDefinition]);
-					break;
-				default:
-					throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.");
+				gsb.AppendWoTrim(", ");
+				AppendParam();
 			}
 
-			void AppendFormatter(Formatter formatter)
+			void AppendParam()
 			{
-				foreach (var formatterParam in formatter.Params)
+				var mappedParam = gsb.Store.OverloadMap[index];
+				string paramName = parameters[index].Identifier.ToFullString();
+				switch (mappedParam.ParameterAction)
 				{
-					gsb.Append($"{formatterParam.GetType(gsb.Template)} {paramName}{formatterParam.Name}, ");
-					replacementModifiers.Add(($"{paramName}.{formatterParam.Name}",
-						$"{paramName}{formatterParam.Name}"));
+					case ParameterAction.Nothing:
+						gsb.Append(parameters[index].ToFullString());
+						break;
+					case ParameterAction.SimpleReplacement:
+					case ParameterAction.CustomReplacement:
+						gsb.AppendWith(mappedParam.Type.ToDisplayString(), " ")
+							.Append(paramName);
+						break;
+					case ParameterAction.FormatterReplacement:
+						if (!gsb.TryGetFormatter(mappedParam.Type, out var formatter))
+							throw new ArgumentException();
+
+						if (formatter.Params.Length == 0) throw new ArgumentException();
+						int paramIndex = 0;
+						AppendFormatterParam();
+						for (paramIndex = 1; paramIndex < formatter.Params.Length; paramIndex++)
+						{
+							gsb.AppendWoTrim(", ");
+							AppendFormatterParam();
+						}
+
+						void AppendFormatterParam()
+						{
+							var formatterParam = formatter.Params[paramIndex];
+							gsb.AppendWith((formatterParam.GetType(gsb.Template) ?? mappedParam.Type).ToDisplayString(), " ")
+								.Append(paramName)
+								.Append(formatterParam.Name);
+							replacementModifiers.Add(($"{paramName}.{formatterParam.Name}",
+								$"{paramName}{formatterParam.Name}"));
+						}
+
+						break;
+					default:
+						throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.");
 				}
 			}
 		}
 
-		gsb.Append(")", 1);
-		gsb.WriteMethodBody(entry, replacementModifiers);
+		gsb.Append(")", 1)
+			.WriteMethodBody(entry, replacementModifiers);
 
 		return ChainResult.NextChainMember;
 	}

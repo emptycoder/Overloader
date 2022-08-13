@@ -10,10 +10,17 @@ using System.Diagnostics;
 
 namespace Overloader;
 
-// TODO: Check firstly DeclaredType formatter and after that OriginalType formatter
 [Generator]
 internal sealed class OverloadsGenerator : ISourceGenerator
 {
+	private static readonly Action<object> OverloadCreation = obj =>
+	{
+		var props = (GeneratorSourceBuilder) obj;
+		Chains.Main.Execute(props);
+		props.Store.Dispose();
+		props.AddToContext();
+	};
+
 	public void Initialize(GeneratorInitializationContext context)
 	{
 #if DEBUG
@@ -31,21 +38,14 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		try
 		{
 #if !DEBUG
-		var tasks = new List<Task>();
-		var taskFactory = new TaskFactory();
+			var tasks = new List<Task>();
+			var taskFactory = new TaskFactory();
 #endif
 			var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormatters(context.Compilation);
 			foreach (var candidate in syntaxReceiver.Candidates)
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;
 				var formatters = candidate.FormatterSyntaxes.GetFormatters(context.Compilation);
-				var overloadCreation = new Action<object>(obj =>
-				{
-					var props = (GeneratorSourceBuilder) obj;
-					Chains.Main.Execute(props);
-					props.Store.Dispose();
-					props.AddToContext();
-				});
 				var formatterOverloadProps = new GeneratorSourceBuilder
 				{
 					Context = context,
@@ -55,9 +55,9 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 					Formatters = formatters
 				};
 #if DEBUG
-				overloadCreation(formatterOverloadProps);
+				OverloadCreation(formatterOverloadProps);
 #else
-			tasks.Add(taskFactory.StartNew(overloadCreation, formatterOverloadProps));
+				tasks.Add(taskFactory.StartNew(overloadCreation, formatterOverloadProps));
 #endif
 
 				foreach ((string className, var argSyntax) in candidate.OverloadTypes)
@@ -72,15 +72,15 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 						Template = argSyntax.GetType(context.Compilation)
 					};
 #if DEBUG
-					overloadCreation(genericWithFormatterOverloadProps);
+					OverloadCreation(genericWithFormatterOverloadProps);
 #else
-				tasks.Add(taskFactory.StartNew(overloadCreation, genericWithFormatterOverloadProps));
+					tasks.Add(taskFactory.StartNew(overloadCreation, genericWithFormatterOverloadProps));
 #endif
 				}
 			}
 
 #if !DEBUG
-		tasks.ForEach(task => task.Wait());
+			tasks.ForEach(task => task.Wait());
 #endif
 		}
 		catch (Exception ex)

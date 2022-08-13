@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.Abstractions;
 using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Utils;
@@ -19,12 +18,10 @@ internal sealed class AnalyzeMethodParams : IChainObj
 		{
 			bool shouldBeReplaced = parameters[index].TryGetTAttr(gsb, out var attribute);
 			var parameterType = (parameters[index].Type ?? throw new ArgumentException("Type is null.")).GetType(gsb.Compilation);
-			var originalTypeDefinition = parameterType.OriginalDefinition;
 
 			var parameterAction = shouldBeReplaced switch
 			{
-				true when gsb.Formatters.ContainsKey(originalTypeDefinition) => ParameterAction.FormatterReplacement,
-				true when gsb.GlobalFormatters.ContainsKey(originalTypeDefinition) => ParameterAction.GlobalFormatterReplacement,
+				true when gsb.TryGetFormatter(parameterType, out _) => ParameterAction.FormatterReplacement,
 				true when attribute?.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
 				true => ParameterAction.SimpleReplacement,
 				false => ParameterAction.Nothing
@@ -35,13 +32,11 @@ internal sealed class AnalyzeMethodParams : IChainObj
 				ParameterAction.SimpleReplacement => gsb.Template,
 				ParameterAction.CustomReplacement => attribute!.ArgumentList!.Arguments[0].GetType(gsb.Compilation),
 				ParameterAction.FormatterReplacement => default,
-				ParameterAction.GlobalFormatterReplacement => default,
 				_ => throw new ArgumentOutOfRangeException()
 			} ?? parameterType;
 
 			gsb.Store.OverloadMap[index] = (parameterAction, newParameterType);
-			gsb.Store.IsAnyFormatter |= parameterAction is ParameterAction.FormatterReplacement
-				or ParameterAction.GlobalFormatterReplacement;
+			gsb.Store.IsAnyFormatter |= parameterAction is ParameterAction.FormatterReplacement;
 			gsb.Store.IsSmthChanged |= shouldBeReplaced;
 		}
 

@@ -1,9 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.Abstractions;
+using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
 using Overloader.Enums;
-using Overloader.Formatters;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
@@ -17,46 +17,56 @@ internal sealed class GenerateTypeOverloads : IChainObj
 		var parameters = entry.ParameterList.Parameters;
 
 		// TODO: Insert attributes
-		gsb.Append($"{entry.Modifiers.ToFullString()}{gsb.Store.ReturnType.ToFullString()}{entry.Identifier.ToFullString()}(");
-		for (int index = 0; index < parameters.Count; index++)
+		gsb.AppendWith(entry.Modifiers.ToFullString(), " ")
+			.AppendWith(gsb.Store.ReturnType.ToFullString(), " ")
+			.Append(entry.Identifier.ToFullString())
+			.Append("(");
+
+		if (parameters.Count > 0)
 		{
-			var mappedParam = gsb.Store.OverloadMap[index];
-			string paramName = parameters[index].Identifier.ToFullString();
-			INamedTypeSymbol? originalType;
-			switch (mappedParam.ParameterAction)
+			int index = 0;
+			AppendParam();
+			for (index = 1; index < parameters.Count; index++)
 			{
-				case ParameterAction.Nothing:
-					gsb.Append(paramName);
-					break;
-				case ParameterAction.SimpleReplacement:
-				case ParameterAction.CustomReplacement:
-					gsb.Append($"{mappedParam.Type.ToDisplayString()} {paramName}");
-					break;
-				case ParameterAction.FormatterReplacement:
-					originalType = (INamedTypeSymbol) mappedParam.Type.OriginalDefinition.OriginalDefinition;
-					AppendFormatter(originalType, gsb.Formatters[originalType]);
-					break;
-				case ParameterAction.GlobalFormatterReplacement:
-					originalType = (INamedTypeSymbol) mappedParam.Type.OriginalDefinition.OriginalDefinition;
-					AppendFormatter(originalType, gsb.GlobalFormatters[originalType]);
-					break;
-				default:
-					throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.");
+				gsb.AppendWoTrim(", ");
+				AppendParam();
 			}
 
-			// ReSharper disable once VariableHidesOuterVariable
-			void AppendFormatter(INamedTypeSymbol originalType, Formatter formatter)
+			void AppendParam()
 			{
-				var @params = new ITypeSymbol[formatter.GenericParams.Length];
-				for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
-					@params[paramIndex] = formatter.GenericParams[index].GetType(gsb.Template) ??
-					                      throw new Exception("Can't get type");
-				gsb.Append($"{originalType.Construct(@params).ToDisplayString()} {paramName}");
+				var mappedParam = gsb.Store.OverloadMap[index];
+				string paramName = parameters[index].Identifier.ToFullString();
+				switch (mappedParam.ParameterAction)
+				{
+					case ParameterAction.Nothing:
+						gsb.Append(parameters[index].ToFullString());
+						break;
+					case ParameterAction.SimpleReplacement:
+					case ParameterAction.CustomReplacement:
+						gsb.AppendWith(mappedParam.Type.ToDisplayString(), " ")
+							.Append(paramName);
+						break;
+					case ParameterAction.FormatterReplacement:
+						if (!gsb.TryGetFormatter(mappedParam.Type, out var formatter)) throw new ArgumentException();
+
+						var originalType = (INamedTypeSymbol) mappedParam.Type.OriginalDefinition;
+						var @params = new ITypeSymbol[formatter.GenericParams.Length];
+
+						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
+							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ??
+							                      throw new Exception("Can't get type");
+
+						gsb.AppendWith(originalType.Construct(@params).ToDisplayString(), " ")
+							.Append(paramName);
+						break;
+					default:
+						throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.");
+				}
 			}
 		}
 
-		gsb.Append(")", 1);
-		gsb.WriteMethodBody(entry, null);
+		gsb.Append(")", 1)
+			.WriteMethodBody(entry, ImmutableList<(string From, string To)>.Empty);
 
 		return ChainResult.NextChainMember;
 	}

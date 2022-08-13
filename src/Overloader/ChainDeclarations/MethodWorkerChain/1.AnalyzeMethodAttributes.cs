@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.Abstractions;
 using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Utils;

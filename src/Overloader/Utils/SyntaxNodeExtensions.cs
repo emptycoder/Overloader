@@ -115,8 +115,10 @@ internal static class SyntaxNodeExtensions
 			var args = formatterSyntax.ArgumentList?.Arguments ??
 			           throw new ArgumentException("Argument list can't be null.");
 			if (args.Count != 3) throw new ArgumentException();
-			
+
 			var type = args[0].GetType(compilation);
+			if (!type.IsDefinition) type = type.OriginalDefinition;
+
 			var genericParams = HandleParams(((ArrayCreationExpressionSyntax) args[1].Expression).Initializer, compilation, false);
 			var @params = HandleParams(((ArrayCreationExpressionSyntax) args[2].Expression).Initializer, compilation, true);
 

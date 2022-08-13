@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.Abstractions;
 using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Utils;
@@ -12,12 +11,15 @@ internal class Main : IChainObj
 	{
 		var entry = (TypeEntrySyntax) gsb.Entry;
 		gsb.AppendUsings(entry.Syntax.GetTopParent().DescendantNodes().Where(node => node is UsingDirectiveSyntax))
-			.Append($"namespace {entry.Syntax.GetNamespace()};", 2);
+			.AppendWith("namespace", " ")
+			.AppendWith(entry.Syntax.GetNamespace(), ";")
+			.Append(string.Empty, 2);
 
 		// Declare class/struct/record signature
-		gsb.Append(entry.Syntax.Modifiers.ToFullString(), 1, ' ')
-			.Append(entry.Syntax.Keyword.ToFullString(), 1, ' ')
-			.AppendLineAndNestedIncrease(gsb.ClassName);
+		gsb.AppendWith(entry.Syntax.Modifiers.ToFullString(), " ")
+			.AppendWith(entry.Syntax.Keyword.ToFullString(), " ")
+			.Append(gsb.ClassName, 1)
+			.NestedIncrease();
 
 		foreach (var member in entry.Syntax.Members)
 		{

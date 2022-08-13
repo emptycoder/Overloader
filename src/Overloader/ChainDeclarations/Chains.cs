@@ -1,5 +1,6 @@
-﻿using Overloader.ChainDeclarations.Abstractions;
-using Overloader.ChainDeclarations.MethodWorkerChain;
+﻿using Overloader.ChainDeclarations.MethodWorkerChain;
+using Overloader.Entities;
+using Overloader.Enums;
 
 namespace Overloader.ChainDeclarations;
 
@@ -14,4 +15,9 @@ public static class Chains
 		new GenerateFormatterOverloads(),
 		new GenerateTypeOverloads()
 	};
+}
+
+internal interface IChainObj
+{
+	internal ChainResult Execute(GeneratorSourceBuilder gsb);
 }

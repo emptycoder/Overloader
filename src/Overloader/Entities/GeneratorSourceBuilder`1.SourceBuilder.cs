@@ -12,6 +12,7 @@ internal partial record GeneratorSourceBuilder
 
 	private readonly StringBuilder _data = new(DefaultHeader);
 	private uint _nestedLevel;
+	private bool _nextLine = true;
 
 	public GeneratorSourceBuilder AppendUsings(IEnumerable<SyntaxNode> usings)
 	{
@@ -21,31 +22,28 @@ internal partial record GeneratorSourceBuilder
 		return Append(string.Empty, 1);
 	}
 
-	public GeneratorSourceBuilder Append(string? str, sbyte breakCount = 0, char breakChar = '\n')
+	public GeneratorSourceBuilder Append(string? str, sbyte breakCount = 0) => AppendWoTrim(str?.Trim(), breakCount);
+
+	public GeneratorSourceBuilder AppendWoTrim(string? str, sbyte breakCount = 0)
 	{
-		AppendNestingByTabs();
-		_data.Append(str?.Trim() ?? string.Empty);
+		if (_nextLine)
+		{
+			for (int index = 0; index < _nestedLevel; index++)
+				_data.Append(PaddingStr);
+			_nextLine = false;
+		}
+
+		_data.Append(str ?? string.Empty);
+		if (breakCount <= 0) return this;
+
 		for (int index = 0; index < breakCount; index++)
-			_data.Append(breakChar);
+			_data.Append('\n');
+		_nextLine = true;
 
 		return this;
 	}
 
-	public GeneratorSourceBuilder AppendLineAndNestedIncrease(string str)
-	{
-		Append(str, 1);
-		NestedIncrease();
-
-		return this;
-	}
-
-	public GeneratorSourceBuilder AppendLineAndNestedDecrease(string? str = null)
-	{
-		Append(str, 1);
-		NestedDecrease();
-
-		return this;
-	}
+	public GeneratorSourceBuilder AppendWith(string? str, string separator) => Append(str).AppendWoTrim(separator);
 
 	public GeneratorSourceBuilder NestedIncrease()
 	{
@@ -59,6 +57,7 @@ internal partial record GeneratorSourceBuilder
 	{
 		if (_nestedLevel == 0)
 			throw new Exception("Minimum nested level has been reached");
+
 		_nestedLevel--;
 		Append(NestedDownStr, 1);
 
@@ -78,10 +77,4 @@ internal partial record GeneratorSourceBuilder
 	}
 
 	public override string ToString() => _data.ToString();
-
-	private void AppendNestingByTabs()
-	{
-		for (int index = 0; index < _nestedLevel; index++)
-			_data.Append(PaddingStr);
-	}
 }
