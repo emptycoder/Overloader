@@ -104,7 +104,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 		public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
 		{
-			if (syntaxNode is AttributeListSyntax attributeListSyntax)
+			if (syntaxNode is AttributeListSyntax {Target.Identifier.Text: "assembly"} attributeListSyntax)
 				foreach (var attribute in attributeListSyntax.Attributes)
 					if (attribute.Name.GetName() == AttributeNames.FormatterAttr)
 						GlobalFormatterSyntaxes.Add(attribute);

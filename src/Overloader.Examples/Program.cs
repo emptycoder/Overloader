@@ -30,7 +30,7 @@ namespace Overloader.Examples
 	[NewClassOverload("2D", "2F", typeof(float))]
 	public static partial class Vector2DExtension
 	{
-		public static void Sum([T] double number, [T] Vector2<double> vector)
+		public static void Sum([T] Vector2<double> vector, [T] double number)
 		{
 			//$ var test = Convert.ToSingle(number); : float
 			long test = Convert.ToInt64(number);
@@ -38,5 +38,11 @@ namespace Overloader.Examples
 			byte dd = (byte) test;
 			Console.WriteLine($"TEST12442 {vector.X}");
 		}
+	}
+
+	[NewClassOverload("D", "F", typeof(float))]
+	public static class GenericMathD
+	{
+		public static double Square([T] double val) => val * val;
 	}
 }

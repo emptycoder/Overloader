@@ -9,6 +9,8 @@ public record GenerationResult(
 	ImmutableArray<Diagnostic> GenerationDiagnostics
 )
 {
+	public GeneratorDriverRunResult? Result { get; init; }
+
 	public ImmutableArray<Diagnostic> CompilationErrors =>
 		CompilationDiagnostics
 			.Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)

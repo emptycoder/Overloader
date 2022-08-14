@@ -2,6 +2,7 @@
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
@@ -61,11 +62,11 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 						void AppendFormatterParam()
 						{
 							var formatterParam = formatter.Params[paramIndex];
-							gsb.AppendWith((formatterParam.GetType(gsb.Template) ?? mappedParam.Type).ToDisplayString(), " ")
+							gsb.AppendWith((formatterParam.GetType(gsb.Template) ??
+							                mappedParam.Type.GetMemberType(formatterParam.Name!)).ToDisplayString(), " ")
 								.Append(paramName)
 								.Append(formatterParam.Name);
-							replacementModifiers.Add(($"{paramName}.{formatterParam.Name}",
-								$"{paramName}{formatterParam.Name}"));
+							replacementModifiers.Add(($"{paramName}.{formatterParam.Name}", $"{paramName}{formatterParam.Name}"));
 						}
 
 						break;

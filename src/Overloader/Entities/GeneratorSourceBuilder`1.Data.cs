@@ -32,7 +32,18 @@ internal partial record GeneratorSourceBuilder : IGeneratorProps
 		       GlobalFormatters.TryGetValue(originalType, out formatter);
 	}
 
-	public void AddToContext() => Context.AddSource(ClassName, ToString());
+	public void AddToContext()
+	{
+		int partialRev = 0;
+		string source = ToString();
+		AddLoop:
+		try
+		{
+			partialRev++;
+			Context.AddSource($"{ClassName}`{partialRev.ToString()}.g.cs", source);
+		}
+		catch { goto AddLoop; }
+	}
 }
 
 public interface IGeneratorProps

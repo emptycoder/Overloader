@@ -156,10 +156,13 @@ internal static class SyntaxNodeExtensions
 					var expressions = @switch.Initializer.Expressions;
 					if (expressions.Count == 0 || expressions.Count % 2 != 0) throw new ArgumentException();
 
-					var switchDict = new Dictionary<ITypeSymbol, ITypeSymbol>(expressions.Count / 2, SymbolEqualityComparer.Default);
+					var switchDict = new Dictionary<ITypeSymbol, ITypeSymbol?>(expressions.Count / 2, SymbolEqualityComparer.Default);
 					for (int switchParamIndex = 0; switchParamIndex < expressions.Count; switchParamIndex += 2)
+					{
+						var value = expressions[switchParamIndex + 1];
 						switchDict.Add(expressions[switchParamIndex].GetType(compilation),
-							expressions[switchParamIndex + 1].GetType(compilation));
+							value.GetText().ToString() == "\"T\"" ? null : value.GetType(compilation));
+					}
 
 					@params[paramIndex++] = SwitchParam.Create(switchDict, name);
 					break;
@@ -173,4 +176,15 @@ internal static class SyntaxNodeExtensions
 
 	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>
 		SymbolEqualityComparer.Default.Equals(arg.GetType(props.Compilation), props.Template);
+
+	public static ITypeSymbol GetMemberType(this ITypeSymbol type, string name)
+	{
+		var member = type.GetMembers(name).FirstOrDefault() ?? throw new ArgumentException("Array is empty");
+		return member switch
+		{
+			IFieldSymbol fieldSymbol => fieldSymbol.Type,
+			IPropertySymbol propertySymbol => propertySymbol.Type,
+			_ => throw new ArgumentException()
+		};
+	}
 }

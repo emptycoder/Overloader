@@ -4,15 +4,16 @@ using Overloader.Tests.Utils;
 
 namespace Overloader.Tests;
 
-public class Tests
+public class OverloadAttributesTest
 {
-	[Test]
-	public void NewClassOverloadTest()
+	[TestCase("public", ExpectedResult = true)]
+	[TestCase("internal", ExpectedResult = false)]
+	public bool NewClassOverloadTest(string modifier)
 	{
 		const string className = "Vector2DExtension";
 		const string regex = "2D";
 		const string regexReplacement = "2F";
-		const string programCs =
+		string programCs =
 			@$"
 using Overloader;
 
@@ -24,19 +25,18 @@ internal class Program
 }}
 
 [NewClassOverload(""{regex}"", ""{regexReplacement}"", typeof(float))]
-public static partial class {className}
+{modifier} static partial class {className}
 {{
 }}
 ";
 		var result = GenRunner<OverloadsGenerator>.ToAssembly(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
 		string newClassName = Regex.Replace(className, regex, regexReplacement);
-		Assert.Multiple(() =>
-		{
-			Assert.That(result.Assembly?.FindClassByName(newClassName) is not null, Is.True);
-			Assert.That(result.CompilationErrors, Is.Empty);
-			Assert.That(result.GenerationDiagnostics, Is.Empty);
-		});
+		var newClass = result.Assembly?.FindClassByName(newClassName);
+
+		Assert.That(newClass is not null, Is.True);
+
+		return newClass!.IsPublic;
 	}
-	
-	
 }
