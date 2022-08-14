@@ -1,4 +1,4 @@
-﻿namespace TestProject;
+﻿namespace Overloader.Tests;
 
 public class FormatterTest
 {

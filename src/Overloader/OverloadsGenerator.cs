@@ -57,7 +57,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 #if DEBUG
 				OverloadCreation(formatterOverloadProps);
 #else
-				tasks.Add(taskFactory.StartNew(overloadCreation, formatterOverloadProps));
+				tasks.Add(taskFactory.StartNew(OverloadCreation, formatterOverloadProps));
 #endif
 
 				foreach ((string className, var argSyntax) in candidate.OverloadTypes)
@@ -74,7 +74,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 #if DEBUG
 					OverloadCreation(genericWithFormatterOverloadProps);
 #else
-					tasks.Add(taskFactory.StartNew(overloadCreation, genericWithFormatterOverloadProps));
+					tasks.Add(taskFactory.StartNew(OverloadCreation, genericWithFormatterOverloadProps));
 #endif
 				}
 			}

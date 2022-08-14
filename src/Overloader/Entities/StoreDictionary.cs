@@ -12,8 +12,9 @@ internal sealed class StoreDictionary : IDisposable
 	public (ParameterAction ParameterAction, ITypeSymbol Type)[]? OverloadMap;
 	public TypeSyntax ReturnType = default!;
 
-	public static StoreDictionary Shared => new();
-
-	public void Dispose() =>
-		ArrayPool<(ParameterAction ParameterAction, ITypeSymbol Type)>.Shared.Return(OverloadMap);
+	public void Dispose()
+	{
+		if (OverloadMap is not null)
+			ArrayPool<(ParameterAction ParameterAction, ITypeSymbol Type)>.Shared.Return(OverloadMap);
+	}
 }

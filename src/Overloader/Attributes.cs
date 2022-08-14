@@ -16,7 +16,7 @@ internal static class AttributeNames
 	public static readonly string ChangeAccessModifierAttr = nameof(ChangeAccessModifierAttribute).Replace("Attribute", "");
 }
 
-// TODO: Attribute usages
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
 public sealed class PartialOverloadsAttribute : Attribute
 {
 	public PartialOverloadsAttribute(params Type[] types) { }
@@ -28,22 +28,26 @@ public sealed class NewClassOverloadAttribute : Attribute
 	public NewClassOverloadAttribute(string nameRegex, string regexReplace, Type type) { }
 }
 
+[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public sealed class FormatterAttribute : Attribute
 {
 	public FormatterAttribute(Type type, object[] genericParams, object[] @params) { }
 }
 
 // ReSharper disable once InconsistentNaming
+[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
 public sealed class TAttribute : Attribute
 {
 	public TAttribute(Type? newType = null, Type? forType = null) { }
 }
 
+[AttributeUsage(AttributeTargets.Method)]
 public sealed class IgnoreForAttribute : Attribute
 {
 	public IgnoreForAttribute(Type? type) { }
 }
 
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public sealed class ChangeAccessModifierAttribute : Attribute
 {
 	public ChangeAccessModifierAttribute(string newModifier, Type? forType) { }

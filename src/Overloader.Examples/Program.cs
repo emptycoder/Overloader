@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using Overloader;
-using TestProject;
+using Overloader.Examples;
 
 [assembly: Formatter(typeof(Vector2<>),
 	new object[] {"T"},
@@ -19,7 +19,7 @@ using TestProject;
 Vector2FExtension.Sum(123, 1, 2, 3);
 Console.WriteLine("TEST");
 
-namespace TestProject
+namespace Overloader.Examples
 {
 	public struct Vector2<T>
 	{
