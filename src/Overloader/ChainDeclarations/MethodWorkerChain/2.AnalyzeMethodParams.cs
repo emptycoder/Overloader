@@ -16,8 +16,10 @@ internal sealed class AnalyzeMethodParams : IChainObj
 		gsb.Store.OverloadMap = ArrayPool<(ParameterAction ParameterAction, ITypeSymbol Type)>.Shared.Rent(parameters.Count);
 		for (int index = 0; index < parameters.Count; index++)
 		{
-			bool shouldBeReplaced = parameters[index].TryGetTAttr(gsb, out var attribute);
-			var parameterType = (parameters[index].Type ?? throw new ArgumentException("Type is null.")).GetType(gsb.Compilation);
+			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(gsb, out var attribute);
+			var parameterType = (parameters[index].Type ?? throw new ArgumentException(
+					$"Parameter {parameters[index].Identifier} type is null."))
+				.GetType(gsb.Compilation);
 
 			var parameterAction = shouldBeReplaced switch
 			{

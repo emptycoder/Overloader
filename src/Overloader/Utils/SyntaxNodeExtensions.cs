@@ -53,7 +53,7 @@ internal static class SyntaxNodeExtensions
 		return nameSpace;
 	}
 
-	public static bool TryGetTAttr(this ParameterSyntax syntaxNode,
+	public static bool TryGetTAttrByTemplate(this ParameterSyntax syntaxNode,
 		IGeneratorProps props,
 		out AttributeSyntax? attr)
 	{
@@ -101,6 +101,9 @@ internal static class SyntaxNodeExtensions
 		if (node is TypeOfExpressionSyntax typeOfExpressionSyntax)
 			node = typeOfExpressionSyntax.Type;
 
+		if (node is RefTypeSyntax refTypeSyntax)
+			node = refTypeSyntax.Type;
+
 		var semanticModel = compilation.GetSemanticModel(node.SyntaxTree);
 		return semanticModel.GetTypeInfo(node).Type ??
 		       throw new ArgumentException("Type not found.");
@@ -113,14 +116,14 @@ internal static class SyntaxNodeExtensions
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
 			var args = formatterSyntax.ArgumentList?.Arguments ??
-			           throw new ArgumentException("Argument list can't be null.");
-			if (args.Count != 3) throw new ArgumentException();
+			           throw new ArgumentException("Argument list for formatter can't be null.");
+			if (args.Count != 3) throw new ArgumentException("Not enough parameters for formatter.");
 
 			var type = args[0].GetType(compilation);
 			if (!type.IsDefinition) type = type.OriginalDefinition;
 
-			var genericParams = HandleParams(((ArrayCreationExpressionSyntax) args[1].Expression).Initializer, compilation, false);
-			var @params = HandleParams(((ArrayCreationExpressionSyntax) args[2].Expression).Initializer, compilation, true);
+			var genericParams = ParseParams(((ArrayCreationExpressionSyntax) args[1].Expression).Initializer, compilation, false);
+			var @params = ParseParams(((ArrayCreationExpressionSyntax) args[2].Expression).Initializer, compilation, true);
 
 			dict.Add(type, new Formatter(genericParams, @params));
 		}
@@ -128,50 +131,57 @@ internal static class SyntaxNodeExtensions
 		return dict;
 	}
 
-	private static IParam[] HandleParams(InitializerExpressionSyntax? initializer, Compilation compilation, bool withNames)
+	private static IParam[] ParseParams(InitializerExpressionSyntax? initializer, Compilation compilation, bool withNames)
 	{
 		if (initializer is null) return Array.Empty<IParam>();
+		if (withNames && initializer.Expressions.Count % 2 != 0)
+			throw new ArgumentException($"Problem with count of expressions for named array in {initializer}.");
 
-		var @params = withNames ? new IParam[initializer.Expressions.Count / 2] : new IParam[initializer.Expressions.Count];
+		var @params = new IParam[withNames ? initializer.Expressions.Count / 2 : initializer.Expressions.Count];
 		string? name = null;
 
 		for (int index = 0, paramIndex = 0; index < initializer.Expressions.Count; index++)
 		{
-			if (withNames && index % 2 == 0)
+			if (withNames)
 			{
 				if (initializer.Expressions[index] is not LiteralExpressionSyntax str) throw new ArgumentException();
 				name = str.GetInnerText();
-				continue;
+				index++;
 			}
 
-			switch (initializer.Expressions[index])
-			{
-				case LiteralExpressionSyntax str when str.GetInnerText() == "T":
-					@params[paramIndex++] = TemplateParam.Create(name);
-					break;
-				case TypeOfExpressionSyntax typeSyntax:
-					@params[paramIndex++] = TypeParam.Create(typeSyntax.GetType(compilation), name);
-					break;
-				case ImplicitArrayCreationExpressionSyntax @switch:
-					var expressions = @switch.Initializer.Expressions;
-					if (expressions.Count == 0 || expressions.Count % 2 != 0) throw new ArgumentException();
-
-					var switchDict = new Dictionary<ITypeSymbol, ITypeSymbol?>(expressions.Count / 2, SymbolEqualityComparer.Default);
-					for (int switchParamIndex = 0; switchParamIndex < expressions.Count; switchParamIndex += 2)
-					{
-						var value = expressions[switchParamIndex + 1];
-						switchDict.Add(expressions[switchParamIndex].GetType(compilation),
-							value.GetText().ToString() == "\"T\"" ? null : value.GetType(compilation));
-					}
-
-					@params[paramIndex++] = SwitchParam.Create(switchDict, name);
-					break;
-				default:
-					throw new ArgumentException();
-			}
+			@params[paramIndex++] = ParseParam(initializer.Expressions[index], compilation, name);
 		}
 
 		return @params;
+	}
+
+	private static IParam ParseParam(this ExpressionSyntax expressionSyntax, Compilation compilation, string? name)
+	{
+		switch (expressionSyntax)
+		{
+			case LiteralExpressionSyntax str when str.GetInnerText() == "T":
+				return TemplateParam.Create(name);
+			case TypeOfExpressionSyntax typeSyntax:
+				return TypeParam.Create(typeSyntax.GetType(compilation), name);
+			case ImplicitArrayCreationExpressionSyntax @switch:
+				var expressions = @switch.Initializer.Expressions;
+				if (expressions.Count == 0 || expressions.Count % 2 != 0) throw new ArgumentException();
+
+				var switchDict = new Dictionary<ITypeSymbol, IParam>(expressions.Count / 2, SymbolEqualityComparer.Default);
+				for (int switchParamIndex = 0; switchParamIndex < expressions.Count; switchParamIndex += 2)
+				{
+					var value = ParseParam(expressions[switchParamIndex + 1], compilation, name);
+					if (value is SwitchParam)
+						throw new ArgumentException(
+							$"Switch statement in switch statement was detected in {expressionSyntax.ToString()}.");
+					switchDict.Add(expressions[switchParamIndex].GetType(compilation), value);
+				}
+
+				return SwitchParam.Create(switchDict, name);
+			default:
+				throw new ArgumentException(
+					$"Can't recognize syntax when try to parse parameter in {expressionSyntax.ToString()}.");
+		}
 	}
 
 	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>
@@ -179,12 +189,17 @@ internal static class SyntaxNodeExtensions
 
 	public static ITypeSymbol GetMemberType(this ITypeSymbol type, string name)
 	{
-		var member = type.GetMembers(name).FirstOrDefault() ?? throw new ArgumentException("Array is empty");
+		var member = type.GetMembers(name).FirstOrDefault() ??
+		             throw new ArgumentException($"Member name ({name}) wasn't found in parameter types.");
 		return member switch
 		{
 			IFieldSymbol fieldSymbol => fieldSymbol.Type,
 			IPropertySymbol propertySymbol => propertySymbol.Type,
-			_ => throw new ArgumentException()
+			_ => throw new ArgumentException($"Member with name '{name}' isn't property or field.")
 		};
 	}
+
+	// TODO: check readonly ref
+	public static string GetPreTypeValues(this TypeSyntax typeSyntax) =>
+		typeSyntax is RefTypeSyntax ? "ref" : string.Empty;
 }

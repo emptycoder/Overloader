@@ -35,7 +35,8 @@ public static class GenRunner<T> where T : ISourceGenerator, new()
 		);
 	}
 
-	public static GenerationResult ToSyntaxTrees(params string[] sources) => RunGenerator(CreateCompilation(sources), true);
+	public static GenerationResultWithSyntaxTree ToSyntaxTrees(params string[] sources) =>
+		(GenerationResultWithSyntaxTree) RunGenerator(CreateCompilation(sources), true);
 
 	private static Compilation CreateCompilation(params string[] sources)
 	{
@@ -65,10 +66,16 @@ public static class GenRunner<T> where T : ISourceGenerator, new()
 				out var generationDiagnostics
 			);
 
+		if (sourceResult)
+			return new GenerationResultWithSyntaxTree(outputCompilation,
+				outputCompilation.GetDiagnostics(),
+				generationDiagnostics,
+				genDriver.GetRunResult());
+
 		return new GenerationResult(
 			outputCompilation,
 			outputCompilation.GetDiagnostics(),
 			generationDiagnostics
-		) {Result = sourceResult ? genDriver.GetRunResult() : default};
+		);
 	}
 }

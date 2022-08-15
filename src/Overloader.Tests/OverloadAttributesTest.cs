@@ -8,7 +8,7 @@ public class OverloadAttributesTest
 {
 	[TestCase("public", ExpectedResult = true)]
 	[TestCase("internal", ExpectedResult = false)]
-	public bool NewClassOverloadTest(string modifier)
+	public bool NewClassOverloadTest(string accessModifier)
 	{
 		const string className = "Vector2DExtension";
 		const string regex = "2D";
@@ -24,10 +24,8 @@ internal class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[NewClassOverload(""{regex}"", ""{regexReplacement}"", typeof(float))]
-{modifier} static partial class {className}
-{{
-}}
+[{AttributeNames.OverloadsAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
+{accessModifier} static partial class {className} {{ }}
 ";
 		var result = GenRunner<OverloadsGenerator>.ToAssembly(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);

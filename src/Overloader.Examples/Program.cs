@@ -8,41 +8,30 @@ using Overloader.Examples;
 	new object[]
 	{
 		"X", "T",
-		"Y", typeof(double),
-		"Z", new[]
-		{
-			typeof(float), typeof(double),
-			typeof(double), typeof(long)
-		}
+		"Y", "T"
 	})]
 
-Vector2FExtension.Sum(123, 1, 2, 3);
+Vector2FExtension.Sum(123, 1, 2);
 Console.WriteLine("TEST");
 
 namespace Overloader.Examples
 {
 	public struct Vector2<T>
 	{
-		public double X;
-		public double Y { get; set; }
+		public T X;
+		public T Y;
 	}
 
-	[NewClassOverload("2D", "2F", typeof(float))]
+	[Overload(typeof(float), "2D", "2F")]
 	public static partial class Vector2DExtension
 	{
-		public static void Sum([T] Vector2<double> vector, [T] double number)
+		[return: T(typeof(Vector2<float>), typeof(float))]
+		public static ref Vector2<double> Sum([T] this ref Vector2<double> vec, [T] double val)
 		{
-			//$ var test = Convert.ToSingle(number); : float
-			long test = Convert.ToInt64(number);
-			//# "(byte)" -> "(${T})"
-			byte dd = (byte) test;
-			Console.WriteLine($"TEST12442 {vector.X}");
-		}
-	}
+			vec.X += val;
+			vec.Y += val;
 
-	[NewClassOverload("D", "F", typeof(float))]
-	public static class GenericMathD
-	{
-		public static double Square([T] double val) => val * val;
+			return ref vec;
+		}
 	}
 }

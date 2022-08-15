@@ -10,7 +10,7 @@ internal class Main : IChainObj
 	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
 		var entry = (TypeEntrySyntax) gsb.Entry;
-		gsb.AppendUsings(entry.Syntax.GetTopParent().DescendantNodes().Where(node => node is UsingDirectiveSyntax))
+		gsb.AppendUsings(entry.Syntax.GetTopParent())
 			.AppendWith("namespace", " ")
 			.AppendWith(entry.Syntax.GetNamespace(), ";")
 			.Append(string.Empty, 2);
@@ -23,12 +23,9 @@ internal class Main : IChainObj
 
 		foreach (var member in entry.Syntax.Members)
 		{
-			if (member is not MethodDeclarationSyntax methodSyntax)
-			{
-				gsb.Append(member.ToFullString());
-				continue;
-			}
+			if (member is not MethodDeclarationSyntax methodSyntax) continue;
 
+			gsb.Store.MemberSkip = entry.IsBlackListMode;
 			foreach (var worker in Chains.MethodWorkers)
 				if (worker.Execute(gsb with {Entry = methodSyntax}) == ChainResult.BreakChain)
 					break;

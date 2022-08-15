@@ -46,7 +46,7 @@ using System;
 namespace TestProject;
 
 {formatters}
-[PartialOverloads(typeof(float))]
+[{AttributeNames.OverloadsAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -69,7 +69,7 @@ internal struct Vector3<T>
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
-		var generatedTrees = result.Result!.GeneratedTrees;
+		var generatedTrees = result.Result.GeneratedTrees;
 		Assert.That(generatedTrees, Has.Length.EqualTo(2));
 
 		var methodOverloads = new Dictionary<string, bool>(3)

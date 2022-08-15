@@ -1,14 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Formatters;
 
 namespace Overloader.Entities;
 
 internal partial record GeneratorSourceBuilder : IGeneratorProps
 {
-	private TypeSyntax? _typeSyntax;
-
 	public StoreDictionary Store { get; } = new();
 	public Dictionary<ITypeSymbol, Formatter> Formatters { private get; init; } = default!;
 	public Dictionary<ITypeSymbol, Formatter> GlobalFormatters { private get; init; } = default!;
@@ -18,9 +14,6 @@ internal partial record GeneratorSourceBuilder : IGeneratorProps
 	public ITypeSymbol? Template { get; init; }
 
 	public Compilation Compilation => Context.Compilation;
-
-	public TypeSyntax? TemplateSyntax => _typeSyntax ??=
-		Template is not null ? SyntaxFactory.ParseTypeName(Template.Name) : default;
 
 	public bool TryGetFormatter(ITypeSymbol type, out Formatter formatter)
 	{
@@ -50,6 +43,5 @@ public interface IGeneratorProps
 {
 	public string ClassName { get; }
 	public ITypeSymbol? Template { get; }
-	public TypeSyntax? TemplateSyntax { get; }
 	public Compilation Compilation { get; }
 }

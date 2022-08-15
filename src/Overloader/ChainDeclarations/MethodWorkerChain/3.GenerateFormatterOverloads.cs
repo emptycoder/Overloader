@@ -14,8 +14,10 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		// TODO: Insert attributes
+		// TODO: Insert this, ref, in, attrs for parameters
 		gsb.AppendWith(entry.Modifiers.ToFullString(), " ")
-			.AppendWith(entry.ReturnType.ToFullString(), " ")
+			.AppendWith(entry.ReturnType.GetPreTypeValues(), " ")
+			.AppendWith(gsb.Store.ReturnType.ToDisplayString(), " ")
 			.Append(entry.Identifier.ToFullString())
 			.Append("(");
 
@@ -35,11 +37,11 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 			void AppendParam()
 			{
 				var mappedParam = gsb.Store.OverloadMap[index];
-				string paramName = parameters[index].Identifier.ToFullString();
+				string paramName = parameters[index].Identifier.ToString();
 				switch (mappedParam.ParameterAction)
 				{
 					case ParameterAction.Nothing:
-						gsb.Append(parameters[index].ToFullString());
+						gsb.Append(parameters[index].ToString());
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:

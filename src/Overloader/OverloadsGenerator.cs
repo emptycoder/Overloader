@@ -87,7 +87,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		{
 			context.ReportDiagnostic(Diagnostic.Create(
 				new DiagnosticDescriptor(
-					$"{nameof(Overloader)[0]}0001",
+					$"{nameof(Overloader)[0]}-0001",
 					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)}",
 					ex.ToString(),
 					nameof(Overloader),
@@ -116,23 +116,25 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 			foreach (var attribute in attributeList.Attributes)
 			{
 				string attrName = attribute.Name.GetName();
-				if (attrName == AttributeNames.PartialOverloadsAttr
+				if (attrName == AttributeNames.OverloadsAttr
 				    && attribute.ArgumentList is not null
 				    && attribute.ArgumentList.Arguments.Count > 0)
 				{
-					foreach (var typeAttributeSyntax in attribute.ArgumentList.Arguments)
-						typeEntry.OverloadTypes.Add((declarationSyntax.Identifier.ValueText, typeAttributeSyntax));
-				}
-				else if (attrName == AttributeNames.NewClassOverloadsAttr
-				         && attribute.ArgumentList is not null
-				         && attribute.ArgumentList.Arguments.Count > 2)
-				{
 					var args = attribute.ArgumentList.Arguments;
-					string className = Regex.Replace(declarationSyntax.Identifier.ValueText,
-						args[0].Expression.GetInnerText(),
-						args[1].Expression.GetInnerText());
+					string className = declarationSyntax.Identifier.ValueText;
+					className = args.Count switch
+					{
+						1 => className,
+						2 => throw new ArgumentException($"Must be set regex replacement parameter for {nameof(OverloadAttribute)}."),
+						3 => Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText()),
+						_ => throw new ArgumentException($"Unexpected count of args for {nameof(OverloadAttribute)}.")
+					};
 
-					typeEntry.OverloadTypes.Add((className, args[2]));
+					typeEntry.OverloadTypes.Add((className, args[0]));
+				}
+				else if (attrName == AttributeNames.BlackListModeAttr)
+				{
+					typeEntry.IsBlackListMode = true;
 				}
 				else if (attrName == AttributeNames.FormatterAttr)
 				{

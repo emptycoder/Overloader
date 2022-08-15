@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
@@ -18,7 +19,8 @@ internal sealed class GenerateTypeOverloads : IChainObj
 
 		// TODO: Insert attributes
 		gsb.AppendWith(entry.Modifiers.ToFullString(), " ")
-			.AppendWith(gsb.Store.ReturnType.ToFullString(), " ")
+			.AppendWith(entry.ReturnType.GetPreTypeValues(), " ")
+			.AppendWith(gsb.Store.ReturnType.ToDisplayString(), " ")
 			.Append(entry.Identifier.ToFullString())
 			.Append("(");
 
@@ -47,16 +49,18 @@ internal sealed class GenerateTypeOverloads : IChainObj
 							.Append(paramName);
 						break;
 					case ParameterAction.FormatterReplacement:
-						if (!gsb.TryGetFormatter(mappedParam.Type, out var formatter)) throw new ArgumentException();
+						if (!gsb.TryGetFormatter(mappedParam.Type, out var formatter))
+							throw new ArgumentException($"Can't get formatter by key: {mappedParam.Type}.");
 
 						var originalType = (INamedTypeSymbol) mappedParam.Type.OriginalDefinition;
 						var @params = new ITypeSymbol[formatter.GenericParams.Length];
 
 						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
-							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ??
-							                      throw new Exception("Can't get type");
+							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
+								$"Can't get type of formatter param (key: {mappedParam.Type}) by index {paramIndex}.");
 
-						gsb.AppendWith(originalType.Construct(@params).ToDisplayString(), " ")
+						gsb.AppendWith(parameters[index].Modifiers.ToFullString(), " ")
+							.AppendWith(originalType.Construct(@params).ToDisplayString(), " ")
 							.Append(paramName);
 						break;
 					default:

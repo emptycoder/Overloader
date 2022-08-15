@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Enums;
 
 namespace Overloader.Entities;
@@ -9,8 +8,9 @@ internal sealed class StoreDictionary : IDisposable
 {
 	public bool IsAnyFormatter;
 	public bool IsSmthChanged;
+	public bool MemberSkip;
 	public (ParameterAction ParameterAction, ITypeSymbol Type)[]? OverloadMap;
-	public TypeSyntax ReturnType = default!;
+	public ITypeSymbol ReturnType = default!;
 
 	public void Dispose()
 	{
