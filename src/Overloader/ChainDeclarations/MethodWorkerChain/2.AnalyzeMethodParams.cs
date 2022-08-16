@@ -16,14 +16,15 @@ internal sealed class AnalyzeMethodParams : IChainObj
 		gsb.Store.OverloadMap = ArrayPool<(ParameterAction ParameterAction, ITypeSymbol Type)>.Shared.Rent(parameters.Count);
 		for (int index = 0; index < parameters.Count; index++)
 		{
-			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(gsb, out var attribute);
+			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(gsb, out var attribute, out var forceOverloadIntegrity);
 			var parameterType = (parameters[index].Type ?? throw new ArgumentException(
 					$"Parameter {parameters[index].Identifier} type is null."))
 				.GetType(gsb.Compilation);
 
 			var parameterAction = shouldBeReplaced switch
 			{
-				true when gsb.TryGetFormatter(parameterType, out _) => ParameterAction.FormatterReplacement,
+				true when gsb.TryGetFormatter(parameterType, out _) => forceOverloadIntegrity?
+					ParameterAction.FormatterIntegrityReplacement : ParameterAction.FormatterReplacement,
 				true when attribute?.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
 				true => ParameterAction.SimpleReplacement,
 				false => ParameterAction.Nothing
@@ -34,6 +35,7 @@ internal sealed class AnalyzeMethodParams : IChainObj
 				ParameterAction.SimpleReplacement => gsb.Template,
 				ParameterAction.CustomReplacement => attribute!.ArgumentList!.Arguments[0].GetType(gsb.Compilation),
 				ParameterAction.FormatterReplacement => default,
+				ParameterAction.FormatterIntegrityReplacement => default,
 				_ => throw new ArgumentOutOfRangeException()
 			} ?? parameterType;
 

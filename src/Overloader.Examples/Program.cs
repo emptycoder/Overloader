@@ -11,7 +11,7 @@ using Overloader.Examples;
 		"Y", "T"
 	})]
 
-Vector2FExtension.Sum(123, 1, 2);
+// Vector2FExtension.Sum(, 1, 2);
 Console.WriteLine("TEST");
 
 namespace Overloader.Examples
@@ -26,7 +26,7 @@ namespace Overloader.Examples
 	public static partial class Vector2DExtension
 	{
 		[return: T(typeof(Vector2<float>), typeof(float))]
-		public static ref Vector2<double> Sum([T] this ref Vector2<double> vec, [T] double val)
+		public static ref Vector2<double> Sum([Integrity][T] this ref Vector2<double> vec, [T] double val)
 		{
 			vec.X += val;
 			vec.Y += val;

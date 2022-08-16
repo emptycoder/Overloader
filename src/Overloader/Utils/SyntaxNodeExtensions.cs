@@ -55,21 +55,28 @@ internal static class SyntaxNodeExtensions
 
 	public static bool TryGetTAttrByTemplate(this ParameterSyntax syntaxNode,
 		IGeneratorProps props,
-		out AttributeSyntax? attr)
+		out AttributeSyntax? attr,
+		out bool forceOverloadIntegrity)
 	{
+		forceOverloadIntegrity = false;
+		attr = default;
 		foreach (var attrList in syntaxNode.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
-			if (!attribute.Name.ToString().Equals(AttributeNames.TAttr)) continue;
+			var attrName = attribute.Name.ToString();
+			if (attrName.Equals(AttributeNames.IntegrityAttr))
+			{
+				forceOverloadIntegrity = true;
+				continue;
+			}
+			if (!attrName.Equals(AttributeNames.TAttr)) continue;
 			if (attribute.ArgumentList is {Arguments.Count: > 1} &&
 			    (props.Template is null || attribute.ArgumentList.Arguments[1].EqualsToTemplate(props))) continue;
 
 			attr = attribute;
-			return true;
 		}
-
-		attr = default;
-		return false;
+		
+		return attr != null;
 	}
 
 	public static string GetName(this NameSyntax nameSyntax) => nameSyntax switch

@@ -10,6 +10,7 @@ internal static class AttributeNames
 
 	// ReSharper disable once InconsistentNaming
 	public static readonly string TAttr = nameof(TAttribute).Replace("Attribute", "");
+	public static readonly string IntegrityAttr = nameof(IntegrityAttribute).Replace("Attribute", "");
 	public static readonly string IgnoreForAttr = nameof(IgnoreForAttribute).Replace("Attribute", "");
 	public static readonly string BlackListModeAttr = nameof(BlackListModeAttribute).Replace("Attribute", "");
 	public static readonly string AllowForAttr = nameof(AllowForAttribute).Replace("Attribute", "");
@@ -34,6 +35,9 @@ public sealed class TAttribute : Attribute
 {
 	public TAttribute(Type? newType = null, Type? forType = null) { }
 }
+
+[AttributeUsage(AttributeTargets.Parameter)]
+public sealed class IntegrityAttribute : Attribute { }
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
 public sealed class BlackListModeAttribute : Attribute

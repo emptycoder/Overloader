@@ -37,7 +37,6 @@ internal sealed class GenerateTypeOverloads : IChainObj
 			void AppendParam()
 			{
 				var mappedParam = gsb.Store.OverloadMap[index];
-				string paramName = parameters[index].Identifier.ToFullString();
 				switch (mappedParam.ParameterAction)
 				{
 					case ParameterAction.Nothing:
@@ -46,22 +45,11 @@ internal sealed class GenerateTypeOverloads : IChainObj
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
 						gsb.AppendWith(mappedParam.Type.ToDisplayString(), " ")
-							.Append(paramName);
+							.Append(parameters[index].Identifier.ToFullString());
 						break;
+					case ParameterAction.FormatterIntegrityReplacement:
 					case ParameterAction.FormatterReplacement:
-						if (!gsb.TryGetFormatter(mappedParam.Type, out var formatter))
-							throw new ArgumentException($"Can't get formatter by key: {mappedParam.Type}.");
-
-						var originalType = (INamedTypeSymbol) mappedParam.Type.OriginalDefinition;
-						var @params = new ITypeSymbol[formatter.GenericParams.Length];
-
-						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
-							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
-								$"Can't get type of formatter param (key: {mappedParam.Type}) by index {paramIndex}.");
-
-						gsb.AppendWith(parameters[index].Modifiers.ToFullString(), " ")
-							.AppendWith(originalType.Construct(@params).ToDisplayString(), " ")
-							.Append(paramName);
+						gsb.AppendFormatterIntegrity(mappedParam.Type, parameters[index]);
 						break;
 					default:
 						throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.");

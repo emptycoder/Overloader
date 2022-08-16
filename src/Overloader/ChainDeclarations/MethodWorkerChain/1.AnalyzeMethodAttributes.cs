@@ -35,6 +35,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 			}
 			else if (attrName == AttributeNames.TAttr)
 			{
+				// TODO:
 				switch (attribute.ArgumentList?.Arguments.Count ?? 0)
 				{
 					case 0 when gsb.Template is not null:
