@@ -45,6 +45,7 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 				
 				switch (mappedParam.ParameterAction)
 				{
+					case ParameterAction.FormatterIntegrityReplacement when gsb.Template is null:
 					case ParameterAction.Nothing:
 						gsb.Append(parameter.WithAttributeLists(new SyntaxList<AttributeListSyntax>()).ToFullString());
 						break;

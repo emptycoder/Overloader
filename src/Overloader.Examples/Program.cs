@@ -13,7 +13,7 @@ using Overloader.Examples;
 	})]
 
 var vec2 = new Vector2<float>();
-vec2.Sum(2);
+vec2.Sum(2, 3);
 Console.WriteLine("TEST");
 
 namespace Overloader.Examples
@@ -28,14 +28,13 @@ namespace Overloader.Examples
 	public static partial class Vector2DExtension
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		[return: T(typeof(Vector2<float>), typeof(float))]
-		public static ref Vector2<double> Sum([Integrity][T] this ref Vector2<double> vec, [T] double val)
+		[return: T]
+		public static ref Vector2<double> Sum([Integrity][T] this ref Vector2<double> vec1, [T] in Vector2<double> vec2)
 		{
-			vec.X += val;
-			vec.Y += val;
-			Console.WriteLine("dd");
+			vec1.X += vec2.X;
+			vec1.Y += vec2.Y;
 
-			return ref vec;
+			return ref vec1;
 		}
 	}
 	

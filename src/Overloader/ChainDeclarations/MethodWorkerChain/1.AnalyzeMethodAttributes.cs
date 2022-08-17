@@ -38,14 +38,9 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 			}
 			else if (attrName == AttributeNames.TAttr)
 			{
+				var returnTypeSymbol = entry.ReturnType.GetType(gsb.Compilation);
 				switch (attribute.ArgumentList?.Arguments.Count ?? 0)
 				{
-					case 0 when gsb.Template is not null:
-						gsb.Store.ReturnType = gsb.Template;
-						gsb.Store.IsSmthChanged = true;
-						break;
-					case 0:
-						break;
 					case 1:
 					case 2 when attribute.ArgumentList!.Arguments[1].EqualsToTemplate(gsb):
 					{
@@ -53,27 +48,24 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						gsb.Store.IsSmthChanged = true;
 						break;
 					}
-					case 2 when gsb.Template is not null:
-						var returnTypeSymbol = entry.ReturnType.GetType(gsb.Compilation);
-						if (gsb.TryGetFormatter(returnTypeSymbol, out var formatter))
-						{
-							var @params = new ITypeSymbol[formatter.GenericParams.Length];
-
-							for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
-								@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
-									$"Can't get type of formatter param (key: {returnTypeSymbol}) by index {paramIndex}.");
-
-							var originalType = (INamedTypeSymbol) returnTypeSymbol.OriginalDefinition;
-							gsb.Store.ReturnType = originalType.Construct(@params);
-							gsb.Store.IsSmthChanged = true;
-						}
-
+					case 2:
 						break;
-					case 2 when gsb.Template is not null:
-						gsb.Store.ReturnType = gsb.Template;
+					case 0 when gsb.Template is null:
+						break;
+					case 0 when gsb.TryGetFormatter(returnTypeSymbol, out var formatter):
+						var @params = new ITypeSymbol[formatter.GenericParams.Length];
+							
+						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
+							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
+								$"Can't get type of formatter param (key: {returnTypeSymbol}) by index {paramIndex}.");
+
+						var originalType = (INamedTypeSymbol) returnTypeSymbol.OriginalDefinition;
+						gsb.Store.ReturnType = originalType.Construct(@params);
 						gsb.Store.IsSmthChanged = true;
 						break;
-					case 2:
+					case 0:
+						gsb.Store.ReturnType = gsb.Template;
+						gsb.Store.IsSmthChanged = true;
 						break;
 					default:
 						throw new ArgumentException($"Unexpected count of arguments in {nameof(TAttribute)}.");

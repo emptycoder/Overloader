@@ -42,7 +42,7 @@ internal static class FormatterExtension
 
 		var originalType = (INamedTypeSymbol) type.OriginalDefinition;
 		var @params = new ITypeSymbol[formatter.GenericParams.Length];
-
+		
 		for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 			@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
 				$"Can't get type of formatter param (key: {type}) by index {paramIndex}.");

@@ -22,7 +22,17 @@ public static class GenericMathD
 	public static double Square([T] double val) => val * val;
 }
 ```
+### Generated part
+```csharp
+[Overload(typeof(float), "D", "F")]
+public static partial class GenericMathF
+{
+	public static double Square([T] float val) => val * val;
+}
+```
+
 P.S. GenericMath provided in preview versions of .net try to resolve this problem, but we can't restrict needed types.
+
 ## Parameter overload creation to avoid additional struct/class allocation
 ### User template
 ```csharp
@@ -36,29 +46,38 @@ P.S. GenericMath provided in preview versions of .net try to resolve this proble
 [Overload(typeof(float), "2D", "2F")]
 public static partial class Vector2DExtension
 {
-	public static Vector2<double> Sum([T] in Vector2<double> vec, [T] double val)
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[return: T]
+	public static ref Vector2<double> Sum([Integrity][T] this ref Vector2<double> vec1, [T] in Vector2<double> vec2)
 	{
-		vec.X += val;
-		vec.Y += val;
+		vec1.X += vec2.X;
+		vec1.Y += vec2.Y;
 
-		return vec;
+		return ref vec1;
 	}
 }
 ```
 ### Generated part
 ```csharp
+[Overload(typeof(float), "2D", "2F")]
 public static partial class Vector2FExtension
 {
-	public static void Sum(float vecX, float vecY, float val)
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[return: T]
+	public static ref Overloader.Examples.Vector2<float> Sum([Integrity][T] this ref Overloader.Examples.Vector2<float> vec1, [T] float vec2X, float vec2Y)
 	{
-		
+		vec1.X += vec2X;
+		vec1.Y += vec2Y;
+		return ref vec1;
 	}
 	
-	public static void Sum(Overloader.Examples.Vector2<float> vec, float val)
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	[return: T]
+	public static ref Overloader.Examples.Vector2<float> Sum([Integrity][T] this ref Overloader.Examples.Vector2<float> vec1, [T] in Overloader.Examples.Vector2<float> vec2)
 	{
-		var test = Convert.ToSingle(number);
-		byte dd = (byte) test;
-		Console.WriteLine($"TEST12442 {vector.X}");
+		vec1.X += vec2.X;
+		vec1.Y += vec2.Y;
+		return ref vec1;
 	}
 }
 ```
