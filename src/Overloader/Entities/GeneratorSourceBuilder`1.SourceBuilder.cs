@@ -15,14 +15,6 @@ internal partial record GeneratorSourceBuilder
 	private uint _nestedLevel;
 	private bool _nextLine = true;
 
-	public GeneratorSourceBuilder AppendUsings(SyntaxNode syntax)
-	{
-		foreach (var @using in syntax.DescendantNodes().Where(node => node is UsingDirectiveSyntax))
-			Append(@using.ToFullString(), 1);
-
-		return Append(string.Empty, 1);
-	}
-
 	public GeneratorSourceBuilder Append(string? str, sbyte breakCount = 0) => AppendWoTrim(str?.Trim(), breakCount);
 
 	public GeneratorSourceBuilder AppendWoTrim(string? str, sbyte breakCount = 0)

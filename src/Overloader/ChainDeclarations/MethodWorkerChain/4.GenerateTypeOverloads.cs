@@ -12,13 +12,14 @@ internal sealed class GenerateTypeOverloads : IChainObj
 {
 	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
-		if (gsb.Store.OverloadMap is null || !gsb.Store.IsSmthChanged || gsb.Template is null) return ChainResult.NextChainMember;
+		if (gsb.Store.OverloadMap is null || gsb.Store.Modifiers is null || !gsb.Store.IsSmthChanged || gsb.Template is null)
+			return ChainResult.NextChainMember;
 
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		var parameters = entry.ParameterList.Parameters;
-
-		// TODO: Insert attributes
-		gsb.AppendWith(entry.Modifiers.ToFullString(), " ")
+		
+		gsb.Append(entry.AttributeLists.ToFullString(), 1)
+			.AppendWith(string.Join(" ", gsb.Store.Modifiers), " ")
 			.AppendWith(entry.ReturnType.GetPreTypeValues(), " ")
 			.AppendWith(gsb.Store.ReturnType.ToDisplayString(), " ")
 			.Append(entry.Identifier.ToFullString())
@@ -37,19 +38,22 @@ internal sealed class GenerateTypeOverloads : IChainObj
 			void AppendParam()
 			{
 				var mappedParam = gsb.Store.OverloadMap[index];
+				var parameter = parameters[index];
+				gsb.AppendWith(parameter.AttributeLists.ToFullString(), " ");
+				
 				switch (mappedParam.ParameterAction)
 				{
 					case ParameterAction.Nothing:
-						gsb.Append(parameters[index].ToFullString());
+						gsb.Append(parameter.WithAttributeLists(new SyntaxList<AttributeListSyntax>()).ToFullString());
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
 						gsb.AppendWith(mappedParam.Type.ToDisplayString(), " ")
-							.Append(parameters[index].Identifier.ToFullString());
+							.Append(parameter.Identifier.ToFullString());
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:
 					case ParameterAction.FormatterReplacement:
-						gsb.AppendFormatterIntegrity(mappedParam.Type, parameters[index]);
+						gsb.AppendFormatterIntegrity(mappedParam.Type, parameter);
 						break;
 					default:
 						throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.");

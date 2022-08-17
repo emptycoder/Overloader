@@ -14,7 +14,7 @@ internal static class AttributeNames
 	public static readonly string IgnoreForAttr = nameof(IgnoreForAttribute).Replace("Attribute", "");
 	public static readonly string BlackListModeAttr = nameof(BlackListModeAttribute).Replace("Attribute", "");
 	public static readonly string AllowForAttr = nameof(AllowForAttribute).Replace("Attribute", "");
-	public static readonly string ChangeAccessModifierAttr = nameof(ChangeAccessModifierAttribute).Replace("Attribute", "");
+	public static readonly string ChangeModifierAttr = nameof(ChangeModifierAttribute).Replace("Attribute", "");
 }
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = false)]
@@ -58,7 +58,7 @@ public sealed class AllowForAttribute : Attribute
 }
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public sealed class ChangeAccessModifierAttribute : Attribute
+public sealed class ChangeModifierAttribute : Attribute
 {
-	public ChangeAccessModifierAttribute(string newModifier, Type? forType) { }
+	public ChangeModifierAttribute(string modifier, string newModifier, Type? forType) { }
 }

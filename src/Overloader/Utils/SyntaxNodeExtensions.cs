@@ -63,19 +63,20 @@ internal static class SyntaxNodeExtensions
 		foreach (var attrList in syntaxNode.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
-			var attrName = attribute.Name.ToString();
+			string attrName = attribute.Name.ToString();
 			if (attrName.Equals(AttributeNames.IntegrityAttr))
 			{
 				forceOverloadIntegrity = true;
 				continue;
 			}
+
 			if (!attrName.Equals(AttributeNames.TAttr)) continue;
 			if (attribute.ArgumentList is {Arguments.Count: > 1} &&
 			    (props.Template is null || attribute.ArgumentList.Arguments[1].EqualsToTemplate(props))) continue;
 
 			attr = attribute;
 		}
-		
+
 		return attr != null;
 	}
 
@@ -206,7 +207,8 @@ internal static class SyntaxNodeExtensions
 		};
 	}
 
-	// TODO: check readonly ref
 	public static string GetPreTypeValues(this TypeSyntax typeSyntax) =>
-		typeSyntax is RefTypeSyntax ? "ref" : string.Empty;
+		typeSyntax is RefTypeSyntax refSyntax
+			? $"{refSyntax.RefKeyword.ToFullString()}{refSyntax.ReadOnlyKeyword.ToFullString()}"
+			: string.Empty;
 }

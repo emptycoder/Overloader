@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Runtime.CompilerServices;
 using Overloader;
 using Overloader.Examples;
 
@@ -11,7 +12,8 @@ using Overloader.Examples;
 		"Y", "T"
 	})]
 
-// Vector2FExtension.Sum(, 1, 2);
+var vec2 = new Vector2<float>();
+vec2.Sum(2);
 Console.WriteLine("TEST");
 
 namespace Overloader.Examples
@@ -25,13 +27,21 @@ namespace Overloader.Examples
 	[Overload(typeof(float), "2D", "2F")]
 	public static partial class Vector2DExtension
 	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[return: T(typeof(Vector2<float>), typeof(float))]
 		public static ref Vector2<double> Sum([Integrity][T] this ref Vector2<double> vec, [T] double val)
 		{
 			vec.X += val;
 			vec.Y += val;
+			Console.WriteLine("dd");
 
 			return ref vec;
 		}
+	}
+	
+	[Overload(typeof(float), "D", "F")]
+	public static partial class GenericMathD
+	{
+		public static double Square([T] double val) => val * val;
 	}
 }

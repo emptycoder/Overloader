@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
 using Overloader.Enums;
@@ -10,12 +11,14 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 {
 	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
-		if (gsb.Store.OverloadMap is null || !gsb.Store.IsAnyFormatter) return ChainResult.NextChainMember;
+		if (gsb.Store.OverloadMap is null || gsb.Store.Modifiers is null || !gsb.Store.IsAnyFormatter)
+			return ChainResult.NextChainMember;
+		if (gsb.Template is null && !gsb.Store.IsPartial) return ChainResult.BreakChain;
 
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
-		// TODO: Insert attributes
-		// TODO: Insert this, ref, in, attrs for parameters
-		gsb.AppendWith(entry.Modifiers.ToFullString(), " ")
+
+		gsb.Append(entry.AttributeLists.ToFullString(), 1)
+			.AppendWith(string.Join(" ", gsb.Store.Modifiers), " ")
 			.AppendWith(entry.ReturnType.GetPreTypeValues(), " ")
 			.AppendWith(gsb.Store.ReturnType.ToDisplayString(), " ")
 			.Append(entry.Identifier.ToFullString())
@@ -37,22 +40,25 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 			void AppendParam()
 			{
 				var mappedParam = gsb.Store.OverloadMap[index];
+				var parameter = parameters[index];
+				gsb.AppendWith(parameter.AttributeLists.ToFullString(), " ");
+				
 				switch (mappedParam.ParameterAction)
 				{
 					case ParameterAction.Nothing:
-						gsb.Append(parameters[index].ToString());
+						gsb.Append(parameter.WithAttributeLists(new SyntaxList<AttributeListSyntax>()).ToFullString());
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
 						gsb.AppendWith(mappedParam.Type.ToDisplayString(), " ")
-							.Append(parameters[index].Identifier.ToString());
+							.Append(parameter.Identifier.ToString());
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:
-						gsb.AppendFormatterIntegrity(mappedParam.Type, parameters[index]);
+						gsb.AppendFormatterIntegrity(mappedParam.Type, parameter);
 						break;
 					case ParameterAction.FormatterReplacement:
 						gsb.AppendFormatter(mappedParam.Type,
-							parameters[index].Identifier.ToString(),
+							parameter.Identifier.ToString(),
 							replacementModifiers);
 						break;
 					default:

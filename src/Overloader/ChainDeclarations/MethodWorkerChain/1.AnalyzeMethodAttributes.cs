@@ -12,6 +12,9 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 	{
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		gsb.Store.ReturnType = entry.ReturnType.GetType(gsb.Compilation);
+		gsb.Store.Modifiers = new string[entry.Modifiers.Count];
+		for (int index = 0; index < gsb.Store.Modifiers.Length; index++)
+			gsb.Store.Modifiers[index] = entry.Modifiers[index].ToString();
 
 		foreach (var attrList in entry.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
@@ -35,7 +38,6 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 			}
 			else if (attrName == AttributeNames.TAttr)
 			{
-				// TODO:
 				switch (attribute.ArgumentList?.Arguments.Count ?? 0)
 				{
 					case 0 when gsb.Template is not null:
@@ -77,8 +79,25 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						throw new ArgumentException($"Unexpected count of arguments in {nameof(TAttribute)}.");
 				}
 			}
-			// TODO: Analyze modifiers and create realization
-			else if (attrName == AttributeNames.ChangeAccessModifierAttr) { }
+			else if (attrName == AttributeNames.ChangeModifierAttr)
+			{
+				if ((attribute.ArgumentList?.Arguments.Count ?? 0) <= 1)
+					throw new ArgumentException($"Unexpected count of arguments in {nameof(ChangeModifierAttribute)}.");
+
+				var arguments = attribute.ArgumentList!.Arguments;
+				if (arguments.Count == 3 && !arguments[2].EqualsToTemplate(gsb)) continue;
+
+				string modifier = arguments[0].Expression.GetInnerText();
+				string newModifier = arguments[1].Expression.GetInnerText();
+
+				for (int index = 0; index < gsb.Store.Modifiers.Length; index++)
+				{
+					if (!gsb.Store.Modifiers[index].Equals(modifier)) continue;
+
+					gsb.Store.Modifiers[index] = newModifier;
+					break;
+				}
+			}
 		}
 
 		return gsb.Store.MemberSkip ? ChainResult.BreakChain : ChainResult.NextChainMember;
