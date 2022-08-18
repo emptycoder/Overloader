@@ -54,7 +54,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						break;
 					case 0 when gsb.TryGetFormatter(returnTypeSymbol, out var formatter):
 						var @params = new ITypeSymbol[formatter.GenericParams.Length];
-							
+
 						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
 								$"Can't get type of formatter param (key: {returnTypeSymbol}) by index {paramIndex}.");
@@ -87,6 +87,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 					if (!gsb.Store.Modifiers[index].Equals(modifier)) continue;
 
 					gsb.Store.Modifiers[index] = newModifier;
+					gsb.Store.IsSmthChanged = true;
 					break;
 				}
 			}

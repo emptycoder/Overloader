@@ -60,5 +60,5 @@ public sealed class AllowForAttribute : Attribute
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public sealed class ChangeModifierAttribute : Attribute
 {
-	public ChangeModifierAttribute(string modifier, string newModifier, Type? forType) { }
+	public ChangeModifierAttribute(string modifier, string newModifier, Type? forType = null) { }
 }

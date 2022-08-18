@@ -32,7 +32,7 @@ internal static class SyntaxNodeExtensions
 		if (potentialNamespaceParent is BaseNamespaceDeclarationSyntax namespaceParent)
 		{
 			// We have a namespace. Use that as the type
-			nameSpace = namespaceParent.Name.ToString();
+			nameSpace = namespaceParent.Name.GetName();
 
 			// Keep moving "out" of the namespace declarations until we 
 			// run out of nested namespace declarations
@@ -63,7 +63,7 @@ internal static class SyntaxNodeExtensions
 		foreach (var attrList in syntaxNode.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
-			string attrName = attribute.Name.ToString();
+			string attrName = attribute.Name.GetName();
 			if (attrName.Equals(AttributeNames.IntegrityAttr))
 			{
 				forceOverloadIntegrity = true;

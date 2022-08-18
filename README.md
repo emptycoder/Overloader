@@ -1,20 +1,21 @@
 <h1 align="center">Overloader</h1>
 
 Overloader is the open-source source generator that provide unsafe generics.
-The main target of this project helps to write generics who don't have any common based interface or type.
-Also, create method parameters overloads to improve developer experience without any line of code.
+The main target of this project helps to write unsafe generics which don't have any common based interface or type.
+Also, create method parameters overloads that helps improve developer experience.
 
-# Features
-## Specific types on generics
-### Uncompilable code
+# Installation
+
+# Specific types on generics
+## Uncompilable code
 ```csharp
 public static class GenericMath
 {
 	public static T Square<T>(T val) where T : double, float => val * val;
 }
 ```
-Unfortunately, in native csharp we can't set specific values to the template.
-### Solution
+
+## Solution
 ```csharp
 [Overload(typeof(float), "D", "F")]
 public static class GenericMathD
@@ -22,7 +23,7 @@ public static class GenericMathD
 	public static double Square([T] double val) => val * val;
 }
 ```
-### Generated part
+## Generated part
 ```csharp
 [Overload(typeof(float), "D", "F")]
 public static partial class GenericMathF
@@ -33,8 +34,8 @@ public static partial class GenericMathF
 
 P.S. GenericMath provided in preview versions of .net try to resolve this problem, but we can't restrict needed types.
 
-## Parameter overload creation to avoid additional struct/class allocation
-### User template
+# Parameter overload creation to avoid additional struct/class allocation
+## User template
 ```csharp
 [Formatter(typeof(Vector2<>),
 	new object[] {"T"},
@@ -57,7 +58,7 @@ public static partial class Vector2DExtension
 	}
 }
 ```
-### Generated part
+## Generated part
 ```csharp
 [Overload(typeof(float), "2D", "2F")]
 public static partial class Vector2FExtension

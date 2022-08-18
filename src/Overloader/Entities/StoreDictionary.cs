@@ -8,7 +8,6 @@ internal sealed class StoreDictionary : IDisposable
 {
 	public bool IsAnyFormatter;
 	public bool IsSmthChanged;
-	public bool IsPartial;
 	public bool MemberSkip;
 	public string[]? Modifiers;
 	public (ParameterAction ParameterAction, ITypeSymbol Type)[]? OverloadMap;

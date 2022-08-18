@@ -17,7 +17,7 @@ internal sealed class GenerateTypeOverloads : IChainObj
 
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		var parameters = entry.ParameterList.Parameters;
-		
+
 		gsb.Append(entry.AttributeLists.ToFullString(), 1)
 			.AppendWith(string.Join(" ", gsb.Store.Modifiers), " ")
 			.AppendWith(entry.ReturnType.GetPreTypeValues(), " ")
@@ -40,7 +40,7 @@ internal sealed class GenerateTypeOverloads : IChainObj
 				var mappedParam = gsb.Store.OverloadMap[index];
 				var parameter = parameters[index];
 				gsb.AppendWith(parameter.AttributeLists.ToFullString(), " ");
-				
+
 				switch (mappedParam.ParameterAction)
 				{
 					case ParameterAction.Nothing:

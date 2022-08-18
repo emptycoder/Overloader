@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations;
 using Overloader.Entities;
+using Overloader.Enums;
 using Overloader.Utils;
 #if DEBUG
 using System.Diagnostics;
@@ -16,9 +17,9 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 	private static readonly Action<object> OverloadCreation = obj =>
 	{
 		var props = (GeneratorSourceBuilder) obj;
-		Chains.Main.Execute(props);
+		if (Chains.Main.Execute(props) != ChainResult.BreakChain)
+			props.AddToContext();
 		props.Store.Dispose();
-		props.AddToContext();
 	};
 
 	public void Initialize(GeneratorInitializationContext context)

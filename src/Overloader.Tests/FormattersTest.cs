@@ -7,7 +7,7 @@ public class FormattersTest
 {
 	// ReSharper disable once RedundantStringInterpolation
 	private const string DefaultVector3Formatter = @$"
-		Formatter(typeof(TestProject.Vector3<>),
+		typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -18,34 +18,34 @@ public class FormattersTest
 					typeof(float), typeof(double),
 					typeof(double), typeof(long)
 				}}
-			}})";
+			}}";
 
 	// ReSharper disable once RedundantStringInterpolation
 	private const string FakeVector3Formatter = @$"
-		Formatter(typeof(TestProject.Vector3<>),
+		typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
 				""X"", ""T"",
 				""Y"", ""T"",
 				""Z"", ""T""
-			}})";
+			}}";
 
-	[TestCase($"[assembly: {DefaultVector3Formatter}]", "", TestName = "Global formatter")]
-	[TestCase("", $"[{DefaultVector3Formatter}]", TestName = "Formatter")]
-	[TestCase($"[assembly: {FakeVector3Formatter}]", $"[{DefaultVector3Formatter}]", TestName = "Order of formatters")]
-	public void Formatters(string globalFormatters, string formatters)
+	[TestCase(DefaultVector3Formatter, null, TestName = "Global formatter")]
+	[TestCase(null, DefaultVector3Formatter, TestName = "Formatter")]
+	[TestCase(FakeVector3Formatter, DefaultVector3Formatter, TestName = "Order of formatters")]
+	public void Formatters(string? globalFormatter, string? formatter)
 	{
 		string programCs =
 			@$"
 using Overloader;
 using System;
 
-{globalFormatters}
+{(globalFormatter is not null ? $"[assembly: {AttributeNames.FormatterAttr}({globalFormatter})]" : string.Empty)}
 
 namespace TestProject;
 
-{formatters}
+{(formatter is not null ? $"[{AttributeNames.FormatterAttr}({formatter})]" : string.Empty)}
 [{AttributeNames.OverloadsAttr}(typeof(float))]
 internal partial class Program
 {{

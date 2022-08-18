@@ -13,7 +13,6 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 	{
 		if (gsb.Store.OverloadMap is null || gsb.Store.Modifiers is null || !gsb.Store.IsAnyFormatter)
 			return ChainResult.NextChainMember;
-		if (gsb.Template is null && !gsb.Store.IsPartial) return ChainResult.BreakChain;
 
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 
@@ -42,7 +41,7 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 				var mappedParam = gsb.Store.OverloadMap[index];
 				var parameter = parameters[index];
 				gsb.AppendWith(parameter.AttributeLists.ToFullString(), " ");
-				
+
 				switch (mappedParam.ParameterAction)
 				{
 					case ParameterAction.FormatterIntegrityReplacement when gsb.Template is null:
