@@ -29,12 +29,18 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 			}
 			else if (attrName == AttributeNames.AllowForAttr)
 			{
-				if (attribute.ArgumentList is null or {Arguments.Count: < 1}) continue;
+				if (attribute.ArgumentList is null or {Arguments.Count: < 1})
+				{
+					gsb.Store.MemberSkip = false;
+					continue;
+				}
+				
 				foreach (var arg in attribute.ArgumentList.Arguments)
-					if (!arg.EqualsToTemplate(gsb))
-						return ChainResult.BreakChain;
-
-				gsb.Store.MemberSkip = false;
+					if (arg.EqualsToTemplate(gsb))
+					{
+						gsb.Store.MemberSkip = false;
+						break;
+					}
 			}
 			else if (attrName == AttributeNames.TAttr)
 			{

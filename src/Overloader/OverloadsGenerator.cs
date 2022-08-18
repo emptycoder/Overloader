@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations;
@@ -140,12 +141,10 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 				else if (attrName == AttributeNames.FormatterAttr)
 				{
 					typeEntry.FormatterSyntaxes.Add(attribute);
-					continue;
 				}
-				else continue;
-
-				Candidates.Add(typeEntry);
 			}
+			
+			Candidates.Add(typeEntry);
 		}
 	}
 }

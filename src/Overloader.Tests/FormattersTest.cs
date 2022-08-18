@@ -34,12 +34,11 @@ public class FormattersTest
 	[TestCase(DefaultVector3Formatter, null, TestName = "Global formatter")]
 	[TestCase(null, DefaultVector3Formatter, TestName = "Formatter")]
 	[TestCase(FakeVector3Formatter, DefaultVector3Formatter, TestName = "Order of formatters")]
-	public void Formatters(string? globalFormatter, string? formatter)
+	public void FormatterTest(string? globalFormatter, string? formatter)
 	{
 		string programCs =
 			@$"
 using Overloader;
-using System;
 
 {(globalFormatter is not null ? $"[assembly: {AttributeNames.FormatterAttr}({globalFormatter})]" : string.Empty)}
 
@@ -51,10 +50,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void GlobalFormatterTest([T] Vector3<double> vec)
-	{{
-		Console.WriteLine(vec.X);
-	}}
+	public static void {nameof(FormatterTest)}([T] Vector3<double> vec) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -90,7 +86,7 @@ internal struct Vector3<T>
 		         where methodOverloads.ContainsKey(identifier)
 		         select identifier)
 			methodOverloads[identifier] = true;
-
+		
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
 	}

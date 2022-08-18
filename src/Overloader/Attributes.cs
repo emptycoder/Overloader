@@ -40,21 +40,18 @@ public sealed class TAttribute : Attribute
 public sealed class IntegrityAttribute : Attribute { }
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
-public sealed class BlackListModeAttribute : Attribute
-{
-	public BlackListModeAttribute(Type type, string? nameRegex = null, string? regexReplace = null) { }
-}
+public sealed class BlackListModeAttribute : Attribute { }
 
 [AttributeUsage(AttributeTargets.Method)]
 public sealed class IgnoreForAttribute : Attribute
 {
-	public IgnoreForAttribute(Type? type) { }
+	public IgnoreForAttribute(Type? type = null) { }
 }
 
 [AttributeUsage(AttributeTargets.Method)]
 public sealed class AllowForAttribute : Attribute
 {
-	public AllowForAttribute(Type? type) { }
+	public AllowForAttribute(Type? type = null) { }
 }
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]

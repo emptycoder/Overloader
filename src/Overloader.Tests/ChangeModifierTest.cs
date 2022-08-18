@@ -6,12 +6,11 @@ namespace Overloader.Tests;
 public class ChangeModifierTest
 {
 	[Test]
-	public void ModifierReplacement()
+	public void ModifierTest()
 	{
 		string programCs =
 			@$"
 using Overloader;
-using System;
 
 namespace TestProject;
 
@@ -21,11 +20,9 @@ internal class Program
 	static void Main(string[] args) {{ }}
 
 	[{AttributeNames.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
+	[{AttributeNames.ChangeModifierAttr}(""public"", ""internal"", typeof(double))]
 	[{AttributeNames.ChangeModifierAttr}(""private"", ""protected"")]
-	public static void ModifierTest()
-	{{
-		Console.WriteLine(""Test"");
-	}}
+	public static void {nameof(ModifierTest)}() {{ }}
 }}
 ";
 
