@@ -7,7 +7,9 @@ namespace Overloader;
 [Generator]
 public class AttributesGenerator : IIncrementalGenerator
 {
-	private const string AttributesWithHeaderSource = @$"namespace {nameof(Overloader)};
+	private const string AttributesWithHeaderSource = @$"
+#nullable enable
+namespace {nameof(Overloader)};
 {AttributesSource}";
 
 	private const string AttributesSource = @"
