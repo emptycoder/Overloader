@@ -9,7 +9,9 @@ Also, create method parameters overloads that helps improve developer experience
 [NuGet](https://www.nuget.org/packages/Overloader/): `dotnet add package overloader`
 
 # Specific types on generics
+
 ## Uncompilable code
+
 ```csharp
 public static class GenericMath
 {
@@ -18,6 +20,7 @@ public static class GenericMath
 ```
 
 ## Solution
+
 ```csharp
 [Overload(typeof(float), "D", "F")]
 public static class GenericMathD
@@ -25,7 +28,9 @@ public static class GenericMathD
 	public static double Square([T] double val) => val * val;
 }
 ```
+
 ## Generated part
+
 ```csharp
 [Overload(typeof(float), "D", "F")]
 public static partial class GenericMathF
@@ -37,7 +42,9 @@ public static partial class GenericMathF
 P.S. GenericMath provided in preview versions of .net try to resolve this problem, but we can't restrict needed types.
 
 # Parameter overload creation to avoid additional struct/class allocation
+
 ## User template
+
 ```csharp
 [Formatter(typeof(Vector2<>),
 	new object[] {"T"},
@@ -60,7 +67,9 @@ public static partial class Vector2DExtension
 	}
 }
 ```
+
 ## Generated part
+
 ```csharp
 [Overload(typeof(float), "2D", "2F")]
 public static partial class Vector2FExtension
@@ -86,4 +95,5 @@ public static partial class Vector2FExtension
 ```
 
 # License
+
 Overloader is licensed under the [MIT](./LICENSE) license.

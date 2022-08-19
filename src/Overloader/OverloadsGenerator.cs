@@ -1,8 +1,6 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Overloader.ChainDeclarations;
 using Overloader.Entities;
 using Overloader.Enums;
@@ -30,11 +28,6 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		if (!Debugger.IsAttached) Debugger.Launch();
 #endif
 		context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-		context.RegisterForPostInitialization(ctx =>
-		{
-			System.Diagnostics.Debugger.Break();
-			ctx.AddSource("Attributes.g.cs", SourceText.From(AttributeNames.AttributesWithHeaderSource, Encoding.UTF8));
-		});
 	}
 
 	public void Execute(GeneratorExecutionContext context)
