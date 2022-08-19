@@ -14,7 +14,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{AttributeNames.OverloadsAttr}(typeof(float), ""Program"", ""Program1"")]
+[{AttributeNames.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -56,7 +56,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{AttributeNames.OverloadsAttr}(typeof(float), ""Program"", ""Program1"")]
+[{AttributeNames.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}

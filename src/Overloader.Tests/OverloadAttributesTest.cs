@@ -24,7 +24,7 @@ internal class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{AttributeNames.OverloadsAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
+[{AttributeNames.OverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
 {accessModifier} static class {className} {{ }}
 ";
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);

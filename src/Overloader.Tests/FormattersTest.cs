@@ -45,7 +45,7 @@ using Overloader;
 namespace TestProject;
 
 {(formatter is not null ? $"[{AttributeNames.FormatterAttr}({formatter})]" : string.Empty)}
-[{AttributeNames.OverloadsAttr}(typeof(float))]
+[{AttributeNames.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}

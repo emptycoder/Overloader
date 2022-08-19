@@ -76,13 +76,13 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						gsb.Store.IsSmthChanged = true;
 						break;
 					default:
-						throw new ArgumentException($"Unexpected count of arguments in {nameof(TAttribute)}.");
+						throw new ArgumentException($"Unexpected count of arguments in {AttributeNames.TAttr}.");
 				}
 			}
 			else if (attrName == AttributeNames.ChangeModifierAttr)
 			{
 				if ((attribute.ArgumentList?.Arguments.Count ?? 0) <= 1)
-					throw new ArgumentException($"Unexpected count of arguments in {nameof(ChangeModifierAttribute)}.");
+					throw new ArgumentException($"Unexpected count of arguments in {AttributeNames.ChangeModifierAttr}.");
 
 				var arguments = attribute.ArgumentList!.Arguments;
 				if (arguments.Count == 3 && !arguments[2].EqualsToTemplate(gsb)) continue;

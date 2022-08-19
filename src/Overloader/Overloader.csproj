@@ -10,6 +10,23 @@
 		<Configurations>Release;Debug</Configurations>
 		<RootNamespace>Overloader</RootNamespace>
 		<AssemblyName>Overloader</AssemblyName>
+		<Title>Overloader</Title>
+	</PropertyGroup>
+		
+	<PropertyGroup>
+		<Authors>Yaroslav Sanko</Authors>
+		<Description>Overloader is the open-source source generator that provide unsafe generics.</Description>
+		<PackageProjectUrl>https://github.com/emptycoder/Overloader</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/emptycoder/Overloader</RepositoryUrl>
+		<PackageTags>source; generator; generics</PackageTags>
+		<AssemblyVersion>1.0.1</AssemblyVersion>
+		<FileVersion>1.0.1</FileVersion>
+		<Version>1.0.1</Version>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<SignAssembly>False</SignAssembly>
+		<DevelopmentDependency>true</DevelopmentDependency>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -17,10 +34,14 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0"/>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
 		<!-- Package the generator in the analyzer directory of the nuget package -->
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="../../README.md" Pack="true" PackagePath="" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -14,7 +14,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{AttributeNames.OverloadsAttr}(typeof(float), ""Program"", ""Program1"")]
+[{AttributeNames.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 [{AttributeNames.BlackListModeAttr}]
 internal class Program
 {{
@@ -47,7 +47,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{AttributeNames.OverloadsAttr}(typeof(float), ""Program"", ""Program1"")]
+[{AttributeNames.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 {(isBlackList ? $"[{AttributeNames.BlackListModeAttr}]" : string.Empty)}
 internal class Program
 {{

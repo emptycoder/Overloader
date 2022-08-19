@@ -28,7 +28,7 @@ namespace TestProject;
 					typeof(double), typeof(long)
 				}}
 			}})]
-[{AttributeNames.OverloadsAttr}(typeof(float))]
+[{AttributeNames.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}

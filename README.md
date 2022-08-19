@@ -6,6 +6,8 @@ Also, create method parameters overloads that helps improve developer experience
 
 # Installation
 
+[NuGet](https://www.nuget.org/packages/Overloader/): `dotnet add package overloader`
+
 # Specific types on generics
 ## Uncompilable code
 ```csharp
