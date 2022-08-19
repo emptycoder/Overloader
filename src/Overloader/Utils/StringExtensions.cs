@@ -6,7 +6,7 @@ public static class StringExtensions
 	public static (string Key, string Value) SplitAsKV(this ReadOnlySpan<char> data, string separator)
 	{
 		int separatorIndex = data.IndexOf(separator.AsSpan(), StringComparison.Ordinal);
-		if (separatorIndex == -1) throw new ArgumentException();
+		if (separatorIndex == -1) throw new ArgumentException($"Separator '{separator}' not found for {data.ToString()}.");
 
 		var key = data.Slice(0, separatorIndex).ChangeBoundsByChar();
 		var value = data.Slice(separatorIndex + separator.Length).ChangeBoundsByChar();
@@ -17,11 +17,11 @@ public static class StringExtensions
 	private static ReadOnlySpan<char> ChangeBoundsByChar(this ReadOnlySpan<char> value, char boundChar = '"')
 	{
 		int start = value.IndexOf(boundChar);
-		if (start == -1) throw new ArgumentException();
+		if (start == -1) throw new ArgumentException($"First '\"' not found for {value.ToString()}.");
 
 		int end = value.LastIndexOf(boundChar);
-		if (end == start) throw new ArgumentException();
+		if (end <= start + 1) throw new ArgumentException($"Last '\"' not found for {value.ToString()}.");
 
-		return value.Slice(start, end - start);
+		return value.Slice(start + 1, end - start - 1);
 	}
 }

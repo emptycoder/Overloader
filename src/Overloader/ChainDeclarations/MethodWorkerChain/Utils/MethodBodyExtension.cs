@@ -47,12 +47,15 @@ internal static class MethodBodyExtension
 									// Replace operation
 									case '#':
 										var kv = strTriviaSpan.SplitAsKV("->");
+										if (kv.Value.IndexOf("${T}", StringComparison.Ordinal) != -1 && templateStr is null) break;
 										strStatement = strStatement.Replace(kv.Key, kv.Value
 											.Replace("${T}", templateStr));
 										break;
 									// Change line operation
 									case '$':
-										strStatement = strTriviaSpan.Slice(3).Trim().ToString()
+										var newStatement = strTriviaSpan.Slice(3).Trim();
+										if (newStatement.IndexOf("${T}".AsSpan()) != -1 && templateStr is null) break;
+										strStatement = newStatement.ToString()
 											.Replace("${T}", templateStr);
 										break;
 									default:

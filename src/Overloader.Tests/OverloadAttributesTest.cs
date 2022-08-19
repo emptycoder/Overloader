@@ -31,14 +31,14 @@ internal class Program
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 		Assert.That(result.Result.GeneratedTrees, Has.Length.EqualTo(1));
-		
+
 		string newClassName = Regex.Replace(className, regex, regexReplacement);
 		var classes = result.Result.GeneratedTrees[0].GetRoot()
 			.DescendantNodes()
 			.OfType<ClassDeclarationSyntax>()
 			.ToArray();
 		Assert.That(classes, Has.Length.EqualTo(1));
-		
+
 		var @class = classes.First();
 		Assert.That(@class.Identifier.Text, Is.EqualTo(newClassName));
 

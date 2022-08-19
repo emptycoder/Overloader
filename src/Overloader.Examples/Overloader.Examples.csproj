@@ -20,11 +20,11 @@
 
 	<!-- Analyzers -->
 	<ItemGroup>
-		<ProjectReference Include="..\Overloader\Overloader.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+		<ProjectReference Include="..\Overloader\Overloader.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true"/>
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Runtime.Experimental" Version="7.0.0-preview.2.22152.2" />
+		<PackageReference Include="System.Runtime.Experimental" Version="7.0.0-preview.2.22152.2"/>
 	</ItemGroup>
 
 </Project>

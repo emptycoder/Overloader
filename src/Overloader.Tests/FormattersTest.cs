@@ -86,7 +86,7 @@ internal struct Vector3<T>
 		         where methodOverloads.ContainsKey(identifier)
 		         select identifier)
 			methodOverloads[identifier] = true;
-		
+
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
 	}

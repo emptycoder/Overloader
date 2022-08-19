@@ -31,9 +31,9 @@ internal class Program
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 		Assert.That(result.Result.GeneratedTrees.Sum(tree =>
 			tree.GetRoot()
-			.DescendantNodes()
-			.OfType<MethodDeclarationSyntax>()
-			.Count()), Is.EqualTo(0));
+				.DescendantNodes()
+				.OfType<MethodDeclarationSyntax>()
+				.Count()), Is.EqualTo(0));
 	}
 
 	[TestCase(true, $"{nameof(IgnoreAllowForTest)}4", $"{nameof(IgnoreAllowForTest)}5")]
@@ -48,7 +48,7 @@ using Overloader;
 namespace TestProject;
 
 [{AttributeNames.OverloadsAttr}(typeof(float), ""Program"", ""Program1"")]
-{(isBlackList? $"[{AttributeNames.BlackListModeAttr}]" : string.Empty)}
+{(isBlackList ? $"[{AttributeNames.BlackListModeAttr}]" : string.Empty)}
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -78,19 +78,19 @@ internal class Program
 	public static void {nameof(IgnoreAllowForTest)}6() {{ }}
 }}
 ";
-		
+
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 		Assert.That(result.Result.GeneratedTrees.Length, Is.EqualTo(1));
 
-		var methodNames = result.Result.GeneratedTrees.SelectMany(tree => 
-			tree.GetRoot()
-				.DescendantNodes()
-				.OfType<MethodDeclarationSyntax>()
-				.Select(methodSyntax => methodSyntax.Identifier.Text))
+		var methodNames = result.Result.GeneratedTrees.SelectMany(tree =>
+				tree.GetRoot()
+					.DescendantNodes()
+					.OfType<MethodDeclarationSyntax>()
+					.Select(methodSyntax => methodSyntax.Identifier.Text))
 			.ToHashSet();
-		
+
 		Assert.That(methodNames, Has.Count.EqualTo(expectedMethodNames.Length));
 		foreach (string name in expectedMethodNames)
 			Assert.That(methodNames, Does.Contain(name));

@@ -11,6 +11,8 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
+		gsb.Store.IsSmthChanged = false;
+		gsb.Store.IsAnyFormatter = false;
 		gsb.Store.ReturnType = entry.ReturnType.GetType(gsb.Compilation);
 		gsb.Store.Modifiers = new string[entry.Modifiers.Count];
 		for (int index = 0; index < gsb.Store.Modifiers.Length; index++)
@@ -34,7 +36,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 					gsb.Store.MemberSkip = false;
 					continue;
 				}
-				
+
 				foreach (var arg in attribute.ArgumentList.Arguments)
 					if (arg.EqualsToTemplate(gsb))
 					{
