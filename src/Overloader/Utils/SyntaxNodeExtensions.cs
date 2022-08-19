@@ -32,7 +32,7 @@ internal static class SyntaxNodeExtensions
 		if (potentialNamespaceParent is BaseNamespaceDeclarationSyntax namespaceParent)
 		{
 			// We have a namespace. Use that as the type
-			nameSpace = namespaceParent.Name.GetName();
+			nameSpace = namespaceParent.Name.ToString();
 
 			// Keep moving "out" of the namespace declarations until we 
 			// run out of nested namespace declarations

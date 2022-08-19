@@ -27,8 +27,6 @@ namespace Overloader.Examples
 	[Overload(typeof(float), "2D", "2F")]
 	public static class Vector2DExtension
 	{
-		[ChangeModifier("public", "private", typeof(float))]
-		[ChangeModifier("private", "protected")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[return: T]
 		public static ref Vector2<double> Sum([Integrity] [T] this ref Vector2<double> vec1, [T] in Vector2<double> vec2)
@@ -38,11 +36,5 @@ namespace Overloader.Examples
 
 			return ref vec1;
 		}
-	}
-
-	[Overload(typeof(float), "D", "F")]
-	public static partial class GenericMathD
-	{
-		public static double Square([T] double val) => val * val;
 	}
 }

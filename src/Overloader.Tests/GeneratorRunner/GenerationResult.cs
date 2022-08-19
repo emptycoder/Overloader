@@ -6,7 +6,8 @@ namespace Overloader.Tests.GeneratorRunner;
 public record GenerationResult(
 	Compilation Compilation,
 	ImmutableArray<Diagnostic> CompilationDiagnostics,
-	ImmutableArray<Diagnostic> GenerationDiagnostics
+	ImmutableArray<Diagnostic> GenerationDiagnostics,
+	GeneratorDriverRunResult Result
 )
 {
 	public ImmutableArray<Diagnostic> CompilationErrors =>
