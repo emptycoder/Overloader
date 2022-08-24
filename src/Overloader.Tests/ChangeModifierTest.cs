@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Tests.GeneratorRunner;
 
 namespace Overloader.Tests;
@@ -14,14 +15,14 @@ using Overloader;
 
 namespace TestProject;
 
-[{AttributeNames.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{AttributeNames.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
-	[{AttributeNames.ChangeModifierAttr}(""public"", ""internal"", typeof(double))]
-	[{AttributeNames.ChangeModifierAttr}(""private"", ""protected"")]
+	[{Attributes.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
+	[{Attributes.ChangeModifierAttr}(""public"", ""internal"", typeof(double))]
+	[{Attributes.ChangeModifierAttr}(""private"", ""protected"")]
 	public static void {nameof(ModifierTest)}() {{ }}
 }}
 ";
@@ -30,15 +31,13 @@ internal class Program
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
-		var generatedTrees = result.Result.GeneratedTrees;
-		Assert.That(generatedTrees, Has.Length.EqualTo(1));
-
 		var modifierOverloads = new Dictionary<string, bool>(3)
 		{
 			{"protected,static", false}
 		};
 
-		foreach (string? identifier in from generatedTree in generatedTrees
+		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
+		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

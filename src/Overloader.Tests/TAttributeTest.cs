@@ -16,7 +16,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{AttributeNames.FormatterAttr}(typeof(TestProject.Vector3<>),
+[{Attributes.FormatterAttr}(typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -28,7 +28,7 @@ namespace TestProject;
 					typeof(double), typeof(long)
 				}}
 			}})]
-[{AttributeNames.OverloadAttr}(typeof(float))]
+[{Attributes.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -56,7 +56,6 @@ internal struct Vector3<T>
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
-		Assert.That(result.Result.GeneratedTrees, Has.Length.EqualTo(2));
 
 		var methodOverloads = new Dictionary<string, bool>(4)
 		{
@@ -67,6 +66,7 @@ internal struct Vector3<T>
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
+		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

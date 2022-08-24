@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Tests.GeneratorRunner;
 
 namespace Overloader.Tests;
@@ -40,12 +41,12 @@ public class FormattersTest
 			@$"
 using Overloader;
 
-{(globalFormatter is not null ? $"[assembly: {AttributeNames.FormatterAttr}({globalFormatter})]" : string.Empty)}
+{(globalFormatter is not null ? $"[assembly: {Attributes.FormatterAttr}({globalFormatter})]" : string.Empty)}
 
 namespace TestProject;
 
-{(formatter is not null ? $"[{AttributeNames.FormatterAttr}({formatter})]" : string.Empty)}
-[{AttributeNames.OverloadAttr}(typeof(float))]
+{(formatter is not null ? $"[{Attributes.FormatterAttr}({formatter})]" : string.Empty)}
+[{Attributes.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -65,9 +66,6 @@ internal struct Vector3<T>
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
-		var generatedTrees = result.Result.GeneratedTrees;
-		Assert.That(generatedTrees, Has.Length.EqualTo(2));
-
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
 			{"double,double,double", false},
@@ -75,7 +73,8 @@ internal struct Vector3<T>
 			{"TestProject.Vector3<float>", false}
 		};
 
-		foreach (string? identifier in from generatedTree in generatedTrees
+		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
+		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

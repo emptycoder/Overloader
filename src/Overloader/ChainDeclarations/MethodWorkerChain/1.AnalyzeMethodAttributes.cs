@@ -22,14 +22,14 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 		foreach (var attribute in attrList.Attributes)
 		{
 			string attrName = attribute.Name.GetName();
-			if (attrName == AttributeNames.IgnoreForAttr)
+			if (attrName == Attributes.IgnoreForAttr)
 			{
 				if (attribute.ArgumentList is null or {Arguments.Count: < 1}) return ChainResult.BreakChain;
 				foreach (var arg in attribute.ArgumentList.Arguments)
 					if (arg.EqualsToTemplate(gsb))
 						return ChainResult.BreakChain;
 			}
-			else if (attrName == AttributeNames.AllowForAttr)
+			else if (attrName == Attributes.AllowForAttr)
 			{
 				if (attribute.ArgumentList is null or {Arguments.Count: < 1})
 				{
@@ -44,7 +44,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						break;
 					}
 			}
-			else if (attrName == AttributeNames.TAttr)
+			else if (attrName == Attributes.TAttr)
 			{
 				var returnTypeSymbol = entry.ReturnType.GetType(gsb.Compilation);
 				switch (attribute.ArgumentList?.Arguments.Count ?? 0)
@@ -76,13 +76,13 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						gsb.Store.IsSmthChanged = true;
 						break;
 					default:
-						throw new ArgumentException($"Unexpected count of arguments in {AttributeNames.TAttr}.");
+						throw new ArgumentException($"Unexpected count of arguments in {Attributes.TAttr}.");
 				}
 			}
-			else if (attrName == AttributeNames.ChangeModifierAttr)
+			else if (attrName == Attributes.ChangeModifierAttr)
 			{
 				if ((attribute.ArgumentList?.Arguments.Count ?? 0) <= 1)
-					throw new ArgumentException($"Unexpected count of arguments in {AttributeNames.ChangeModifierAttr}.");
+					throw new ArgumentException($"Unexpected count of arguments in {Attributes.ChangeModifierAttr}.");
 
 				var arguments = attribute.ArgumentList!.Arguments;
 				if (arguments.Count == 3 && !arguments[2].EqualsToTemplate(gsb)) continue;

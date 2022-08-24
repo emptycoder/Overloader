@@ -1,13 +1,19 @@
-﻿using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-
 namespace Overloader;
 
-[Generator]
-public class AttributesGenerator : IIncrementalGenerator
+internal static class Attributes
 {
-	private const string AttributesWithHeaderSource = @$"
+	public const string OverloadAttr = "Overload";
+	public const string FormatterAttr = "Formatter";
+
+	// ReSharper disable once InconsistentNaming
+	public const string TAttr = "T";
+	public const string IntegrityAttr = "Integrity";
+	public const string IgnoreForAttr = "IgnoreFor";
+	public const string BlackListModeAttr = "BlackListMode";
+	public const string AllowForAttr = "AllowFor";
+	public const string ChangeModifierAttr = "ChangeModifier";
+
+	public const string AttributesWithHeaderSource = @$"using System;
 #nullable enable
 namespace {nameof(Overloader)};
 {AttributesSource}";
@@ -54,10 +60,4 @@ public sealed class ChangeModifierAttribute : Attribute
 {
 	public ChangeModifierAttribute(string modifier, string newModifier, Type? forType = null) { }
 }";
-
-	public void Initialize(IncrementalGeneratorInitializationContext context) =>
-		context.RegisterPostInitializationOutput(ctx =>
-		{
-			ctx.AddSource("Attributes.g.cs", SourceText.From(AttributesWithHeaderSource, Encoding.UTF8));
-		});
 }

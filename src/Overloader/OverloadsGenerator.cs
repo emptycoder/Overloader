@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using Overloader.ChainDeclarations;
 using Overloader.Entities;
 using Overloader.Enums;
@@ -28,6 +30,10 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		if (!Debugger.IsAttached) Debugger.Launch();
 #endif
 		context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+		context.RegisterForPostInitialization(ctx =>
+		{
+			ctx.AddSource("Attributes.g.cs", SourceText.From(Attributes.AttributesWithHeaderSource, Encoding.UTF8));
+		});
 	}
 
 	public void Execute(GeneratorExecutionContext context)
@@ -107,7 +113,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		{
 			if (syntaxNode is AttributeListSyntax {Target.Identifier.Text: "assembly"} attributeListSyntax)
 				foreach (var attribute in attributeListSyntax.Attributes)
-					if (attribute.Name.GetName() == AttributeNames.FormatterAttr)
+					if (attribute.Name.GetName() == Attributes.FormatterAttr)
 						GlobalFormatterSyntaxes.Add(attribute);
 
 			if (syntaxNode is not TypeDeclarationSyntax {AttributeLists.Count: >= 1} declarationSyntax) return;
@@ -117,7 +123,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 			foreach (var attribute in attributeList.Attributes)
 			{
 				string attrName = attribute.Name.GetName();
-				if (attrName == AttributeNames.OverloadAttr
+				if (attrName == Attributes.OverloadAttr
 				    && attribute.ArgumentList is not null
 				    && attribute.ArgumentList.Arguments.Count > 0)
 				{
@@ -126,18 +132,18 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 					className = args.Count switch
 					{
 						1 => className,
-						2 => throw new ArgumentException($"Must be set regex replacement parameter for {AttributeNames.OverloadAttr}."),
+						2 => throw new ArgumentException($"Must be set regex replacement parameter for {Attributes.OverloadAttr}."),
 						3 => Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText()),
-						_ => throw new ArgumentException($"Unexpected count of args for {AttributeNames.OverloadAttr}.")
+						_ => throw new ArgumentException($"Unexpected count of args for {Attributes.OverloadAttr}.")
 					};
 
 					typeEntry.OverloadTypes.Add((className, args[0]));
 				}
-				else if (attrName == AttributeNames.BlackListModeAttr)
+				else if (attrName == Attributes.BlackListModeAttr)
 				{
 					typeEntry.IsBlackListMode = true;
 				}
-				else if (attrName == AttributeNames.FormatterAttr)
+				else if (attrName == Attributes.FormatterAttr)
 				{
 					typeEntry.FormatterSyntaxes.Add(attribute);
 				}

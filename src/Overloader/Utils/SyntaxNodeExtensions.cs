@@ -64,13 +64,13 @@ internal static class SyntaxNodeExtensions
 		foreach (var attribute in attrList.Attributes)
 		{
 			string attrName = attribute.Name.GetName();
-			if (attrName.Equals(AttributeNames.IntegrityAttr))
+			if (attrName.Equals(Attributes.IntegrityAttr))
 			{
 				forceOverloadIntegrity = true;
 				continue;
 			}
 
-			if (!attrName.Equals(AttributeNames.TAttr)) continue;
+			if (!attrName.Equals(Attributes.TAttr)) continue;
 			if (attribute.ArgumentList is {Arguments.Count: > 1} &&
 			    (props.Template is null || attribute.ArgumentList.Arguments[1].EqualsToTemplate(props))) continue;
 

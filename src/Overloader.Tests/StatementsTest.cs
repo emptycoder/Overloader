@@ -14,12 +14,12 @@ using Overloader;
 
 namespace TestProject;
 
-[{AttributeNames.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{AttributeNames.ChangeModifierAttr}(""public"", ""public"")]
+	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ReplaceOperationTest)}()
 	{{
 		//# {comment}
@@ -31,7 +31,6 @@ internal class Program
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
-		Assert.That(result.Result.GeneratedTrees, Has.Length.EqualTo(1));
 
 		var assembly = result.Compilation.ToAssembly();
 		var method = assembly.DefinedTypes
@@ -56,12 +55,12 @@ using Overloader;
 
 namespace TestProject;
 
-[{AttributeNames.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{AttributeNames.ChangeModifierAttr}(""public"", ""public"")]
+	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ChangeLineOperationTest)}()
 	{{
 		//$ {comment}
@@ -73,7 +72,6 @@ internal class Program
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
-		Assert.That(result.Result.GeneratedTrees, Has.Length.EqualTo(1));
 
 		var assembly = result.Compilation.ToAssembly();
 		var method = assembly.DefinedTypes

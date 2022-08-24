@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Tests.GeneratorRunner;
@@ -24,16 +25,18 @@ internal class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{AttributeNames.OverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
+[{Attributes.OverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
 {accessModifier} static class {className} {{ }}
 ";
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
-		Assert.That(result.Result.GeneratedTrees, Has.Length.EqualTo(1));
+		var generatedTrees = result.Result.GeneratedTrees.Where(tree =>
+			!Path.GetFileName(tree.FilePath).Equals($"{nameof(Attributes)}.g.cs")).ToImmutableArray();
+		Assert.That(generatedTrees, Has.Length.EqualTo(1));
 
 		string newClassName = Regex.Replace(className, regex, regexReplacement);
-		var classes = result.Result.GeneratedTrees[0].GetRoot()
+		var classes = generatedTrees[0].GetRoot()
 			.DescendantNodes()
 			.OfType<ClassDeclarationSyntax>()
 			.ToArray();
