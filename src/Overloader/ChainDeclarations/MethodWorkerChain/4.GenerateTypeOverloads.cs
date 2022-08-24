@@ -61,7 +61,7 @@ internal sealed class GenerateTypeOverloads : IChainObj
 			}
 		}
 
-		gsb.Append(")", 1)
+		gsb.Append(")")
 			.WriteMethodBody(entry, ImmutableList<(string From, string To)>.Empty);
 
 		return ChainResult.NextChainMember;

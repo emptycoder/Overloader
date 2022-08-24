@@ -67,7 +67,7 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 			}
 		}
 
-		gsb.Append(")", 1)
+		gsb.Append(")")
 			.WriteMethodBody(entry, replacementModifiers);
 
 		return ChainResult.NextChainMember;

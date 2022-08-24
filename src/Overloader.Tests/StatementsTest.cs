@@ -10,7 +10,7 @@ public class StatementsTest
 	public string ReplaceOperationTest(string comment)
 	{
 		string programCs = @$"
-using Overloader;
+using {nameof(Overloader)};
 
 namespace TestProject;
 
@@ -51,7 +51,7 @@ internal class Program
 	public string ChangeLineOperationTest(string comment)
 	{
 		string programCs = @$"
-using Overloader;
+using {nameof(Overloader)};
 
 namespace TestProject;
 
@@ -66,6 +66,45 @@ internal class Program
 		//$ {comment}
 		return ""DEFAULT"";
 	}}
+}}
+";
+
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+
+		var assembly = result.Compilation.ToAssembly();
+		var method = assembly.DefinedTypes
+			.Where(type => type.Name != "Program")
+			.SelectMany(type => type.DeclaredMethods)
+			.Single(method => method.Name.Contains(nameof(ChangeLineOperationTest)));
+		Assert.That(method, Is.Not.Null);
+		object? resultObj = method.Invoke(null, null);
+
+		Assert.That(resultObj, Is.Not.Null);
+		Assert.That(resultObj is string, Is.True);
+		return (string) resultObj!;
+	}
+
+	[TestCase("\"EXPECTED\"", ExpectedResult = "EXPECTED")]
+	[TestCase("\"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
+	[TestCase("\"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
+	public string ArrowTokenStatementsTest(string comment)
+	{
+		string programCs = @$"
+using {nameof(Overloader)};
+
+namespace TestProject;
+
+[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+internal class Program
+{{
+	static void Main(string[] args) {{ }}
+
+	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
+	public static string {nameof(ChangeLineOperationTest)}() =>
+		//$ {comment}
+		""DEFAULT"";
 }}
 ";
 
