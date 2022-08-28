@@ -11,6 +11,7 @@
 		<RootNamespace>Overloader</RootNamespace>
 		<AssemblyName>Overloader</AssemblyName>
 		<Title>Overloader</Title>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -21,9 +22,9 @@
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/emptycoder/Overloader</RepositoryUrl>
 		<PackageTags>source; generator; generics</PackageTags>
-		<AssemblyVersion>1.0.2</AssemblyVersion>
-		<FileVersion>1.0.2</FileVersion>
-		<Version>1.0.2</Version>
+		<AssemblyVersion>1.0.3</AssemblyVersion>
+		<FileVersion>1.0.3</FileVersion>
+		<Version>1.0.3</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<SignAssembly>False</SignAssembly>
 		<DevelopmentDependency>true</DevelopmentDependency>
@@ -34,14 +35,14 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0"/>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
 		<!-- Package the generator in the analyzer directory of the nuget package -->
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="../../documentation/NuGetReadme.md" Pack="true" PackagePath="" Visible="false"/>
+		<None Include="../../documentation/NuGetReadme.md" Pack="true" PackagePath="" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>

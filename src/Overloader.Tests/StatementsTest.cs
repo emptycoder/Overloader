@@ -4,9 +4,14 @@ namespace Overloader.Tests;
 
 public class StatementsTest
 {
-	[TestCase("\"DEFAULT\" -> \"EXPECTED\"", ExpectedResult = "EXPECTED")]
-	[TestCase("\"DEFAULT\" -> \"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
-	[TestCase("\"DEFAULT\" -> \"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
+	private const string SomeKindOfComment = "// SOME KIND OF USER COMMENT\n";
+	
+	[TestCase("//# \"DEFAULT\" -> \"EXPECTED\"", ExpectedResult = "EXPECTED")]
+	[TestCase("//# \"DEFAULT\" -> \"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
+	[TestCase("//# \"DEFAULT\" -> \"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
+	[TestCase($"{SomeKindOfComment}//# \"DEFAULT\" -> \"EXPECTED\"", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//# \"DEFAULT\" -> \"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//# \"DEFAULT\" -> \"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
 	public string ReplaceOperationTest(string comment)
 	{
 		string programCs = @$"
@@ -22,7 +27,7 @@ internal class Program
 	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ReplaceOperationTest)}()
 	{{
-		//# {comment}
+		{comment}
 		return ""DEFAULT"";
 	}}
 }}
@@ -45,9 +50,12 @@ internal class Program
 		return (string) resultObj!;
 	}
 
-	[TestCase("return \"EXPECTED\";", ExpectedResult = "EXPECTED")]
-	[TestCase("return \"EXPECTED\"; : float", ExpectedResult = "EXPECTED")]
-	[TestCase("return \"EXPECTED\"; : double", ExpectedResult = "DEFAULT")]
+	[TestCase("//$ return \"EXPECTED\";", ExpectedResult = "EXPECTED")]
+	[TestCase("//$ return \"EXPECTED\"; : float", ExpectedResult = "EXPECTED")]
+	[TestCase("//$ return \"EXPECTED\"; : double", ExpectedResult = "DEFAULT")]
+	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\";", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\"; : float", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\"; : double", ExpectedResult = "DEFAULT")]
 	public string ChangeLineOperationTest(string comment)
 	{
 		string programCs = @$"
@@ -63,7 +71,7 @@ internal class Program
 	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ChangeLineOperationTest)}()
 	{{
-		//$ {comment}
+		{comment}
 		return ""DEFAULT"";
 	}}
 }}
@@ -86,9 +94,12 @@ internal class Program
 		return (string) resultObj!;
 	}
 
-	[TestCase("\"EXPECTED\"", ExpectedResult = "EXPECTED")]
-	[TestCase("\"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
-	[TestCase("\"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
+	[TestCase("//$ \"EXPECTED\"", ExpectedResult = "EXPECTED")]
+	[TestCase("//$ \"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
+	[TestCase("//$ \"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
+	[TestCase($"{SomeKindOfComment}//$ \"EXPECTED\"", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//$ \"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//$ \"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
 	public string ArrowTokenStatementsTest(string comment)
 	{
 		string programCs = @$"
@@ -103,7 +114,7 @@ internal class Program
 
 	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ChangeLineOperationTest)}() =>
-		//$ {comment}
+		{comment}
 		""DEFAULT"";
 }}
 ";

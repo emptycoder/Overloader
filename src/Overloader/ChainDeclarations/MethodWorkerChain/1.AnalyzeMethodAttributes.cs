@@ -12,7 +12,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 	{
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		gsb.Store.IsSmthChanged = false;
-		gsb.Store.IsAnyFormatter = false;
+		gsb.Store.FormattersWoIntegrityCount = 0;
 		gsb.Store.ReturnType = entry.ReturnType.GetType(gsb.Compilation);
 		gsb.Store.Modifiers = new string[entry.Modifiers.Count];
 		for (int index = 0; index < gsb.Store.Modifiers.Length; index++)

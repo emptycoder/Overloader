@@ -38,9 +38,15 @@ internal partial class Program
 	[return: T]
 	public static double {nameof(TAttrTest)}2([T] Vector3<double> vec, [T] Vector3<double> vec1)
 	{{
+		Test(vec);
 		//# ""double"" -> ""${{T}}""
 		return (double) (vec.X + vec1.X + vec.Y + vec1.Y + vec.Z + vec1.Z);
 	}}
+
+	private static void Test(Vector3<double> vec123) {{}}
+	private static void Test(Vector3<float> vec123) {{}}
+	private static void Test(double x, double y, double z) {{}}
+	private static void Test(float x, float y, float z) {{}}
 
 	public static void {nameof(TAttrTest)}3(Vector3<double> vec, [T] double vec1) {{ }}
 }}

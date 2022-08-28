@@ -6,7 +6,7 @@ namespace Overloader.Entities;
 
 internal sealed class StoreDictionary : IDisposable
 {
-	public bool IsAnyFormatter;
+	public uint FormattersWoIntegrityCount;
 	public bool IsSmthChanged;
 	public bool MemberSkip;
 	public string[]? Modifiers;

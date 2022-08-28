@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
 using Overloader.Utils;
@@ -7,31 +8,56 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 
 internal static class FormatterExtension
 {
-	public static void AppendFormatter(this GeneratorSourceBuilder gsb,
+	public static unsafe string AppendFormatter(this GeneratorSourceBuilder gsb,
 		ITypeSymbol type,
-		string paramName,
-		List<(string, string)> replacementModifiers)
+		string paramName)
 	{
 		if (!gsb.TryGetFormatter(type, out var formatter))
 			throw new ArgumentException();
 
 		if (formatter.Params.Length == 0) throw new ArgumentException();
 		int paramIndex = 0;
-		AppendFormatterParam();
+		int charLengthOfParams = AppendFormatterParam();
+		const string paramsSeparator = ", ";
 		for (paramIndex = 1; paramIndex < formatter.Params.Length; paramIndex++)
 		{
-			gsb.AppendWoTrim(", ");
-			AppendFormatterParam();
+			gsb.AppendWoTrim(paramsSeparator);
+			charLengthOfParams += AppendFormatterParam();
 		}
 
-		void AppendFormatterParam()
+		// To avoid double heapAllocation when using StreamBuilder
+		var bufferLen = charLengthOfParams +
+		                (paramsSeparator.Length * (formatter.Params.Length - 1));
+		var strBuffer = stackalloc char[bufferLen];
+		int index = 0;
+		paramIndex = 0;
+		PushToBuffer(paramName);
+		PushToBuffer(formatter.Params[paramIndex].Name!);
+		for (paramIndex = 1; paramIndex < formatter.Params.Length; paramIndex++)
+		{
+			PushToBuffer(paramsSeparator);
+			PushToBuffer(paramName);
+			PushToBuffer(formatter.Params[paramIndex].Name!);
+		}
+		
+		return new string(strBuffer, 0, bufferLen);
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void PushToBuffer(string str)
+		{
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int strIndex = 0; strIndex < str.Length; strIndex++)
+				strBuffer[index++] = str[strIndex];
+		}
+
+		int AppendFormatterParam()
 		{
 			var formatterParam = formatter.Params[paramIndex];
 			gsb.AppendWith((formatterParam.GetType(gsb.Template) ??
 			                type.GetMemberType(formatterParam.Name!)).ToDisplayString(), " ")
 				.Append(paramName)
 				.Append(formatterParam.Name);
-			replacementModifiers.Add(($"{paramName}.{formatterParam.Name}", $"{paramName}{formatterParam.Name}"));
+			return paramName.Length + formatterParam.Name!.Length;
 		}
 	}
 

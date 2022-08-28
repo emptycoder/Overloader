@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
@@ -62,7 +61,7 @@ internal sealed class GenerateTypeOverloads : IChainObj
 		}
 
 		gsb.Append(")")
-			.WriteMethodBody(entry, ImmutableList<(string From, string To)>.Empty);
+			.WriteMethodBody(entry, Array.Empty<(string, string)>());
 
 		return ChainResult.NextChainMember;
 	}

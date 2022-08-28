@@ -1,6 +1,9 @@
-﻿namespace Overloader.Utils;
+﻿using System.Runtime.InteropServices;
+using Overloader.Entities;
 
-public static class StringExtensions
+namespace Overloader.Utils;
+
+internal static class StringExtensions
 {
 	// ReSharper disable once InconsistentNaming
 	public static (string Key, string Value) SplitAsKV(this ReadOnlySpan<char> data, string separator)

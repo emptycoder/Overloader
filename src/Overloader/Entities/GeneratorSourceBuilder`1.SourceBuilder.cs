@@ -19,6 +19,28 @@ internal partial record GeneratorSourceBuilder
 
 	public GeneratorSourceBuilder Append(string? str, sbyte breakCount = 0) => AppendWoTrim(str?.Trim(), breakCount);
 
+	public GeneratorSourceBuilder Append(ReadOnlySpan<char> str, sbyte breakCount = 0) => AppendWoTrim(str.Trim(), breakCount);
+
+	public GeneratorSourceBuilder AppendWoTrim(ReadOnlySpan<char> str, sbyte breakCount = 0)
+	{
+		if (_nextLine)
+		{
+			for (int index = 0; index < _nestedLevel; index++)
+				_data.Append(PaddingStr);
+			_nextLine = false;
+		}
+
+		for (int index = 0; index < str.Length; index++)
+			_data.Append(str[index]);
+		if (breakCount <= 0) return this;
+
+		for (int index = 0; index < breakCount; index++)
+			_data.Append('\n');
+		_nextLine = true;
+
+		return this;
+	}
+
 	public GeneratorSourceBuilder AppendWoTrim(string? str, sbyte breakCount = 0)
 	{
 		if (_nextLine)

@@ -9,7 +9,7 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
 internal sealed class AnalyzeMethodParams : IChainObj
 {
-	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
+	unsafe ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
 		var parameters = entry.ParameterList.Parameters;
@@ -41,7 +41,8 @@ internal sealed class AnalyzeMethodParams : IChainObj
 			} ?? parameterType;
 
 			gsb.Store.OverloadMap[index] = (parameterAction, newParameterType);
-			gsb.Store.IsAnyFormatter |= parameterAction is ParameterAction.FormatterReplacement;
+			bool isFormatter = parameterAction is ParameterAction.FormatterReplacement;
+			gsb.Store.FormattersWoIntegrityCount += *((byte*) (&isFormatter));
 			gsb.Store.IsSmthChanged |= shouldBeReplaced;
 		}
 

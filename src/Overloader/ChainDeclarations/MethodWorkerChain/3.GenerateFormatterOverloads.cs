@@ -11,7 +11,7 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 {
 	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
 	{
-		if (gsb.Store.OverloadMap is null || gsb.Store.Modifiers is null || !gsb.Store.IsAnyFormatter)
+		if (gsb.Store.OverloadMap is null || gsb.Store.Modifiers is null || gsb.Store.FormattersWoIntegrityCount == 0)
 			return ChainResult.NextChainMember;
 
 		var entry = (MethodDeclarationSyntax) gsb.Entry;
@@ -23,7 +23,8 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 			.Append(entry.Identifier.ToFullString())
 			.Append("(");
 
-		var replacementModifiers = new List<(string, string)>();
+		int replacementVariableIndex = 0;
+		var replacementVariableNames = new (string Replacment, string ConcatedParams)[gsb.Store.FormattersWoIntegrityCount];
 		var parameters = entry.ParameterList.Parameters;
 
 		if (parameters.Count > 0)
@@ -57,9 +58,10 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 						gsb.AppendFormatterIntegrity(mappedParam.Type, parameter);
 						break;
 					case ParameterAction.FormatterReplacement:
-						gsb.AppendFormatter(mappedParam.Type,
-							parameter.Identifier.ToString(),
-							replacementModifiers);
+						var paramName = parameter.Identifier.ToString();
+						// ReSharper disable once IdentifierTypo
+						var concatedParams = gsb.AppendFormatter(mappedParam.Type, paramName);
+						replacementVariableNames[replacementVariableIndex++] = (paramName, concatedParams);
 						break;
 					default:
 						throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.");
@@ -68,7 +70,7 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 		}
 
 		gsb.Append(")")
-			.WriteMethodBody(entry, replacementModifiers);
+			.WriteMethodBody(entry, replacementVariableNames);
 
 		return ChainResult.NextChainMember;
 	}
