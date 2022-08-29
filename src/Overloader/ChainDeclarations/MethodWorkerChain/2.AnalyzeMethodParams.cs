@@ -42,7 +42,7 @@ internal sealed class AnalyzeMethodParams : IChainObj
 
 			gsb.Store.OverloadMap[index] = (parameterAction, newParameterType);
 			bool isFormatter = parameterAction is ParameterAction.FormatterReplacement;
-			gsb.Store.FormattersWoIntegrityCount += *((byte*) (&isFormatter));
+			gsb.Store.FormattersWoIntegrityCount += *(byte*) &isFormatter;
 			gsb.Store.IsSmthChanged |= shouldBeReplaced;
 		}
 

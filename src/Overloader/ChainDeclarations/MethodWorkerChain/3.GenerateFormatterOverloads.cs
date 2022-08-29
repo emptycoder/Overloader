@@ -58,9 +58,9 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 						gsb.AppendFormatterIntegrity(mappedParam.Type, parameter);
 						break;
 					case ParameterAction.FormatterReplacement:
-						var paramName = parameter.Identifier.ToString();
+						string paramName = parameter.Identifier.ToString();
 						// ReSharper disable once IdentifierTypo
-						var concatedParams = gsb.AppendFormatter(mappedParam.Type, paramName);
+						string concatedParams = gsb.AppendFormatter(mappedParam.Type, paramName);
 						replacementVariableNames[replacementVariableIndex++] = (paramName, concatedParams);
 						break;
 					default:

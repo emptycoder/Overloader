@@ -3,7 +3,7 @@ using Overloader.Tests.GeneratorRunner;
 
 namespace Overloader.Tests;
 
-public class FormattersTest
+public class FormatterTests
 {
 	// ReSharper disable once RedundantStringInterpolation
 	private const string DefaultVector3Formatter = @$"

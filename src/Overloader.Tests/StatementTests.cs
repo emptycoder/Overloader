@@ -2,10 +2,10 @@
 
 namespace Overloader.Tests;
 
-public class StatementsTest
+public class StatementTests
 {
 	private const string SomeKindOfComment = "// SOME KIND OF USER COMMENT\n";
-	
+
 	[TestCase("//# \"DEFAULT\" -> \"EXPECTED\"", ExpectedResult = "EXPECTED")]
 	[TestCase("//# \"DEFAULT\" -> \"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
 	[TestCase("//# \"DEFAULT\" -> \"EXPECTED\" : double", ExpectedResult = "DEFAULT")]

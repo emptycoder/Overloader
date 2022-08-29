@@ -26,9 +26,9 @@ internal static class FormatterExtension
 		}
 
 		// To avoid double heapAllocation when using StreamBuilder
-		var bufferLen = charLengthOfParams +
+		int bufferLen = charLengthOfParams +
 		                (paramsSeparator.Length * (formatter.Params.Length - 1));
-		var strBuffer = stackalloc char[bufferLen];
+		char* strBuffer = stackalloc char[bufferLen];
 		int index = 0;
 		paramIndex = 0;
 		PushToBuffer(paramName);
@@ -39,9 +39,9 @@ internal static class FormatterExtension
 			PushToBuffer(paramName);
 			PushToBuffer(formatter.Params[paramIndex].Name!);
 		}
-		
+
 		return new string(strBuffer, 0, bufferLen);
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		void PushToBuffer(string str)
 		{

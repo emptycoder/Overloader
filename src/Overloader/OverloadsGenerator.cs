@@ -7,12 +7,13 @@ using Overloader.ChainDeclarations;
 using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Utils;
-#if DEBUG
+#if DEBUG && !DisableDebugger
 using System.Diagnostics;
 #endif
 
 namespace Overloader;
 
+// TODO: Fix location for errors
 [Generator]
 internal sealed class OverloadsGenerator : ISourceGenerator
 {
@@ -26,7 +27,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 	public void Initialize(GeneratorInitializationContext context)
 	{
-#if DEBUG
+#if DEBUG && !DisableDebugger
 		if (!Debugger.IsAttached) Debugger.Launch();
 #endif
 		context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());

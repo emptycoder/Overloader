@@ -27,15 +27,18 @@ internal partial record GeneratorSourceBuilder : IGeneratorProps
 
 	public void AddToContext()
 	{
-		int partialRev = 0;
-		string source = ToString();
-		AddLoop:
-		try
+		lock (Context.Compilation)
 		{
-			partialRev++;
-			Context.AddSource($"{ClassName}`{partialRev.ToString()}.g.cs", source);
+			int partialRev = 0;
+			string source = ToString();
+			AddLoop:
+			try
+			{
+				partialRev++;
+				Context.AddSource($"{ClassName}`{partialRev.ToString()}.g.cs", source);
+			}
+			catch { goto AddLoop; }
 		}
-		catch { goto AddLoop; }
 	}
 }
 

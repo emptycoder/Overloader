@@ -3,13 +3,12 @@ using Overloader.Tests.GeneratorRunner;
 
 namespace Overloader.Tests;
 
-public class ChangeModifierTest
+public class ChangeModifierTests
 {
 	[Test]
 	public void ModifierTest()
 	{
-		string programCs =
-			@$"
+		const string programCs = @$"
 using Overloader;
 
 namespace TestProject;

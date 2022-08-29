@@ -4,14 +4,13 @@ using Overloader.Tests.GeneratorRunner;
 namespace Overloader.Tests;
 
 // ReSharper disable once InconsistentNaming
-public class TAttributeTest
+public class TAttributeTests
 {
 	[Test]
 	// ReSharper disable once InconsistentNaming
 	public void TAttrTest()
 	{
-		string programCs =
-			@$"
+		const string programCs = @$"
 using Overloader;
 
 namespace TestProject;

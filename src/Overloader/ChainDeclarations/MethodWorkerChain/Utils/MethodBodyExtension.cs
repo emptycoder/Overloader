@@ -39,7 +39,7 @@ internal static class MethodBodyExtension
 
 	private static StringBuilder ToStringVarsReplacement<T>(this StringBuilder sb,
 		T syntaxNode,
-		(string VarName, string ConcatedVars)[] replacements) where T: SyntaxNode
+		(string VarName, string ConcatedVars)[] replacements) where T : SyntaxNode
 	{
 		foreach (var nodeOrToken in syntaxNode.ChildNodesAndTokens())
 		{
@@ -57,9 +57,10 @@ internal static class MethodBodyExtension
 				case MemberAccessExpressionSyntax syntax:
 					if (syntax.Expression is not IdentifierNameSyntax)
 					{
-						throw new ArgumentException(
-							$"Use Integrity attribute on parameter, because argument of object has complex type: {syntax.Expression}");
+						sb.Append(syntax.ToFullString());
+						continue;
 					}
+
 					varName = syntax.Expression.ToString();
 					if (FindReplacement() == -1) goto default;
 					sb.Append(varName).Append(syntax.Name);
@@ -94,7 +95,8 @@ internal static class MethodBodyExtension
 		T node,
 		(string Replacment, string ConcatedParams)[] replacement) where T : SyntaxNode
 	{
-		string strStatementWoTrivia = new StringBuilder()
+		using var sb = StringBuilderPool.GetInstance();
+		string strStatementWoTrivia = sb.Builder
 			.ToStringVarsReplacement(node, replacement)
 			.ToString();
 		if (!node.HasLeadingTrivia) return gsb;

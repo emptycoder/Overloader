@@ -5,7 +5,7 @@ using Overloader.Tests.GeneratorRunner;
 
 namespace Overloader.Tests;
 
-public class OverloadAttributesTest
+public class OverloadAttributeTests
 {
 	[TestCase("public", "public", "static")]
 	[TestCase("internal", "internal", "static")]
