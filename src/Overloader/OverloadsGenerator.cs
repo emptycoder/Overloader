@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 using Overloader.ChainDeclarations;
 using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Exceptions;
 using Overloader.Utils;
 #if DEBUG && !DisableDebugger
 using System.Diagnostics;
@@ -13,7 +14,6 @@ using System.Diagnostics;
 
 namespace Overloader;
 
-// TODO: Fix location for errors
 [Generator]
 internal sealed class OverloadsGenerator : ISourceGenerator
 {
@@ -91,11 +91,23 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 			tasks.ForEach(task => task.Wait());
 #endif
 		}
-		catch (Exception ex)
+		catch (LocationException ex)
 		{
 			context.ReportDiagnostic(Diagnostic.Create(
 				new DiagnosticDescriptor(
 					$"{nameof(Overloader)[0]}-0001",
+					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)}",
+					ex.ToString(),
+					nameof(Overloader),
+					DiagnosticSeverity.Error,
+					true),
+				ex.Location));
+		}
+		catch (Exception ex)
+		{
+			context.ReportDiagnostic(Diagnostic.Create(
+				new DiagnosticDescriptor(
+					$"{nameof(Overloader)[0]}-0002",
 					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)}",
 					ex.ToString(),
 					nameof(Overloader),
@@ -133,9 +145,11 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 					className = args.Count switch
 					{
 						1 => className,
-						2 => throw new ArgumentException($"Must be set regex replacement parameter for {Attributes.OverloadAttr}."),
+						2 => throw new ArgumentException($"Must be set regex replacement parameter for {Attributes.OverloadAttr}.")
+							.WithLocation(attribute.GetLocation()),
 						3 => Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText()),
 						_ => throw new ArgumentException($"Unexpected count of args for {Attributes.OverloadAttr}.")
+							.WithLocation(attribute.GetLocation())
 					};
 
 					typeEntry.OverloadTypes.Add((className, args[0]));

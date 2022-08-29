@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
+using Overloader.Exceptions;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
@@ -49,7 +50,8 @@ internal static class MethodBodyExtension
 				continue;
 			}
 
-			var node = nodeOrToken.AsNode() ?? throw new ArgumentException("Unexpected exception. Node isn't node.");
+			var node = nodeOrToken.AsNode() ?? throw new ArgumentException("Unexpected exception. Node isn't node.")
+				.WithLocation(nodeOrToken.GetLocation() ?? Location.None);
 
 			string varName;
 			switch (node)

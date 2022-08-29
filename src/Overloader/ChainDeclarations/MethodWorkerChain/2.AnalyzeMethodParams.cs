@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Exceptions;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
@@ -18,7 +19,8 @@ internal sealed class AnalyzeMethodParams : IChainObj
 		{
 			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(gsb, out var attribute, out bool forceOverloadIntegrity);
 			var parameterType = (parameters[index].Type ?? throw new ArgumentException(
-					$"Parameter {parameters[index].Identifier} type is null."))
+					$"Parameter {parameters[index].Identifier} type is null.")
+					.WithLocation(parameters[index].GetLocation()))
 				.GetType(gsb.Compilation);
 
 			var parameterAction = shouldBeReplaced switch

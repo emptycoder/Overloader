@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
+using Overloader.Exceptions;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
@@ -13,9 +14,11 @@ internal static class FormatterExtension
 		string paramName)
 	{
 		if (!gsb.TryGetFormatter(type, out var formatter))
-			throw new ArgumentException();
+			throw new ArgumentException(
+				$"Can't get formatter for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}.");
 
-		if (formatter.Params.Length == 0) throw new ArgumentException();
+		if (formatter.Params.Length == 0) throw new ArgumentException(
+			$"Params count equals to 0 for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}");
 		int paramIndex = 0;
 		int charLengthOfParams = AppendFormatterParam();
 		const string paramsSeparator = ", ";
@@ -64,14 +67,16 @@ internal static class FormatterExtension
 	public static void AppendFormatterIntegrity(this GeneratorSourceBuilder gsb, ITypeSymbol type, ParameterSyntax parameterSyntax)
 	{
 		if (!gsb.TryGetFormatter(type, out var formatter))
-			throw new ArgumentException($"Can't get formatter by key: {type}.");
+			throw new ArgumentException($"Can't get formatter by key: {type}.")
+				.WithLocation(parameterSyntax.GetLocation());
 
 		var originalType = (INamedTypeSymbol) type.OriginalDefinition;
 		var @params = new ITypeSymbol[formatter.GenericParams.Length];
 
 		for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 			@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
-				$"Can't get type of formatter param (key: {type}) by index {paramIndex}.");
+				$"Can't get type of formatter param (key: {type}) by index {paramIndex}.")
+				.WithLocation(parameterSyntax.GetLocation());
 
 		gsb.AppendWith(parameterSyntax.Modifiers.ToFullString(), " ")
 			.AppendWith(originalType.Construct(@params).ToDisplayString(), " ")

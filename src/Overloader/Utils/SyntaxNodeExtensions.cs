@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
+using Overloader.Exceptions;
 using Overloader.Formatters;
 using Overloader.Formatters.Params;
 
@@ -86,11 +87,8 @@ internal static class SyntaxNodeExtensions
 		IdentifierNameSyntax identifierSyntax => identifierSyntax.Identifier.ValueText,
 		// [namespace.name]
 		QualifiedNameSyntax qualifiedNameSyntax => qualifiedNameSyntax.Right.Identifier.ValueText,
-		_ => throw new ArgumentException("Unknown attribute.")
+		_ => throw new ArgumentException("Unknown attribute.").WithLocation(nameSyntax.GetLocation())
 	};
-
-	public static string GetInnerText(this ExpressionSyntax expressionSyntax) =>
-		expressionSyntax.GetText().GetInnerText();
 
 	public static SyntaxNode GetTopParent(this SyntaxNode syntax)
 	{
@@ -114,7 +112,7 @@ internal static class SyntaxNodeExtensions
 
 		var semanticModel = compilation.GetSemanticModel(node.SyntaxTree);
 		return semanticModel.GetTypeInfo(node).Type ??
-		       throw new ArgumentException("Type not found.");
+		       throw new ArgumentException("Type not found.").WithLocation(node.GetLocation());
 	}
 
 	public static Dictionary<ITypeSymbol, Formatter> GetFormatters(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
@@ -124,8 +122,10 @@ internal static class SyntaxNodeExtensions
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
 			var args = formatterSyntax.ArgumentList?.Arguments ??
-			           throw new ArgumentException("Argument list for formatter can't be null.");
-			if (args.Count != 3) throw new ArgumentException("Not enough parameters for formatter.");
+			           throw new ArgumentException("Argument list for formatter can't be null.")
+				           .WithLocation(formatterSyntax.GetLocation());
+			if (args.Count != 3) throw new ArgumentException("Not enough parameters for formatter.")
+				.WithLocation(formatterSyntax.GetLocation());
 
 			var type = args[0].GetType(compilation);
 			if (!type.IsDefinition) type = type.OriginalDefinition;
@@ -143,7 +143,8 @@ internal static class SyntaxNodeExtensions
 	{
 		if (initializer is null) return Array.Empty<IParam>();
 		if (withNames && initializer.Expressions.Count % 2 != 0)
-			throw new ArgumentException($"Problem with count of expressions for named array in {initializer}.");
+			throw new ArgumentException($"Problem with count of expressions for named array in {initializer}.")
+				.WithLocation(initializer.GetLocation());
 
 		var @params = new IParam[withNames ? initializer.Expressions.Count / 2 : initializer.Expressions.Count];
 		string? name = null;
@@ -152,7 +153,9 @@ internal static class SyntaxNodeExtensions
 		{
 			if (withNames)
 			{
-				if (initializer.Expressions[index] is not LiteralExpressionSyntax str) throw new ArgumentException();
+				if (initializer.Expressions[index] is not LiteralExpressionSyntax str)
+					throw new ArgumentException("Expression isn't LiteralExpressionSyntax.")
+						.WithLocation(initializer.GetLocation());
 				name = str.GetInnerText();
 				index++;
 			}
@@ -171,9 +174,11 @@ internal static class SyntaxNodeExtensions
 				return TemplateParam.Create(name);
 			case TypeOfExpressionSyntax typeSyntax:
 				return TypeParam.Create(typeSyntax.GetType(compilation), name);
-			case ImplicitArrayCreationExpressionSyntax @switch:
-				var expressions = @switch.Initializer.Expressions;
-				if (expressions.Count == 0 || expressions.Count % 2 != 0) throw new ArgumentException();
+			case ImplicitArrayCreationExpressionSyntax implicitArrayCreationExpressionSyntax:
+				var expressions = implicitArrayCreationExpressionSyntax.Initializer.Expressions;
+				if (expressions.Count == 0 || expressions.Count % 2 != 0)
+					throw new ArgumentException("expressions.Count == 0 || expressions.Count % 2 != 0")
+						.WithLocation(implicitArrayCreationExpressionSyntax.GetLocation());
 
 				var switchDict = new Dictionary<ITypeSymbol, IParam>(expressions.Count / 2, SymbolEqualityComparer.Default);
 				for (int switchParamIndex = 0; switchParamIndex < expressions.Count; switchParamIndex += 2)
@@ -181,14 +186,16 @@ internal static class SyntaxNodeExtensions
 					var value = ParseParam(expressions[switchParamIndex + 1], compilation, name);
 					if (value is SwitchParam)
 						throw new ArgumentException(
-							$"Switch statement in switch statement was detected in {expressionSyntax.ToString()}.");
+							$"Switch statement in switch statement was detected in {expressionSyntax.ToString()}.")
+							.WithLocation(expressions[switchParamIndex + 1].GetLocation());
 					switchDict.Add(expressions[switchParamIndex].GetType(compilation), value);
 				}
 
 				return SwitchParam.Create(switchDict, name);
 			default:
 				throw new ArgumentException(
-					$"Can't recognize syntax when try to parse parameter in {expressionSyntax.ToString()}.");
+					$"Can't recognize syntax when try to parse parameter in {expressionSyntax.ToString()}.")
+					.WithLocation(expressionSyntax.GetLocation());
 		}
 	}
 

@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Exceptions;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
@@ -64,7 +65,8 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 						replacementVariableNames[replacementVariableIndex++] = (paramName, concatedParams);
 						break;
 					default:
-						throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.");
+						throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.")
+							.WithLocation(parameter.GetLocation());
 				}
 			}
 		}

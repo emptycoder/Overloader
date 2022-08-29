@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Overloader.Exceptions;
 
 namespace Overloader.Tests.GeneratorRunner;
 
@@ -15,8 +16,7 @@ public static class GenRunner<T> where T : ISourceGenerator, new()
 		string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 		string netstandardLibPath = $@"{userFolder}\.nuget\packages\netstandard.library\2.0.0\build\netstandard2.0\ref\netstandard.dll";
 		if (!File.Exists(netstandardLibPath))
-			throw new ArgumentException(
-				$".netstandard 2.0 not found using next path: {netstandardLibPath}");
+			throw new ArgumentException($".netstandard 2.0 not found using next path: {netstandardLibPath}");
 
 		return CSharpCompilation.Create(
 			"compilation",

@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Exceptions;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
@@ -65,7 +66,8 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 
 						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
-								$"Can't get type of formatter param (key: {returnTypeSymbol}) by index {paramIndex}.");
+								$"Can't get type of formatter param (key: {returnTypeSymbol}) by index {paramIndex}.")
+								.WithLocation(attribute.GetLocation());
 
 						var originalType = (INamedTypeSymbol) returnTypeSymbol.OriginalDefinition;
 						gsb.Store.ReturnType = originalType.Construct(@params);
@@ -76,13 +78,15 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						gsb.Store.IsSmthChanged = true;
 						break;
 					default:
-						throw new ArgumentException($"Unexpected count of arguments in {Attributes.TAttr}.");
+						throw new ArgumentException($"Unexpected count of arguments in {Attributes.TAttr}.")
+							.WithLocation(attribute.GetLocation());
 				}
 			}
 			else if (attrName == Attributes.ChangeModifierAttr)
 			{
 				if ((attribute.ArgumentList?.Arguments.Count ?? 0) <= 1)
-					throw new ArgumentException($"Unexpected count of arguments in {Attributes.ChangeModifierAttr}.");
+					throw new ArgumentException($"Unexpected count of arguments in {Attributes.ChangeModifierAttr}.")
+						.WithLocation(attribute.GetLocation());
 
 				var arguments = attribute.ArgumentList!.Arguments;
 				if (arguments.Count == 3 && !arguments[2].EqualsToTemplate(gsb)) continue;

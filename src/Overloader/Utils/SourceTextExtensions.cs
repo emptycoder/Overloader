@@ -1,15 +1,20 @@
-﻿using Microsoft.CodeAnalysis.Text;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+using Overloader.Exceptions;
 
 namespace Overloader.Utils;
 
 internal static class SourceTextExtensions
 {
-	public static string GetInnerText(this SourceText sourceText)
+	public static string GetInnerText(this ExpressionSyntax expressionSyntax)
 	{
+		var sourceText = expressionSyntax.GetText();
 		int startPos = sourceText.IndexOf('"') + 1;
 		int endPos = sourceText.LastIndexOf('"');
 
-		if (startPos >= endPos) throw new ArgumentException($"Can't get inner text for {sourceText}");
+		if (startPos >= endPos) throw new ArgumentException($"Can't get inner text for {sourceText}")
+			.WithLocation(expressionSyntax.GetLocation());
 
 		return sourceText.GetSubText(new TextSpan(startPos, endPos - startPos)).ToString();
 	}

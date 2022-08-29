@@ -33,6 +33,7 @@ namespace Overloader.Examples
 		{
 			vec1.X += vec2.X;
 			vec1.Y += vec2.Y;
+			Console.WriteLine("dd");
 
 			return ref vec1;
 		}
