@@ -94,10 +94,9 @@ internal static class MethodBodyExtension
 		T node,
 		(string Replacment, string ConcatedParams)[] replacement) where T : SyntaxNode
 	{
-		string strStatementWoTrivia = StringBuilderCache.Acquire()
-			.Result
+		string strStatementWoTrivia = new StringBuilder()
 			.ToStringVarsReplacement(node, replacement)
-			.GetAndReturn();
+			.ToString();
 		if (!node.HasLeadingTrivia) return gsb;
 
 		foreach (var syntaxTrivia in node.GetLeadingTrivia())
