@@ -135,4 +135,67 @@ internal class Program
 		Assert.That(resultObj is string, Is.True);
 		return (string) resultObj!;
 	}
+
+	[Test]
+	public void MethodParamsOverload()
+	{
+		const string programCs = @$"
+using {nameof(Overloader)};
+
+namespace TestProject;
+
+[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+internal class Program
+{{
+	static void Main(string[] args) {{ }}
+}}
+
+[{Attributes.FormatterAttr}(typeof(TestProject.Vector3<>),
+			new object[] {{""T""}},
+			new object[]
+			{{
+				""X"", ""T"",
+				""Y"", typeof(double),
+				""Z"", new[]
+				{{
+					typeof(float), typeof(double),
+					typeof(double), typeof(long)
+				}}
+			}})]
+[Overload(typeof(float), ""3D"", ""3F"")]
+public static class Vec3DExt
+{{
+	[return: T]
+	public static double AngleCos([Integrity][T] this ref Vector3<double> current, [T] in Vector3<double> vector)
+	{{
+		// TEST
+		return 0;
+	}}
+
+	[return: T]
+	public static double Angle([Integrity][T] this ref Vector3<double> current, [T] in Vector3<double> vector)
+	{{
+		return AngleCos(ref current, in vector);
+	}}
+}}
+
+public struct Vector3<T>
+{{
+	public double X;
+	public T Y {{ get; set; }}
+	internal T Z {{ get; private set; }}
+}}
+";
+
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+
+		var assembly = result.Compilation.ToAssembly();
+		int methodsCount = assembly.DefinedTypes
+			.Where(type => type.Name != "Program")
+			.SelectMany(type => type.DeclaredMethods)
+			.Sum(method => Convert.ToSByte(method.Name.Equals("Angle")));
+		Assert.That(methodsCount, Is.EqualTo(3));
+	}
 }

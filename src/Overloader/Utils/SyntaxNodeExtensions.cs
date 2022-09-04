@@ -124,8 +124,9 @@ internal static class SyntaxNodeExtensions
 			var args = formatterSyntax.ArgumentList?.Arguments ??
 			           throw new ArgumentException("Argument list for formatter can't be null.")
 				           .WithLocation(formatterSyntax.GetLocation());
-			if (args.Count != 3) throw new ArgumentException("Not enough parameters for formatter.")
-				.WithLocation(formatterSyntax.GetLocation());
+			if (args.Count != 3)
+				throw new ArgumentException("Not enough parameters for formatter.")
+					.WithLocation(formatterSyntax.GetLocation());
 
 			var type = args[0].GetType(compilation);
 			if (!type.IsDefinition) type = type.OriginalDefinition;
@@ -186,7 +187,7 @@ internal static class SyntaxNodeExtensions
 					var value = ParseParam(expressions[switchParamIndex + 1], compilation, name);
 					if (value is SwitchParam)
 						throw new ArgumentException(
-							$"Switch statement in switch statement was detected in {expressionSyntax.ToString()}.")
+								$"Switch statement in switch statement was detected in {expressionSyntax.ToString()}.")
 							.WithLocation(expressions[switchParamIndex + 1].GetLocation());
 					switchDict.Add(expressions[switchParamIndex].GetType(compilation), value);
 				}
@@ -194,7 +195,7 @@ internal static class SyntaxNodeExtensions
 				return SwitchParam.Create(switchDict, name);
 			default:
 				throw new ArgumentException(
-					$"Can't recognize syntax when try to parse parameter in {expressionSyntax.ToString()}.")
+						$"Can't recognize syntax when try to parse parameter in {expressionSyntax.ToString()}.")
 					.WithLocation(expressionSyntax.GetLocation());
 		}
 	}

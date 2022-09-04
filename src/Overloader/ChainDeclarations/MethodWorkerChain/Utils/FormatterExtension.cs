@@ -17,8 +17,9 @@ internal static class FormatterExtension
 			throw new ArgumentException(
 				$"Can't get formatter for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}.");
 
-		if (formatter.Params.Length == 0) throw new ArgumentException(
-			$"Params count equals to 0 for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}");
+		if (formatter.Params.Length == 0)
+			throw new ArgumentException(
+				$"Params count equals to 0 for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}");
 		int paramIndex = 0;
 		int charLengthOfParams = AppendFormatterParam();
 		const string paramsSeparator = ", ";
@@ -75,7 +76,7 @@ internal static class FormatterExtension
 
 		for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 			@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
-				$"Can't get type of formatter param (key: {type}) by index {paramIndex}.")
+					$"Can't get type of formatter param (key: {type}) by index {paramIndex}.")
 				.WithLocation(parameterSyntax.GetLocation());
 
 		gsb.AppendWith(parameterSyntax.Modifiers.ToFullString(), " ")

@@ -19,7 +19,7 @@ internal sealed class AnalyzeMethodParams : IChainObj
 		{
 			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(gsb, out var attribute, out bool forceOverloadIntegrity);
 			var parameterType = (parameters[index].Type ?? throw new ArgumentException(
-					$"Parameter {parameters[index].Identifier} type is null.")
+						$"Parameter {parameters[index].Identifier} type is null.")
 					.WithLocation(parameters[index].GetLocation()))
 				.GetType(gsb.Compilation);
 

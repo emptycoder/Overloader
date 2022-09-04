@@ -1,6 +1,4 @@
-﻿using Overloader.Exceptions;
-
-namespace Overloader.Utils;
+﻿namespace Overloader.Utils;
 
 internal static class StringExtensions
 {

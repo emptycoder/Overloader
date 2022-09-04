@@ -46,7 +46,7 @@ internal static class MethodBodyExtension
 		{
 			if (!nodeOrToken.IsNode)
 			{
-				sb.Append(nodeOrToken.ToFullString());
+				sb.Append(nodeOrToken.HasLeadingTrivia ? nodeOrToken.WithLeadingTrivia().ToFullString() : nodeOrToken.ToFullString());
 				continue;
 			}
 
@@ -63,12 +63,13 @@ internal static class MethodBodyExtension
 						continue;
 					}
 
+					// Don't need go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
 					if (FindReplacement() == -1) goto default;
 					sb.Append(varName).Append(syntax.Name);
 					break;
 				case ArgumentSyntax argSyntax:
-					varName = argSyntax.ToString();
+					varName = argSyntax.Expression.ToString();
 					int replacementIndex = FindReplacement();
 					if (replacementIndex == -1) goto default;
 					sb.Append(replacements[replacementIndex].ConcatedVars);
