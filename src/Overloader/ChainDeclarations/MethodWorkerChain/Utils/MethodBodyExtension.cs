@@ -102,7 +102,7 @@ internal static class MethodBodyExtension
 		string strStatementWoTrivia = sb.Builder
 			.ToStringVarsReplacement(node, replacement)
 			.ToString();
-		if (!node.HasLeadingTrivia) return gsb;
+		if (!node.HasLeadingTrivia) return gsb.Append(strStatementWoTrivia);
 
 		foreach (var syntaxTrivia in node.GetLeadingTrivia())
 		{
