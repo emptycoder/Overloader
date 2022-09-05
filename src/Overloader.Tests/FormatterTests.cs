@@ -30,10 +30,16 @@ public class FormatterTests
 				""Y"", ""T"",
 				""Z"", ""T""
 			}}";
+	
+	// ReSharper disable once RedundantStringInterpolation
+	private const string Vector3WithoutParams = $@"
+		typeof(TestProject.Vector3<>),
+			new object[] {{""T""}},
+			new object[] {{ }}";
 
-	[TestCase(DefaultVector3Formatter, null, TestName = "Global formatter")]
-	[TestCase(null, DefaultVector3Formatter, TestName = "Formatter")]
-	[TestCase(FakeVector3Formatter, DefaultVector3Formatter, TestName = "Order of formatters")]
+	[TestCase(DefaultVector3Formatter, null, TestName = "F: Global formatter")]
+	[TestCase(null, DefaultVector3Formatter, TestName = "F: Formatter")]
+	[TestCase(FakeVector3Formatter, DefaultVector3Formatter, TestName = "F: Order of formatters")]
 	public void FormatterTest(string? globalFormatter, string? formatter)
 	{
 		string programCs =
@@ -87,5 +93,46 @@ internal struct Vector3<T>
 
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
+	}
+	
+	[TestCase(Vector3WithoutParams, null, TestName = "AP: Global formatter")]
+	[TestCase(null, Vector3WithoutParams, TestName = "AP: Formatter")]
+	public void AutoParamIntegrityTest(string? globalFormatter, string? formatter)
+	{
+		string programCs =
+			@$"
+using System;
+using Overloader;
+
+{(globalFormatter is not null ? $"[assembly: {Attributes.FormatterAttr}({globalFormatter})]" : string.Empty)}
+
+namespace TestProject;
+
+{(formatter is not null ? $"[{Attributes.FormatterAttr}({formatter})]" : string.Empty)}
+[{Attributes.OverloadAttr}(typeof(float))]
+internal partial class Program
+{{
+	static void Main(string[] args) {{ }}
+
+	public static void {nameof(AutoParamIntegrityTest)}([T] Vector3<double> vec) {{ }}
+}}
+
+internal struct Vector3<T>
+{{
+	public double X;
+	public T Y {{ get; set; }}
+	internal T Z {{ get; private set; }}
+}}
+";
+		
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+
+		var countOfMethods = result.Result.GeneratedTrees.Where(generatedTree =>
+				!Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs"))
+			.SelectMany(generatedTree => generatedTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>())
+			.Sum(method => Convert.ToByte(method.Identifier.ToString().Equals(nameof(AutoParamIntegrityTest))));
+		Assert.That(countOfMethods, Is.EqualTo(1));
 	}
 }

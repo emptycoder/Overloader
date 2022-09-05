@@ -142,7 +142,7 @@ internal static class SyntaxNodeExtensions
 
 	private static IParam[] ParseParams(InitializerExpressionSyntax? initializer, Compilation compilation, bool withNames)
 	{
-		if (initializer is null) return Array.Empty<IParam>();
+		if (initializer is null || initializer.Expressions.Count == 0) return Array.Empty<IParam>();
 		if (withNames && initializer.Expressions.Count % 2 != 0)
 			throw new ArgumentException($"Problem with count of expressions for named array in {initializer}.")
 				.WithLocation(initializer.GetLocation());
