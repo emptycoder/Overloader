@@ -31,18 +31,20 @@ internal readonly struct Formatter
 		var type = args[0].GetType(compilation);
 		var namedTypeSymbol = type.GetRootType();
 		if (namedTypeSymbol.IsUnboundGenericType) type = type.OriginalDefinition;
-		
-		if (args[1].Expression is not ArrayCreationExpressionSyntax arg1) throw new ArgumentException(
+
+		if (args[1].Expression is not ArrayCreationExpressionSyntax arg1)
+			throw new ArgumentException(
 				$"Arg1 of formatter must be {nameof(ArrayCreationExpressionSyntax)}");
-		if (args[2].Expression is not ArrayCreationExpressionSyntax arg2) throw new ArgumentException(
-			$"Arg2 of formatter must be {nameof(ArrayCreationExpressionSyntax)}");
+		if (args[2].Expression is not ArrayCreationExpressionSyntax arg2)
+			throw new ArgumentException(
+				$"Arg2 of formatter must be {nameof(ArrayCreationExpressionSyntax)}");
 
 		var genericParams = ParseParams(arg1.Initializer, compilation, false);
 		var @params = ParseParams(arg2.Initializer, compilation, true);
 
 		return (type, new Formatter(genericParams, @params));
 	}
-	
+
 	private static IParam[] ParseParams(InitializerExpressionSyntax? initializer, Compilation compilation, bool withNames)
 	{
 		if (initializer is null || initializer.Expressions.Count == 0) return Array.Empty<IParam>();

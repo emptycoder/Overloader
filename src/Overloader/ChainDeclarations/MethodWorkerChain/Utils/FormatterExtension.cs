@@ -78,12 +78,12 @@ internal static class FormatterExtension
 				paramType = gsb.GoDeeper(paramType, paramType);
 				var paramRootType = paramType.GetRootType();
 				if (!paramRootType.IsUnboundGenericType) return paramType;
-				
+
 				var typeParameters = new ITypeSymbol[paramRootType.TypeParameters.Length];
 				for (int typeParamIndex = 0; typeParamIndex < typeParameters.Length; typeParamIndex++)
 					typeParameters[typeParamIndex] = gsb.Template ?? throw new Exception(
 						"Unexpected declaration of unbound generic in method.");
-				
+
 				return paramType.SetRootType(paramRootType.OriginalDefinition.Construct(typeParameters), gsb.Compilation);
 			}
 		}

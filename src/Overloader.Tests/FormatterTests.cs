@@ -30,7 +30,7 @@ public class FormatterTests
 				""Y"", ""T"",
 				""Z"", ""T""
 			}}";
-	
+
 	// ReSharper disable once RedundantStringInterpolation
 	private const string Vector3WithoutParams = $@"
 		typeof(TestProject.Vector3<>),
@@ -94,7 +94,7 @@ internal struct Vector3<T>
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
 	}
-	
+
 	[TestCase(Vector3WithoutParams, null, TestName = "AP: Global formatter")]
 	[TestCase(null, Vector3WithoutParams, TestName = "AP: Formatter")]
 	public void AutoParamIntegrityTest(string? globalFormatter, string? formatter)
@@ -124,12 +124,12 @@ internal struct Vector3<T>
 	internal T Z {{ get; private set; }}
 }}
 ";
-		
+
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
-		var countOfMethods = result.Result.GeneratedTrees.Where(generatedTree =>
+		int countOfMethods = result.Result.GeneratedTrees.Where(generatedTree =>
 				!Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs"))
 			.SelectMany(generatedTree => generatedTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>())
 			.Sum(method => Convert.ToByte(method.Identifier.ToString().Equals(nameof(AutoParamIntegrityTest))));
@@ -168,7 +168,7 @@ internal struct Vector3<T>
 	internal T Z {{ get; private set; }}
 }}
 ";
-		
+
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);

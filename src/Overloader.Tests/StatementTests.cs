@@ -163,7 +163,7 @@ internal class Program
 			.Where(type => type.Name != "Program")
 			.SelectMany(type => type.DeclaredMethods)
 			.Single(method => method.Name.Contains(nameof(ArrowTokenSingleLineProblemTest)));
-		
+
 		Assert.That(method, Is.Not.Null);
 		object? resultObj = method.Invoke(null, null);
 		Assert.That(resultObj, Is.Not.Null);

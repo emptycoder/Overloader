@@ -69,7 +69,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
 									$"Can't get type of formatter param (key: {returnTypeSymbol}) by index {paramIndex}.")
 								.WithLocation(attribute.GetLocation());
-						
+
 						gsb.Store.ReturnType = returnTypeSymbol.SetRootType(
 							returnTypeSymbolRoot
 								.OriginalDefinition
