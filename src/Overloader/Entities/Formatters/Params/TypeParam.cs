@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Overloader.Formatters.Params;
+namespace Overloader.Entities.Formatters.Params;
 
 internal sealed class TypeParam : IParam
 {

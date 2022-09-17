@@ -52,7 +52,8 @@ internal sealed class GenerateFormatterOverloads : IChainObj
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
-						gsb.AppendWith(mappedParam.Type.ToDisplayString(), " ")
+						gsb.AppendWith(parameter.Type!.GetType(gsb.Compilation)
+								.SetRootType(mappedParam.Type, gsb.Compilation).ToDisplayString(), " ")
 							.Append(parameter.Identifier.ToString());
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:

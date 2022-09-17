@@ -48,6 +48,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 			else if (attrName == Attributes.TAttr)
 			{
 				var returnTypeSymbol = entry.ReturnType.GetType(gsb.Compilation);
+				var returnTypeSymbolRoot = returnTypeSymbol.GetRootType();
 				switch (attribute.ArgumentList?.Arguments.Count ?? 0)
 				{
 					case 1:
@@ -61,16 +62,19 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						break;
 					case 0 when gsb.Template is null:
 						break;
-					case 0 when gsb.TryGetFormatter(returnTypeSymbol, out var formatter):
+					case 0 when gsb.TryGetFormatter(returnTypeSymbolRoot, out var formatter):
 						var @params = new ITypeSymbol[formatter.GenericParams.Length];
 
 						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
 									$"Can't get type of formatter param (key: {returnTypeSymbol}) by index {paramIndex}.")
 								.WithLocation(attribute.GetLocation());
-
-						var originalType = (INamedTypeSymbol) returnTypeSymbol.OriginalDefinition;
-						gsb.Store.ReturnType = originalType.Construct(@params);
+						
+						gsb.Store.ReturnType = returnTypeSymbol.SetRootType(
+							returnTypeSymbolRoot
+								.OriginalDefinition
+								.Construct(@params),
+							gsb.Compilation);
 						gsb.Store.IsSmthChanged = true;
 						break;
 					case 0:

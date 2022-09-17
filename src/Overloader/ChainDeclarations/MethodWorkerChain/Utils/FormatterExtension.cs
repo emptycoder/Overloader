@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
-using Overloader.Exceptions;
+using Overloader.Entities.Formatters.Params;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
@@ -13,13 +13,20 @@ internal static class FormatterExtension
 		ITypeSymbol type,
 		string paramName)
 	{
-		if (!gsb.TryGetFormatter(type, out var formatter))
+		var rootType = type.GetRootType();
+		if (!gsb.TryGetFormatter(rootType, out var formatter))
 			throw new ArgumentException(
 				$"Can't get formatter for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}.");
 
 		if (formatter.Params.Length == 0)
 			throw new ArgumentException(
 				$"Params count equals to 0 for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}");
+
+		var @params = rootType.TypeArguments.ToArray();
+		if (@params.Length != formatter.GenericParams.Length)
+			throw new ArgumentException(
+				$"Different generic params in formatter ({formatter.GenericParams.Length}) and type ({@params.Length})");
+
 		int paramIndex = 0;
 		int charLengthOfParams = AppendFormatterParam();
 		const string paramsSeparator = ", ";
@@ -29,7 +36,7 @@ internal static class FormatterExtension
 			charLengthOfParams += AppendFormatterParam();
 		}
 
-		// To avoid double heapAllocation when using StreamBuilder
+		// To avoid additional heapAllocation from StringBuilder
 		int bufferLen = charLengthOfParams +
 		                (paramsSeparator.Length * (formatter.Params.Length - 1));
 		char* strBuffer = stackalloc char[bufferLen];
@@ -56,31 +63,54 @@ internal static class FormatterExtension
 
 		int AppendFormatterParam()
 		{
-			var formatterParam = formatter.Params[paramIndex];
-			gsb.AppendWith((formatterParam.GetType(gsb.Template) ??
-			                type.GetMemberType(formatterParam.Name!)).ToDisplayString(), " ")
+			// ReSharper disable once SuggestVarOrType_SimpleTypes
+			// Broken var type specified as IParam?
+			IParam formatterParam = formatter.Params[paramIndex];
+			gsb.AppendWith(GetDeeperType().ToDisplayString(), " ")
 				.Append(paramName)
 				.Append(formatterParam.Name);
 			return paramName.Length + formatterParam.Name!.Length;
+
+			ITypeSymbol GetDeeperType()
+			{
+				var paramType = formatterParam.GetType(gsb.Template) ??
+				                type.GetMemberType(formatterParam.Name!);
+				paramType = gsb.GoDeeper(paramType, paramType);
+				var paramRootType = paramType.GetRootType();
+				if (!paramRootType.IsUnboundGenericType) return paramType;
+				
+				var typeParameters = new ITypeSymbol[paramRootType.TypeParameters.Length];
+				for (int typeParamIndex = 0; typeParamIndex < typeParameters.Length; typeParamIndex++)
+					typeParameters[typeParamIndex] = gsb.Template ?? throw new Exception(
+						"Unexpected declaration of unbound generic in method.");
+				
+				return paramType.SetRootType(paramRootType.OriginalDefinition.Construct(typeParameters), gsb.Compilation);
+			}
 		}
 	}
 
-	public static void AppendFormatterIntegrity(this GeneratorSourceBuilder gsb, ITypeSymbol type, ParameterSyntax parameterSyntax)
-	{
-		if (!gsb.TryGetFormatter(type, out var formatter))
-			throw new ArgumentException($"Can't get formatter by key: {type}.")
-				.WithLocation(parameterSyntax.GetLocation());
+	public static void AppendFormatterIntegrity(this GeneratorSourceBuilder gsb, ITypeSymbol type, ParameterSyntax parameterSyntax) =>
+		gsb.AppendWith(parameterSyntax.Modifiers.ToFullString(), " ")
+			.AppendWith(gsb.GoDeeper(type, gsb.Template ?? type).ToDisplayString(), " ")
+			.Append(parameterSyntax.Identifier.ToFullString());
 
-		var originalType = (INamedTypeSymbol) type.OriginalDefinition;
-		var @params = new ITypeSymbol[formatter.GenericParams.Length];
+	private static ITypeSymbol GoDeeper(this GeneratorSourceBuilder gsb, ITypeSymbol argType, ITypeSymbol paramType)
+	{
+		var rootType = argType.GetRootType();
+		if (!rootType.IsGenericType || !gsb.TryGetFormatter(rootType, out var formatter)) return paramType;
+
+		var @params = rootType.TypeArguments.ToArray();
+		if (@params.Length != formatter.GenericParams.Length)
+			throw new ArgumentException(
+				$"Different generic params in formatter ({formatter.GenericParams.Length}) and type ({@params.Length})");
 
 		for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
-			@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
-					$"Can't get type of formatter param (key: {type}) by index {paramIndex}.")
-				.WithLocation(parameterSyntax.GetLocation());
+		{
+			@params[paramIndex] = gsb.GoDeeper(@params[paramIndex],
+				formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
+					$"Can't get type of formatter param (key: {argType}) by index {paramIndex}."));
+		}
 
-		gsb.AppendWith(parameterSyntax.Modifiers.ToFullString(), " ")
-			.AppendWith(originalType.Construct(@params).ToDisplayString(), " ")
-			.Append(parameterSyntax.Identifier.ToFullString());
+		return argType.SetRootType(rootType.OriginalDefinition.Construct(@params), gsb.Compilation);
 	}
 }

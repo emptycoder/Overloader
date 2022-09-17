@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Overloader.Formatters;
+using Overloader.Entities.Formatters;
 
 namespace Overloader.Entities;
 

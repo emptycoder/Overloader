@@ -25,8 +25,8 @@ internal sealed class AnalyzeMethodParams : IChainObj
 
 			var parameterAction = shouldBeReplaced switch
 			{
-				true when gsb.TryGetFormatter(parameterType, out var formatter) =>
-					forceOverloadIntegrity || formatter.Params.Length == 0
+				true when gsb.TryGetFormatter(parameterType.GetRootType(), out var formatter) =>
+					forceOverloadIntegrity || formatter.Params.Length == 0 || parameterType is not INamedTypeSymbol
 					? ParameterAction.FormatterIntegrityReplacement
 					: ParameterAction.FormatterReplacement,
 				true when attribute?.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,

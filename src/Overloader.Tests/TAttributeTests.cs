@@ -42,12 +42,26 @@ internal partial class Program
 		return (double) (vec.X + vec1.X + vec.Y + vec1.Y + vec.Z + vec1.Z);
 	}}
 
+	[return: T]
+	public static double {nameof(TAttrTest)}3([T] double[] vec)
+	{{
+		return vec[0] + vec[1] + vec[3];
+	}}
+
+	[return: T]
+	public static Vector3<double>[] {nameof(TAttrTest)}3([Integrity][T] Vector3<double>[] vec)
+	{{
+		// Check that auto integrity works
+		var test = vec[0].X + vec[1].X;
+		return vec;
+	}}
+
 	private static void Test(Vector3<double> vec123) {{}}
 	private static void Test(Vector3<float> vec123) {{}}
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void {nameof(TAttrTest)}3(Vector3<double> vec, [T] double vec1) {{ }}
+	public static void {nameof(TAttrTest)}4(Vector3<double> vec, [T] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>

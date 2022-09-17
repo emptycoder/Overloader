@@ -135,4 +135,42 @@ internal struct Vector3<T>
 			.Sum(method => Convert.ToByte(method.Identifier.ToString().Equals(nameof(AutoParamIntegrityTest))));
 		Assert.That(countOfMethods, Is.EqualTo(1));
 	}
+
+	[TestCase(Vector3WithoutParams, null, TestName = "DF: Global formatter")]
+	[TestCase(null, Vector3WithoutParams, TestName = "DF: Formatter")]
+	public void DeepFormatterUsageTest(string? globalFormatter, string? formatter)
+	{
+		string programCs =
+			@$"
+using System;
+using Overloader;
+
+{(globalFormatter is not null ? $"[assembly: {Attributes.FormatterAttr}({globalFormatter})]" : string.Empty)}
+
+namespace TestProject;
+
+{(formatter is not null ? $"[{Attributes.FormatterAttr}({formatter})]" : string.Empty)}
+[{Attributes.OverloadAttr}(typeof(float))]
+internal partial class Program
+{{
+	static void Main(string[] args) {{ }}
+
+	public static void {nameof(DeepFormatterUsageTest)}([T] Vector3<Vector3<double>> vec) {{ }}
+	// For Overload conflict
+	public static void {nameof(DeepFormatterUsageTest)}(Vector3<float> vec) {{ }}
+	public static void {nameof(DeepFormatterUsageTest)}(float vec) {{ }}
+}}
+
+internal struct Vector3<T>
+{{
+	public double X;
+	public T Y {{ get; set; }}
+	internal T Z {{ get; private set; }}
+}}
+";
+		
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+	}
 }

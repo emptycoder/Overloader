@@ -13,7 +13,7 @@ using Overloader.Examples;
 	})]
 
 var vec2 = new Vector2<float>();
-vec2.Sum(2, 3);
+vec2.Sum(Array.Empty<Vector2<float>>());
 Console.WriteLine("TEST");
 
 namespace Overloader.Examples
@@ -29,10 +29,10 @@ namespace Overloader.Examples
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[return: T]
-		public static ref Vector2<double> Sum([Integrity] [T] this ref Vector2<double> vec1, [T] in Vector2<double> vec2)
+		public static ref Vector2<double> Sum([Integrity] [T] this ref Vector2<double> vec1, [T] in Vector2<double>[] vec2)
 		{
-			vec1.X += vec2.X;
-			vec1.Y += vec2.Y;
+			vec1.X += vec2[0].X;
+			vec1.Y += vec2[0].Y;
 			Console.WriteLine("dd");
 
 			return ref vec1;
