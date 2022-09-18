@@ -8,6 +8,7 @@ internal sealed class SourceBuilder : IDisposable
 	private const string PaddingStr = "\t";
 	private const string NestedUpStr = "{";
 	private const string NestedDownStr = "}";
+
 	// ReSharper disable once RedundantSuppressNullableWarningExpression
 	private static readonly ObjectPool<SourceBuilder> SPoolInstance = new(() => new SourceBuilder(SPoolInstance!), 16);
 

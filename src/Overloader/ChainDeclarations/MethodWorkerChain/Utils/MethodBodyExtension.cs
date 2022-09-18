@@ -61,7 +61,7 @@ internal static class MethodBodyExtension
 					if (syntax.Expression is not IdentifierNameSyntax)
 					{
 						sb.Append(syntax.ToFullString());
-						return;
+						break;
 					}
 
 					// Don't need go deep to get name, because that's case can't be supported
@@ -76,7 +76,7 @@ internal static class MethodBodyExtension
 					if (replacementIndex == -1) goto default;
 					sb.AppendWoTrim(replacements[replacementIndex].ConcatedVars);
 					break;
-				case ExpressionSyntax:
+				case {Parent: ArrowExpressionClauseSyntax}:
 				case StatementSyntax:
 				{
 					var triviaList = node.GetLeadingTrivia();

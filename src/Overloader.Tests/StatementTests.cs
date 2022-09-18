@@ -267,4 +267,61 @@ internal class Program
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 	}
+
+	[Test]
+	public void MemberAccessExpressionSyntaxTest()
+	{
+		const string programCs = @$"
+using {nameof(Overloader)};
+
+namespace TestProject;
+
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+internal class Program
+{{
+	static void Main(string[] args) {{ }}
+
+	[return: T]
+	private static double ComputeLowestRoot([T] double a, [T] double b, [T] double c, [T] double maxR)
+	{{
+		//# ""double"" -> ""${{T}}""
+		double determinant = b * b - 4 * a * c;
+		if (determinant < 0)
+			//# ""double"" -> ""${{T}}""
+			return double.PositiveInfinity;
+		//# ""double"" -> ""${{T}}""
+		double sqrtD = Sqrt(determinant);
+		//# ""double"" -> ""${{T}}""
+		double r1 = (-b - sqrtD) / (2 * a);
+		//# ""double"" -> ""${{T}}""
+		double r2 = (-b + sqrtD) / (2 * a);
+		if (r1 > r2)
+		{{
+			(r2, r1) = (r1, r2);
+		}}
+
+		if (r1 > 0 && r1 < maxR)
+		{{
+			return r1;
+		}}
+
+		if (r2 > 0 && r2 < maxR)
+		{{
+			return r2;
+		}}
+
+		//# ""double"" -> ""${{T}}""
+		return double.PositiveInfinity;
+	}}
+
+	// Plugs
+	private static double Sqrt(double val) => val;
+	[{Constants.ChangeModifierAttr}(""private"", ""private"")]
+	private static float Sqrt(float val) => val;
+}}
+";
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+	}
 }
