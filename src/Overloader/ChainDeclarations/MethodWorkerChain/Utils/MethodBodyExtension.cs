@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.Buffers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,101 +10,125 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 
 internal static class MethodBodyExtension
 {
-	public static GeneratorSourceBuilder WriteMethodBody(this GeneratorSourceBuilder gsb,
+	public static GeneratorProperties WriteMethodBody(this GeneratorProperties props,
 		MethodDeclarationSyntax method,
-		(string Replacment, string ConcatedParams)[] replacement)
+		(string Replacment, string ConcatedParams)[] replacements)
 	{
 		if (method.ExpressionBody is not null)
 		{
-			gsb.Append(method.ExpressionBody.ArrowToken.ToFullString(), 1);
-
-			gsb.ApplySyntaxChanges(method.ExpressionBody.Expression, replacement)
-				.Append(";", 1);
+			props.Builder.HandleChildren(method.ExpressionBody, replacements, props.Template?.ToDisplayString());
+			props.Builder.Append(";", 1);
 		}
 		else if (method.Body is not null)
 		{
-			gsb.Append(string.Empty, 1)
-				.NestedIncrease();
-			foreach (var statement in method.Body.Statements)
-			{
-				gsb.ApplySyntaxChanges(statement, replacement)
-					.Append(string.Empty, 1);
-			}
-
-			gsb.NestedDecrease()
-				.Append(string.Empty, 1);
+			props.Builder.Append(String.Empty, 1);
+			props.Builder.HandleChildren(method.Body, replacements, props.Template?.ToDisplayString());
 		}
 
-		return gsb;
+		return props;
 	}
 
-	private static StringBuilder ToStringVarsReplacement<T>(this StringBuilder sb,
-		T syntaxNode,
-		(string VarName, string ConcatedVars)[] replacements) where T : SyntaxNode
+	private static void HandleChildren(this SourceBuilder sb,
+		SyntaxNodeOrToken syntaxNode,
+		(string VarName, string ConcatedVars)[] replacements,
+		string? templateStr)
 	{
+		string varName;
 		foreach (var nodeOrToken in syntaxNode.ChildNodesAndTokens())
 		{
 			if (!nodeOrToken.IsNode)
 			{
-				sb.Append(nodeOrToken.HasLeadingTrivia ? nodeOrToken.WithLeadingTrivia().ToFullString() : nodeOrToken.ToFullString());
-				continue;
+				switch (nodeOrToken.AsToken().Kind())
+				{
+					case SyntaxKind.OpenBraceToken:
+						sb.NestedIncrease();
+						continue;
+					case SyntaxKind.CloseBraceToken:
+						sb.NestedDecrease();
+						continue;
+					default:
+						sb.AppendWoTrim(nodeOrToken.HasLeadingTrivia ? nodeOrToken.WithLeadingTrivia().ToFullString() : nodeOrToken.ToFullString());
+						continue;
+				}
 			}
 
 			var node = nodeOrToken.AsNode() ?? throw new ArgumentException("Unexpected exception. Node isn't node.")
 				.WithLocation(nodeOrToken.GetLocation() ?? Location.None);
 
-			string varName;
 			switch (node)
 			{
 				case MemberAccessExpressionSyntax syntax:
 					if (syntax.Expression is not IdentifierNameSyntax)
 					{
 						sb.Append(syntax.ToFullString());
-						continue;
+						return;
 					}
 
 					// Don't need go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
 					if (FindReplacement() == -1) goto default;
-					sb.Append(varName).Append(syntax.Name);
+					sb.AppendWoTrim(varName)
+						.AppendWoTrim(syntax.Name.ToString());
 					break;
 				case ArgumentSyntax argSyntax:
 					varName = argSyntax.Expression.ToString();
 					int replacementIndex = FindReplacement();
 					if (replacementIndex == -1) goto default;
-					sb.Append(replacements[replacementIndex].ConcatedVars);
+					sb.AppendWoTrim(replacements[replacementIndex].ConcatedVars);
 					break;
-				default:
-					sb.ToStringVarsReplacement(node, replacements);
-					break;
-			}
-
-			int FindReplacement()
-			{
-				for (int index = 0; index < replacements.Length; index++)
+				case ExpressionSyntax:
+				case StatementSyntax:
 				{
-					if (!replacements[index].VarName.Equals(varName)) continue;
-					return index;
-				}
+					var triviaList = node.GetLeadingTrivia();
+					var buffer = ArrayPool<(string, string)>.Shared.Rent(triviaList.Count);
+					string? changeLine = triviaList.ParseTrivia(buffer, templateStr, out var localReplacements);
+					if (changeLine is not null)
+					{
+						sb.AppendWoTrim(changeLine, 1);
+					}
+					else if (localReplacements.IsEmpty)
+					{
+						sb.HandleChildren(node, replacements, templateStr);
+					}
+					else
+					{
+						using var statementSb = sb.GetDependentInstance();
+						statementSb.HandleChildren(node, replacements, templateStr);
+						string statementStr = statementSb.ToString();
+						foreach ((string key, string value) in localReplacements)
+							statementStr = statementStr.Replace(key, value);
 
-				return -1;
+						sb.Append(statementStr, 1);
+					}
+
+					ArrayPool<(string, string)>.Shared.Return(buffer);
+					break;
+				}
+				default:
+					sb.HandleChildren(node, replacements, templateStr);
+					break;
 			}
 		}
 
-		return sb;
+
+		int FindReplacement()
+		{
+			for (int index = 0; index < replacements.Length; index++)
+			{
+				if (!replacements[index].VarName.Equals(varName)) continue;
+				return index;
+			}
+
+			return -1;
+		}
 	}
 
-	private static GeneratorSourceBuilder ApplySyntaxChanges<T>(this GeneratorSourceBuilder gsb,
-		T node,
-		(string Replacment, string ConcatedParams)[] replacement) where T : SyntaxNode
+	private static string? ParseTrivia(this SyntaxTriviaList triviaList, (string, string)[] buffer,
+		string? templateStr, out Span<(string, string)> replacements)
 	{
-		using var sb = StringBuilderPool.GetInstance();
-		string strStatementWoTrivia = sb.Builder
-			.ToStringVarsReplacement(node, replacement)
-			.ToString();
-		if (!node.HasLeadingTrivia) return gsb.Append(strStatementWoTrivia);
-
-		foreach (var syntaxTrivia in node.GetLeadingTrivia())
+		int size = 0;
+		string? changeLine = default;
+		foreach (var syntaxTrivia in triviaList)
 		{
 			switch (syntaxTrivia.Kind())
 			{
@@ -112,11 +136,10 @@ internal static class MethodBodyExtension
 					string strTrivia = syntaxTrivia.ToString();
 					var strTriviaSpan = strTrivia.AsSpan();
 					int separatorIndex = strTrivia.LastIndexOf(':');
-					string? templateStr = gsb.Template?.ToDisplayString();
 
 					if (separatorIndex != -1)
 					{
-						if (gsb.Template is null) continue;
+						if (templateStr is null) continue;
 						if (templateStr != strTriviaSpan.Slice(separatorIndex + 1).Trim().ToString()) continue;
 						strTriviaSpan = strTriviaSpan.Slice(0, separatorIndex);
 					}
@@ -127,30 +150,23 @@ internal static class MethodBodyExtension
 						case '#':
 							var kv = strTriviaSpan.SplitAsKV("->");
 							if (kv.Value.IndexOf("${T}", StringComparison.Ordinal) != -1 && templateStr is null) break;
-							strStatementWoTrivia = strStatementWoTrivia.Replace(kv.Key, kv.Value
-								.Replace("${T}", templateStr));
+							kv.Value = kv.Value.Replace("${T}", templateStr);
+							buffer[size++] = kv;
 							break;
 						// Change line operation
 						case '$':
 							var newStatement = strTriviaSpan.Slice(3).Trim();
 							if (newStatement.IndexOf("${T}".AsSpan()) != -1 && templateStr is null) break;
-							strStatementWoTrivia = newStatement.ToString()
-								.Replace("${T}", templateStr);
-							break;
-						default:
-							gsb.Append(strTrivia);
+							if (changeLine is not null) throw new ArgumentException("Can't be two replace line on one syntax node");
+							changeLine = newStatement.ToString().Replace("${T}", templateStr);
 							break;
 					}
 
 					break;
-				case SyntaxKind.WhitespaceTrivia:
-					break;
-				default:
-					gsb.Append(syntaxTrivia.ToString(), 1);
-					break;
 			}
 		}
 
-		return gsb.Append(strStatementWoTrivia);
+		replacements = buffer.AsSpan(0, size);
+		return changeLine;
 	}
 }

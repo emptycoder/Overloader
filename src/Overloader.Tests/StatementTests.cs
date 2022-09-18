@@ -19,12 +19,12 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ReplaceOperationTest)}()
 	{{
 		{comment}
@@ -63,12 +63,12 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ChangeLineOperationTest)}()
 	{{
 		{comment}
@@ -107,12 +107,12 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ChangeLineOperationTest)}() =>
 		{comment}
 		""DEFAULT"";
@@ -144,12 +144,12 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
 	public static string {nameof(ArrowTokenSingleLineProblemTest)}() => ""DEFAULT"";
 }}
 ";
@@ -179,13 +179,13 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 }}
 
-[{Attributes.FormatterAttr}(typeof(TestProject.Vector3<>),
+[{Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -232,5 +232,39 @@ public struct Vector3<T>
 			.SelectMany(type => type.DeclaredMethods)
 			.Sum(method => Convert.ToSByte(method.Name.Equals("Angle")));
 		Assert.That(methodsCount, Is.EqualTo(3));
+	}
+
+	[Test]
+	public void CommentAfterIfIgnoreProblemTest()
+	{
+		const string programCs = @$"
+using {nameof(Overloader)};
+
+namespace TestProject;
+
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+internal class Program
+{{
+	static void Main(string[] args) {{ }}
+
+	[return: T]
+	public static double {nameof(CommentAfterIfIgnoreProblemTest)}([T] double val)
+	{{
+		//# ""double"" -> ""${{T}}""
+		double test = 123;
+		if (true)
+		{{
+			//# ""double"" -> ""${{T}}""
+			double res = val * 2;
+			return res;
+		}}
+
+		return 0;
+	}}
+}}
+";
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
 	}
 }

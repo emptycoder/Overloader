@@ -10,7 +10,7 @@ public class MultithreadingTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {Attributes.FormatterAttr}(typeof(TestProject.Vector3<>),
+[assembly: {Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -25,7 +25,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float))]
+[{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -65,7 +65,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float))]
+[{Constants.OverloadAttr}(typeof(float))]
 internal partial class TestClass{index}
 {{
 	public static void TestMethod1([Integrity][T] Vector3<double> vec, Vector3<double> vec1) {{ }}

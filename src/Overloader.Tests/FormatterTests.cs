@@ -46,12 +46,12 @@ public class FormatterTests
 			@$"
 using Overloader;
 
-{(globalFormatter is not null ? $"[assembly: {Attributes.FormatterAttr}({globalFormatter})]" : string.Empty)}
+{(globalFormatter is not null ? $"[assembly: {Constants.FormatterAttr}({globalFormatter})]" : string.Empty)}
 
 namespace TestProject;
 
-{(formatter is not null ? $"[{Attributes.FormatterAttr}({formatter})]" : string.Empty)}
-[{Attributes.OverloadAttr}(typeof(float))]
+{(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
+[{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -79,7 +79,7 @@ internal struct Vector3<T>
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs")
+		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()
@@ -104,12 +104,12 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-{(globalFormatter is not null ? $"[assembly: {Attributes.FormatterAttr}({globalFormatter})]" : string.Empty)}
+{(globalFormatter is not null ? $"[assembly: {Constants.FormatterAttr}({globalFormatter})]" : string.Empty)}
 
 namespace TestProject;
 
-{(formatter is not null ? $"[{Attributes.FormatterAttr}({formatter})]" : string.Empty)}
-[{Attributes.OverloadAttr}(typeof(float))]
+{(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
+[{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -130,7 +130,7 @@ internal struct Vector3<T>
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
 		int countOfMethods = result.Result.GeneratedTrees.Where(generatedTree =>
-				!Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs"))
+				!Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs"))
 			.SelectMany(generatedTree => generatedTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>())
 			.Sum(method => Convert.ToByte(method.Identifier.ToString().Equals(nameof(AutoParamIntegrityTest))));
 		Assert.That(countOfMethods, Is.EqualTo(1));
@@ -145,12 +145,12 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-{(globalFormatter is not null ? $"[assembly: {Attributes.FormatterAttr}({globalFormatter})]" : string.Empty)}
+{(globalFormatter is not null ? $"[assembly: {Constants.FormatterAttr}({globalFormatter})]" : string.Empty)}
 
 namespace TestProject;
 
-{(formatter is not null ? $"[{Attributes.FormatterAttr}({formatter})]" : string.Empty)}
-[{Attributes.OverloadAttr}(typeof(float))]
+{(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
+[{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}

@@ -11,7 +11,6 @@
 // #endif
 
 using System.Diagnostics;
-using System.Text;
 
 namespace Overloader.Utils;
 
@@ -265,71 +264,4 @@ internal class ObjectPool<T> where T : class?
 			Debug.Assert(value != obj, "freeing twice?");
 		}
 	}
-}
-
-/// <summary>
-///     The usage is:
-///     var inst = PooledStringBuilder.GetInstance();
-///     var sb = inst.builder;
-///     ... Do Stuff...
-///     ... sb.ToString() ...
-///     inst.Free();
-/// </summary>
-internal sealed class StringBuilderPool : IDisposable
-{
-	private const int DefaultCapacity = 50 * 1024;
-
-	// global pool
-	private static readonly ObjectPool<StringBuilderPool?> SPoolInstance = CreatePool();
-	private readonly ObjectPool<StringBuilderPool?>? _pool;
-
-	public readonly StringBuilder Builder = new(DefaultCapacity);
-
-	private StringBuilderPool(ObjectPool<StringBuilderPool?>? pool)
-	{
-		Debug.Assert(pool != null);
-		_pool = pool;
-	}
-
-	public int Length => Builder.Length;
-
-	public void Dispose()
-	{
-		var builder = Builder;
-
-		// Do not store builders that are too large.
-
-		if (builder.Capacity == DefaultCapacity)
-		{
-			builder.Clear();
-			_pool!.Free(this);
-		}
-		else
-		{
-			_pool!.ForgetTrackedObject(this);
-		}
-	}
-
-	// if someone needs to create a private pool;
-	/// <summary>
-	///     If someone need to create a private pool
-	/// </summary>
-	/// <param name="size">The size of the pool.</param>
-	/// <returns></returns>
-	private static ObjectPool<StringBuilderPool?> CreatePool(int size = 16)
-	{
-		ObjectPool<StringBuilderPool?> pool = default!;
-		// ReSharper disable once AccessToModifiedClosure
-		pool = new ObjectPool<StringBuilderPool?>(() => new StringBuilderPool(pool), size);
-		return pool;
-	}
-
-	public static StringBuilderPool GetInstance()
-	{
-		var builder = SPoolInstance.Allocate();
-		Debug.Assert(builder!.Builder.Length == 0);
-		return builder;
-	}
-
-	public override string ToString() => Builder.ToString();
 }

@@ -15,7 +15,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{Attributes.FormatterAttr}(typeof(TestProject.Vector3<>),
+[{Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -27,7 +27,7 @@ namespace TestProject;
 					typeof(double), typeof(long)
 				}}
 			}})]
-[{Attributes.OverloadAttr}(typeof(float))]
+[{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -85,7 +85,7 @@ internal struct Vector3<T>
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs")
+		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

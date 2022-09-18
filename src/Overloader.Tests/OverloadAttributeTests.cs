@@ -25,14 +25,14 @@ internal class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{Attributes.OverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
+[{Constants.OverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
 {accessModifier} static class {className} {{ }}
 ";
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 		var generatedTrees = result.Result.GeneratedTrees.Where(tree =>
-			!Path.GetFileName(tree.FilePath).Equals($"{nameof(Attributes)}.g.cs")).ToImmutableArray();
+			!Path.GetFileName(tree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")).ToImmutableArray();
 		Assert.That(generatedTrees, Has.Length.EqualTo(1));
 
 		string newClassName = Regex.Replace(className, regex, regexReplacement);

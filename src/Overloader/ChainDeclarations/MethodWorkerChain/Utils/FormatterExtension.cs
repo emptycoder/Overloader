@@ -9,12 +9,12 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 
 internal static class FormatterExtension
 {
-	public static unsafe string AppendFormatter(this GeneratorSourceBuilder gsb,
+	public static unsafe string AppendFormatter(this GeneratorProperties props,
 		ITypeSymbol type,
 		string paramName)
 	{
 		var rootType = type.GetRootType();
-		if (!gsb.TryGetFormatter(rootType, out var formatter))
+		if (!props.TryGetFormatter(rootType, out var formatter))
 			throw new ArgumentException(
 				$"Can't get formatter for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}.");
 
@@ -32,7 +32,7 @@ internal static class FormatterExtension
 		const string paramsSeparator = ", ";
 		for (paramIndex = 1; paramIndex < formatter.Params.Length; paramIndex++)
 		{
-			gsb.AppendWoTrim(paramsSeparator);
+			props.Builder.AppendWoTrim(paramsSeparator);
 			charLengthOfParams += AppendFormatterParam();
 		}
 
@@ -66,35 +66,35 @@ internal static class FormatterExtension
 			// ReSharper disable once SuggestVarOrType_SimpleTypes
 			// Broken var type specified as IParam?
 			IParam formatterParam = formatter.Params[paramIndex];
-			gsb.AppendWith(GetDeeperType().ToDisplayString(), " ")
+			props.Builder.AppendWith(GetDeeperType().ToDisplayString(), " ")
 				.Append(paramName)
 				.Append(formatterParam.Name);
 			return paramName.Length + formatterParam.Name!.Length;
 
 			ITypeSymbol GetDeeperType()
 			{
-				var paramType = formatterParam.GetType(gsb.Template) ??
+				var paramType = formatterParam.GetType(props.Template) ??
 				                type.GetMemberType(formatterParam.Name!);
-				paramType = gsb.GoDeeper(paramType, paramType);
+				paramType = props.GoDeeper(paramType, paramType);
 				var paramRootType = paramType.GetRootType();
 				if (!paramRootType.IsUnboundGenericType) return paramType;
 
 				var typeParameters = new ITypeSymbol[paramRootType.TypeParameters.Length];
 				for (int typeParamIndex = 0; typeParamIndex < typeParameters.Length; typeParamIndex++)
-					typeParameters[typeParamIndex] = gsb.Template ?? throw new Exception(
+					typeParameters[typeParamIndex] = props.Template ?? throw new Exception(
 						"Unexpected declaration of unbound generic in method.");
 
-				return paramType.SetRootType(paramRootType.OriginalDefinition.Construct(typeParameters), gsb.Compilation);
+				return paramType.SetRootType(paramRootType.OriginalDefinition.Construct(typeParameters), props.Compilation);
 			}
 		}
 	}
 
-	public static void AppendFormatterIntegrity(this GeneratorSourceBuilder gsb, ITypeSymbol type, ParameterSyntax parameterSyntax) =>
-		gsb.AppendWith(parameterSyntax.Modifiers.ToFullString(), " ")
-			.AppendWith(gsb.GoDeeper(type, gsb.Template ?? type).ToDisplayString(), " ")
+	public static void AppendFormatterIntegrity(this GeneratorProperties props, ITypeSymbol type, ParameterSyntax parameterSyntax) =>
+		props.Builder.AppendWith(parameterSyntax.Modifiers.ToFullString(), " ")
+			.AppendWith(props.GoDeeper(type, props.Template ?? type).ToDisplayString(), " ")
 			.Append(parameterSyntax.Identifier.ToFullString());
 
-	private static ITypeSymbol GoDeeper(this GeneratorSourceBuilder gsb, ITypeSymbol argType, ITypeSymbol paramType)
+	private static ITypeSymbol GoDeeper(this GeneratorProperties gsb, ITypeSymbol argType, ITypeSymbol paramType)
 	{
 		var rootType = argType.GetRootType();
 		if (!rootType.IsGenericType || !gsb.TryGetFormatter(rootType, out var formatter)) return paramType;

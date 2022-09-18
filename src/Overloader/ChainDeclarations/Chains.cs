@@ -1,4 +1,5 @@
-﻿using Overloader.ChainDeclarations.MethodWorkerChain;
+﻿using Microsoft.CodeAnalysis;
+using Overloader.ChainDeclarations.MethodWorkerChain;
 using Overloader.Entities;
 using Overloader.Enums;
 
@@ -19,5 +20,5 @@ public static class Chains
 
 internal interface IChainObj
 {
-	internal ChainResult Execute(GeneratorSourceBuilder gsb);
+	internal ChainResult Execute(GeneratorProperties gsb, SyntaxNode syntaxNode);
 }

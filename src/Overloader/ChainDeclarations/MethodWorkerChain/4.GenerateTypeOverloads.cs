@@ -10,18 +10,19 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
 internal sealed class GenerateTypeOverloads : IChainObj
 {
-	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
+	ChainResult IChainObj.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
-		if (gsb.Store.OverloadMap is null || gsb.Store.Modifiers is null || !gsb.Store.IsSmthChanged || gsb.Template is null)
+		var sb = props.Builder;
+		if (props.Store.OverloadMap is null || props.Store.Modifiers is null || !props.Store.IsSmthChanged || props.Template is null)
 			return ChainResult.NextChainMember;
 
-		var entry = (MethodDeclarationSyntax) gsb.Entry;
+		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
 
-		gsb.Append(entry.AttributeLists.ToFullString(), 1)
-			.AppendWith(string.Join(" ", gsb.Store.Modifiers), " ")
+		sb.Append(entry.AttributeLists.ToFullString(), 1)
+			.AppendWith(string.Join(" ", props.Store.Modifiers), " ")
 			.AppendWith(entry.ReturnType.GetPreTypeValues(), " ")
-			.AppendWith(gsb.Store.ReturnType.ToDisplayString(), " ")
+			.AppendWith(props.Store.ReturnType.ToDisplayString(), " ")
 			.Append(entry.Identifier.ToFullString())
 			.Append("(");
 
@@ -31,40 +32,40 @@ internal sealed class GenerateTypeOverloads : IChainObj
 			AppendParam();
 			for (index = 1; index < parameters.Count; index++)
 			{
-				gsb.AppendWoTrim(", ");
+				sb.AppendWoTrim(", ");
 				AppendParam();
 			}
 
 			void AppendParam()
 			{
-				var mappedParam = gsb.Store.OverloadMap[index];
+				var mappedParam = props.Store.OverloadMap[index];
 				var parameter = parameters[index];
-				gsb.AppendWith(parameter.AttributeLists.ToFullString(), " ");
+				sb.AppendWith(parameter.AttributeLists.ToFullString(), " ");
 
 				switch (mappedParam.ParameterAction)
 				{
 					case ParameterAction.Nothing:
-						gsb.Append(parameter.WithAttributeLists(new SyntaxList<AttributeListSyntax>()).ToFullString());
+						sb.Append(parameter.WithAttributeLists(new SyntaxList<AttributeListSyntax>()).ToFullString());
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
-						gsb.AppendWith(parameter.Type!.GetType(gsb.Compilation)
-								.SetRootType(mappedParam.Type, gsb.Compilation).ToDisplayString(), " ")
+						sb.AppendWith(parameter.Type!.GetType(props.Compilation)
+								.SetRootType(mappedParam.Type, props.Compilation).ToDisplayString(), " ")
 							.Append(parameter.Identifier.ToString());
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:
 					case ParameterAction.FormatterReplacement:
-						gsb.AppendFormatterIntegrity(mappedParam.Type, parameter);
+						props.AppendFormatterIntegrity(mappedParam.Type, parameter);
 						break;
 					default:
-						throw new ArgumentException($"Can't find case for {gsb.Store.OverloadMap[index]} parameterAction.")
+						throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
 							.WithLocation(entry.GetLocation());
 				}
 			}
 		}
 
-		gsb.Append(")")
-			.WriteMethodBody(entry, Array.Empty<(string, string)>());
+		sb.Append(")");
+		props.WriteMethodBody(entry, Array.Empty<(string, string)>());
 
 		return ChainResult.NextChainMember;
 	}

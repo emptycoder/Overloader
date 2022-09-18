@@ -4,9 +4,9 @@ using Overloader.Entities;
 
 namespace Overloader.Utils;
 
-internal static class GeneratorSourceBuilderExtensions
+internal static class SourceBuilderExtensions
 {
-	public static GeneratorSourceBuilder AppendUsings(this GeneratorSourceBuilder gsb, SyntaxNode syntax)
+	public static SourceBuilder AppendUsings(this SourceBuilder gsb, SyntaxNode syntax)
 	{
 		foreach (var @using in syntax.DescendantNodes().Where(node => node is UsingDirectiveSyntax))
 			gsb.Append(@using.ToFullString(), 1);

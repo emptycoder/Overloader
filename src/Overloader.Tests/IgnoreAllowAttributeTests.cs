@@ -13,14 +13,14 @@ using Overloader;
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
-[{Attributes.BlackListModeAttr}]
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.BlackListModeAttr}]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
-	[{Attributes.ChangeModifierAttr}(""private"", ""protected"")]
+	[{Constants.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
+	[{Constants.ChangeModifierAttr}(""private"", ""protected"")]
 	public static void {nameof(BlackListModeTest)}() {{ }}
 }}
 ";
@@ -46,34 +46,34 @@ using Overloader;
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
-{(isBlackList ? $"[{Attributes.BlackListModeAttr}]" : string.Empty)}
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+{(isBlackList ? $"[{Constants.BlackListModeAttr}]" : string.Empty)}
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
-	[{Attributes.IgnoreForAttr}]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.IgnoreForAttr}]
 	public static void {nameof(IgnoreAllowForTest)}1() {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
-	[{Attributes.IgnoreForAttr}(typeof(float))]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.IgnoreForAttr}(typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}2() {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
-	[{Attributes.IgnoreForAttr}(typeof(double))]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.IgnoreForAttr}(typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}3() {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
-	[{Attributes.AllowForAttr}]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.AllowForAttr}]
 	public static void {nameof(IgnoreAllowForTest)}4() {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
-	[{Attributes.AllowForAttr}(typeof(float))]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.AllowForAttr}(typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}5() {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""public"")]
-	[{Attributes.AllowForAttr}(typeof(double))]
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.AllowForAttr}(typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}6() {{ }}
 }}
 ";
@@ -83,7 +83,7 @@ internal class Program
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
 		var methodNames = result.Result.GeneratedTrees
-			.Where(tree => !Path.GetFileName(tree.FilePath).Equals($"{nameof(Attributes)}.g.cs"))
+			.Where(tree => !Path.GetFileName(tree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs"))
 			.SelectMany(tree =>
 				tree.GetRoot()
 					.DescendantNodes()

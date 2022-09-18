@@ -10,9 +10,9 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
 internal sealed class AnalyzeMethodParams : IChainObj
 {
-	unsafe ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
+	unsafe ChainResult IChainObj.Execute(GeneratorProperties gsb, SyntaxNode syntaxNode)
 	{
-		var entry = (MethodDeclarationSyntax) gsb.Entry;
+		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
 		gsb.Store.OverloadMap = ArrayPool<(ParameterAction ParameterAction, ITypeSymbol Type)>.Shared.Rent(parameters.Count);
 		for (int index = 0; index < parameters.Count; index++)

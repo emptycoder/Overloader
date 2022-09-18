@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Utils;
@@ -7,35 +8,35 @@ namespace Overloader.ChainDeclarations;
 
 internal class Main : IChainObj
 {
-	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
+	ChainResult IChainObj.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
-		var entry = (TypeEntrySyntax) gsb.Entry;
-		if (gsb.Template is null && !entry.Syntax.Modifiers.Any(modifier => modifier.Text.Equals("partial")))
+		var sb = props.Builder;
+		if (props.Template is null && !props.StartEntry.Syntax.Modifiers.Any(modifier => modifier.Text.Equals("partial")))
 			return ChainResult.BreakChain;
 
-		gsb.AppendUsings(entry.Syntax.GetTopParent())
+		sb.AppendUsings(props.StartEntry.Syntax.GetTopParent())
 			.AppendWith("namespace", " ")
-			.AppendWith(entry.Syntax.GetNamespace(), ";")
+			.AppendWith(props.StartEntry.Syntax.GetNamespace(), ";")
 			.Append(string.Empty, 2);
 
 		// Declare class/struct/record signature
-		gsb.Append(entry.Syntax.AttributeLists.ToFullString(), 1)
-			.AppendWith(entry.Syntax.Modifiers.ToFullString(), " ")
-			.AppendWith(entry.Syntax.Keyword.ToFullString(), " ")
-			.Append(gsb.ClassName, 1)
+		sb.Append(props.StartEntry.Syntax.AttributeLists.ToFullString(), 1)
+			.AppendWith(props.StartEntry.Syntax.Modifiers.ToFullString(), " ")
+			.AppendWith(props.StartEntry.Syntax.Keyword.ToFullString(), " ")
+			.Append(props.ClassName, 1)
 			.NestedIncrease();
 
-		foreach (var member in entry.Syntax.Members)
+		foreach (var member in props.StartEntry.Syntax.Members)
 		{
-			if (member is not MethodDeclarationSyntax methodSyntax) continue;
+			if (member is not MethodDeclarationSyntax) continue;
 
-			gsb.Store.MemberSkip = entry.IsBlackListMode;
+			props.Store.MemberSkip = props.StartEntry.IsBlackListMode;
 			foreach (var worker in Chains.MethodWorkers)
-				if (worker.Execute(gsb with {Entry = methodSyntax}) == ChainResult.BreakChain)
+				if (worker.Execute(props, member) == ChainResult.BreakChain)
 					break;
 		}
 
-		gsb.NestedDecrease();
+		sb.NestedDecrease();
 
 		return ChainResult.NextChainMember;
 	}

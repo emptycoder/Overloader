@@ -3,13 +3,21 @@ using Overloader.Entities.Formatters;
 
 namespace Overloader.Entities;
 
-internal partial record GeneratorSourceBuilder : IGeneratorProps
+internal class GeneratorProperties : IGeneratorProps, IDisposable
 {
 	public StoreDictionary Store { get; } = new();
+	public SourceBuilder Builder { get; } = SourceBuilder.GetInstance();
 	public Dictionary<ITypeSymbol, Formatter> Formatters { private get; init; } = default!;
 	public Dictionary<ITypeSymbol, Formatter> GlobalFormatters { private get; init; } = default!;
 	public GeneratorExecutionContext Context { private get; init; }
-	public object Entry { get; init; } = default!;
+	public TypeEntrySyntax StartEntry { get; init; }
+
+	void IDisposable.Dispose()
+	{
+		Builder.Dispose();
+		Store.Dispose();
+	}
+
 	public string ClassName { get; init; } = default!;
 	public ITypeSymbol? Template { get; init; }
 
@@ -25,12 +33,12 @@ internal partial record GeneratorSourceBuilder : IGeneratorProps
 		       GlobalFormatters.TryGetValue(originalType, out formatter);
 	}
 
-	public void AddToContext()
+	public void ReleaseAsOutput()
 	{
 		lock (Context.Compilation)
 		{
 			int partialRev = 0;
-			string source = ToString();
+			string source = Builder.ToString();
 			AddLoop:
 			try
 			{

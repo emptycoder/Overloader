@@ -9,9 +9,9 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
 internal sealed class AnalyzeMethodAttributes : IChainObj
 {
-	ChainResult IChainObj.Execute(GeneratorSourceBuilder gsb)
+	ChainResult IChainObj.Execute(GeneratorProperties gsb, SyntaxNode syntaxNode)
 	{
-		var entry = (MethodDeclarationSyntax) gsb.Entry;
+		var entry = (MethodDeclarationSyntax) syntaxNode;
 		gsb.Store.IsSmthChanged = false;
 		gsb.Store.FormattersWoIntegrityCount = 0;
 		gsb.Store.ReturnType = entry.ReturnType.GetType(gsb.Compilation);
@@ -23,14 +23,14 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 		foreach (var attribute in attrList.Attributes)
 		{
 			string attrName = attribute.Name.GetName();
-			if (attrName == Attributes.IgnoreForAttr)
+			if (attrName == Constants.IgnoreForAttr)
 			{
 				if (attribute.ArgumentList is null or {Arguments.Count: < 1}) return ChainResult.BreakChain;
 				foreach (var arg in attribute.ArgumentList.Arguments)
 					if (arg.EqualsToTemplate(gsb))
 						return ChainResult.BreakChain;
 			}
-			else if (attrName == Attributes.AllowForAttr)
+			else if (attrName == Constants.AllowForAttr)
 			{
 				if (attribute.ArgumentList is null or {Arguments.Count: < 1})
 				{
@@ -45,7 +45,7 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						break;
 					}
 			}
-			else if (attrName == Attributes.TAttr)
+			else if (attrName == Constants.TAttr)
 			{
 				var returnTypeSymbol = entry.ReturnType.GetType(gsb.Compilation);
 				var returnTypeSymbolRoot = returnTypeSymbol.GetRootType();
@@ -82,14 +82,14 @@ internal sealed class AnalyzeMethodAttributes : IChainObj
 						gsb.Store.IsSmthChanged = true;
 						break;
 					default:
-						throw new ArgumentException($"Unexpected count of arguments in {Attributes.TAttr}.")
+						throw new ArgumentException($"Unexpected count of arguments in {Constants.TAttr}.")
 							.WithLocation(attribute.GetLocation());
 				}
 			}
-			else if (attrName == Attributes.ChangeModifierAttr)
+			else if (attrName == Constants.ChangeModifierAttr)
 			{
 				if ((attribute.ArgumentList?.Arguments.Count ?? 0) <= 1)
-					throw new ArgumentException($"Unexpected count of arguments in {Attributes.ChangeModifierAttr}.")
+					throw new ArgumentException($"Unexpected count of arguments in {Constants.ChangeModifierAttr}.")
 						.WithLocation(attribute.GetLocation());
 
 				var arguments = attribute.ArgumentList!.Arguments;

@@ -13,14 +13,14 @@ using Overloader;
 
 namespace TestProject;
 
-[{Attributes.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Attributes.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
-	[{Attributes.ChangeModifierAttr}(""public"", ""internal"", typeof(double))]
-	[{Attributes.ChangeModifierAttr}(""private"", ""protected"")]
+	[{Constants.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
+	[{Constants.ChangeModifierAttr}(""public"", ""internal"", typeof(double))]
+	[{Constants.ChangeModifierAttr}(""private"", ""protected"")]
 	public static void {nameof(ModifierTest)}() {{ }}
 }}
 ";
@@ -35,7 +35,7 @@ internal class Program
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{nameof(Attributes)}.g.cs")
+		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

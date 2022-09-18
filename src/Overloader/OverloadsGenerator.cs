@@ -19,10 +19,10 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 {
 	private static readonly Action<object> OverloadCreation = obj =>
 	{
-		var props = (GeneratorSourceBuilder) obj;
-		if (Chains.Main.Execute(props) != ChainResult.BreakChain)
-			props.AddToContext();
-		props.Store.Dispose();
+		using var gsb = (GeneratorProperties) obj;
+		gsb.Builder.AppendWoTrim(Constants.DefaultHeader);
+		if (Chains.Main.Execute(gsb, gsb.StartEntry.Syntax) != ChainResult.BreakChain)
+			gsb.ReleaseAsOutput();
 	};
 
 	public void Initialize(GeneratorInitializationContext context)
@@ -33,7 +33,8 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
 		context.RegisterForPostInitialization(ctx =>
 		{
-			ctx.AddSource("Attributes.g.cs", SourceText.From(Attributes.AttributesWithHeaderSource, Encoding.UTF8));
+			ctx.AddSource($"{Constants.AttributesFileNameWoExt}.g.cs",
+				SourceText.From(Constants.AttributesWithHeaderSource, Encoding.UTF8));
 		});
 	}
 
@@ -54,10 +55,10 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;
 				var formatters = candidate.FormatterSyntaxes.GetFormatters(context.Compilation);
-				var formatterOverloadProps = new GeneratorSourceBuilder
+				var formatterOverloadProps = new GeneratorProperties
 				{
 					Context = context,
-					Entry = candidate,
+					StartEntry = candidate,
 					ClassName = candidateClassName,
 					GlobalFormatters = globalFormatters,
 					Formatters = formatters
@@ -70,10 +71,10 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 				foreach ((string className, var argSyntax) in candidate.OverloadTypes)
 				{
-					var genericWithFormatterOverloadProps = new GeneratorSourceBuilder
+					var genericWithFormatterOverloadProps = new GeneratorProperties
 					{
 						Context = context,
-						Entry = candidate,
+						StartEntry = candidate,
 						ClassName = className,
 						GlobalFormatters = globalFormatters,
 						Formatters = formatters,
@@ -126,7 +127,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		{
 			if (syntaxNode is AttributeListSyntax {Target.Identifier.Text: "assembly"} attributeListSyntax)
 				foreach (var attribute in attributeListSyntax.Attributes)
-					if (attribute.Name.GetName() == Attributes.FormatterAttr)
+					if (attribute.Name.GetName() == Constants.FormatterAttr)
 						GlobalFormatterSyntaxes.Add(attribute);
 
 			if (syntaxNode is not TypeDeclarationSyntax {AttributeLists.Count: >= 1} declarationSyntax) return;
@@ -136,7 +137,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 			foreach (var attribute in attributeList.Attributes)
 			{
 				string attrName = attribute.Name.GetName();
-				if (attrName == Attributes.OverloadAttr
+				if (attrName == Constants.OverloadAttr
 				    && attribute.ArgumentList is not null
 				    && attribute.ArgumentList.Arguments.Count > 0)
 				{
@@ -145,20 +146,20 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 					className = args.Count switch
 					{
 						1 => className,
-						2 => throw new ArgumentException($"Must be set regex replacement parameter for {Attributes.OverloadAttr}.")
+						2 => throw new ArgumentException($"Must be set regex replacement parameter for {Constants.OverloadAttr}.")
 							.WithLocation(attribute.GetLocation()),
 						3 => Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText()),
-						_ => throw new ArgumentException($"Unexpected count of args for {Attributes.OverloadAttr}.")
+						_ => throw new ArgumentException($"Unexpected count of args for {Constants.OverloadAttr}.")
 							.WithLocation(attribute.GetLocation())
 					};
 
 					typeEntry.OverloadTypes.Add((className, args[0]));
 				}
-				else if (attrName == Attributes.BlackListModeAttr)
+				else if (attrName == Constants.BlackListModeAttr)
 				{
 					typeEntry.IsBlackListMode = true;
 				}
-				else if (attrName == Attributes.FormatterAttr)
+				else if (attrName == Constants.FormatterAttr)
 				{
 					typeEntry.FormatterSyntaxes.Add(attribute);
 				}
