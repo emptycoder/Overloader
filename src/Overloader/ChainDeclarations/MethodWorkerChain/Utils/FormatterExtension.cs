@@ -106,9 +106,9 @@ internal static class FormatterExtension
 
 		for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 		{
-			@params[paramIndex] = gsb.GoDeeper(@params[paramIndex],
-				formatter.GenericParams[paramIndex].GetType(gsb.Template) ?? throw new ArgumentException(
-					$"Can't get type of formatter param (key: {argType}) by index {paramIndex}."));
+			var genericType = formatter.GenericParams[paramIndex].GetType(gsb.Template);
+			if (genericType is null) return paramType;
+			@params[paramIndex] = gsb.GoDeeper(@params[paramIndex], genericType);
 		}
 
 		return argType.SetRootType(rootType.OriginalDefinition.Construct(@params), gsb.Compilation);

@@ -59,10 +59,25 @@ internal readonly struct Formatter
 		{
 			if (withNames)
 			{
-				if (initializer.Expressions[index] is not LiteralExpressionSyntax str)
-					throw new ArgumentException("Expression isn't LiteralExpressionSyntax.")
-						.WithLocation(initializer.GetLocation());
-				name = str.GetInnerText();
+				switch (initializer.Expressions[index])
+				{
+					case LiteralExpressionSyntax str:
+						name = str.GetInnerText();
+						break;
+					case InvocationExpressionSyntax { Expression: IdentifierNameSyntax { Identifier.Text: "nameof" } } invocationExpressionSyntax:
+						var args = invocationExpressionSyntax.ArgumentList.Arguments;
+						if (args.Count != 1) 
+							throw new ArgumentException("args.Count != 1")
+								.WithLocation(invocationExpressionSyntax.GetLocation());
+						if (args[0].Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax)
+							throw new ArgumentException("Expression isn't MemberAccessExpressionSyntax")
+								.WithLocation(invocationExpressionSyntax.GetLocation());
+						name = memberAccessExpressionSyntax.Name.Identifier.Text;
+						break;
+					default:
+						throw new ArgumentException("Expression isn't literal or nameof syntax.")
+							.WithLocation(initializer.GetLocation());
+				}
 				index++;
 			}
 

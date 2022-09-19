@@ -173,4 +173,46 @@ internal struct Vector3<T>
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 	}
+	
+	[Test]
+	public void NameOfSupportTest()
+	{
+		const string programCs =
+			@$"
+using System;
+using Overloader;
+
+namespace TestProject;
+
+[{Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
+			new object[] {{""T""}},
+			new object[]
+			{{
+				nameof(Vector3<double>.X), ""T"",
+				nameof(Vector3<double>.Y), ""T"",
+				nameof(Vector3<double>.Z), ""T""
+			}})]
+[{Constants.OverloadAttr}(typeof(float))]
+internal partial class Program
+{{
+	static void Main(string[] args) {{ }}
+
+	public static void {nameof(NameOfSupportTest)}([T] Vector3<Vector3<double>> vec) {{ }}
+	// For Overload conflict
+	public static void {nameof(NameOfSupportTest)}(Vector3<float> vec) {{ }}
+	public static void {nameof(NameOfSupportTest)}(float vec) {{ }}
+}}
+
+internal struct Vector3<T>
+{{
+	public double X;
+	public T Y {{ get; set; }}
+	internal T Z {{ get; private set; }}
+}}
+";
+		
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+	}
 }

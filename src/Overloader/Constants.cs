@@ -31,47 +31,47 @@ using System;
 namespace {nameof(Overloader)};
 {AttributesSource}";
 
-	private const string AttributesSource = @"
+	private const string AttributesSource = $@"
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = false)]
-public sealed class OverloadAttribute : Attribute
-{
-	public OverloadAttribute(Type type, string? nameRegex = null, string? regexReplace = null) { }
-}
+public sealed class {OverloadAttr}Attribute : Attribute
+{{
+	public {OverloadAttr}Attribute(Type type, string? nameRegex = null, string? regexReplace = null) {{ }}
+}}
 
 [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-public sealed class FormatterAttribute : Attribute
-{
-	public FormatterAttribute(Type type, object[] genericParams, object[] @params) { }
-}
+public sealed class {FormatterAttr}Attribute : Attribute
+{{
+	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params) {{ }}
+}}
 
 [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue, AllowMultiple = true, Inherited = false)]
-public sealed class TAttribute : Attribute
-{
-	public TAttribute(Type? newType = null, Type? forType = null) { }
-}
+public sealed class {TAttr}Attribute : Attribute
+{{
+	public {TAttr}Attribute(Type? newType = null, Type? forType = null) {{ }}
+}}
 
 [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
-public sealed class IntegrityAttribute : Attribute { }
+public sealed class {IntegrityAttr}Attribute : Attribute {{ }}
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
-public sealed class BlackListModeAttribute : Attribute { }
+public sealed class {BlackListModeAttr}Attribute : Attribute {{ }}
 
 [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-public sealed class IgnoreForAttribute : Attribute
-{
-	public IgnoreForAttribute(Type? type = null) { }
-}
+public sealed class {IgnoreForAttr}Attribute : Attribute
+{{
+	public {IgnoreForAttr}Attribute(Type? type = null) {{ }}
+}}
 
 [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-public sealed class AllowForAttribute : Attribute
-{
-	public AllowForAttribute(Type? type = null) { }
-}
+public sealed class {AllowForAttr}Attribute : Attribute
+{{
+	public {AllowForAttr}Attribute(Type? type = null) {{ }}
+}}
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-public sealed class ChangeModifierAttribute : Attribute
-{
-	public ChangeModifierAttribute(string modifier, string newModifier, Type? forType = null) { }
-}
+public sealed class {ChangeModifierAttr}Attribute : Attribute
+{{
+	public {ChangeModifierAttr}Attribute(string modifier, string newModifier, Type? forType = null) {{ }}
+}}
 ";
 }
