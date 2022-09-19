@@ -173,7 +173,7 @@ internal struct Vector3<T>
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 	}
-	
+
 	[Test]
 	public void NameOfSupportTest()
 	{
@@ -210,7 +210,7 @@ internal struct Vector3<T>
 	internal T Z {{ get; private set; }}
 }}
 ";
-		
+
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
