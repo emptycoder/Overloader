@@ -6,13 +6,13 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations;
 
-internal class Main : IChainObj
+internal class Main : IChainMember
 {
-	ChainResult IChainObj.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
+	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		var sb = props.Builder;
 		if (props.Template is null && !props.StartEntry.Syntax.Modifiers.Any(modifier => modifier.Text.Equals("partial")))
-			return ChainResult.BreakChain;
+			return ChainAction.Break;
 
 		sb.AppendUsings(props.StartEntry.Syntax.GetTopParent())
 			.AppendWith("namespace", " ")
@@ -32,12 +32,12 @@ internal class Main : IChainObj
 
 			props.Store.MemberSkip = props.StartEntry.IsBlackListMode;
 			foreach (var worker in Chains.MethodWorkers)
-				if (worker.Execute(props, member) == ChainResult.BreakChain)
+				if (worker.Execute(props, member) == ChainAction.Break)
 					break;
 		}
 
 		sb.NestedDecrease();
 
-		return ChainResult.NextChainMember;
+		return ChainAction.NextMember;
 	}
 }

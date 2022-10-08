@@ -5,6 +5,7 @@ namespace Overloader.Entities;
 internal struct TypeEntrySyntax
 {
 	public readonly TypeDeclarationSyntax Syntax;
+	// TODO: Lazy initialization for List
 	public readonly List<(string ClassName, AttributeArgumentSyntax TypeSyntax)> OverloadTypes = new();
 	public readonly List<AttributeSyntax> FormatterSyntaxes = new();
 	public bool IsBlackListMode = false;

@@ -7,8 +7,7 @@ internal sealed class SwitchParam : IParam
 	private readonly Dictionary<ITypeSymbol, IParam> _data;
 
 	private SwitchParam(Dictionary<ITypeSymbol, IParam> data) => _data = data;
-	public string? Name { get; private init; }
 	ITypeSymbol? IParam.GetType(ITypeSymbol? template) => template is null ? template : _data[template].GetType(template);
 
-	public static SwitchParam Create(Dictionary<ITypeSymbol, IParam> data, string? name = null) => new(data) {Name = name};
+	public static SwitchParam Create(Dictionary<ITypeSymbol, IParam> data) => new(data);
 }

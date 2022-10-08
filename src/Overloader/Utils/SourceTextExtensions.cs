@@ -12,9 +12,8 @@ internal static class SourceTextExtensions
 		int startPos = sourceText.IndexOf('"') + 1;
 		int endPos = sourceText.LastIndexOf('"');
 
-		if (startPos >= endPos)
-			throw new ArgumentException($"Can't get inner text for {sourceText}")
-				.WithLocation(expressionSyntax.GetLocation());
+		if (startPos >= endPos) throw new ArgumentException(
+			$"Can't get inner text for {sourceText}").WithLocation(expressionSyntax);
 
 		return sourceText.GetSubText(new TextSpan(startPos, endPos - startPos)).ToString();
 	}

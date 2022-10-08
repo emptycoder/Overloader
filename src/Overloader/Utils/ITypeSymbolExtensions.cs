@@ -5,17 +5,17 @@ namespace Overloader.Utils;
 // ReSharper disable once InconsistentNaming
 internal static class ITypeSymbolExtensions
 {
-	public static ITypeSymbol SetRootType(this ITypeSymbol typeSymbol, ITypeSymbol newRootType, Compilation compilation) =>
+	public static ITypeSymbol ConstructWithClearType(this ITypeSymbol typeSymbol, ITypeSymbol newRootType, Compilation compilation) =>
 		typeSymbol switch
 		{
 			IArrayTypeSymbol arrayTypeSymbol => compilation.CreateArrayTypeSymbol(
-				arrayTypeSymbol.ElementType.SetRootType(newRootType, compilation)),
+				arrayTypeSymbol.ElementType.ConstructWithClearType(newRootType, compilation)),
 			IPointerTypeSymbol pointerTypeSymbol => compilation.CreatePointerTypeSymbol(
-				pointerTypeSymbol.PointedAtType.SetRootType(newRootType, compilation)),
+				pointerTypeSymbol.PointedAtType.ConstructWithClearType(newRootType, compilation)),
 			_ => newRootType
 		};
 
-	public static INamedTypeSymbol GetRootType(this ITypeSymbol typeSymbol)
+	public static INamedTypeSymbol GetClearType(this ITypeSymbol typeSymbol)
 	{
 		while (true)
 		{

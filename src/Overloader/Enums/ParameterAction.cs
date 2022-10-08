@@ -1,6 +1,6 @@
 ﻿namespace Overloader.Enums;
 
-internal enum ParameterAction : byte
+internal enum ParameterAction : sbyte
 {
 	Nothing,
 	SimpleReplacement,

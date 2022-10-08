@@ -12,25 +12,25 @@ internal static class MethodBodyExtension
 {
 	public static GeneratorProperties WriteMethodBody(this GeneratorProperties props,
 		MethodDeclarationSyntax method,
-		(string Replacment, string ConcatedParams)[] replacements)
+		Span<(string VarName, string ConcatedVars)> replacements)
 	{
 		if (method.ExpressionBody is not null)
 		{
-			props.Builder.HandleChildren(method.ExpressionBody, replacements, props.Template?.ToDisplayString());
+			props.Builder.WriteChildren(method.ExpressionBody, replacements, props.Template?.ToDisplayString());
 			props.Builder.Append(";", 1);
 		}
 		else if (method.Body is not null)
 		{
-			props.Builder.Append(String.Empty, 1);
-			props.Builder.HandleChildren(method.Body, replacements, props.Template?.ToDisplayString());
+			props.Builder.Append(String.Empty, 1)
+				.WriteChildren(method.Body, replacements, props.Template?.ToDisplayString());
 		}
 
 		return props;
 	}
 
-	private static void HandleChildren(this SourceBuilder sb,
+	private static void WriteChildren(this SourceBuilder sb,
 		SyntaxNodeOrToken syntaxNode,
-		(string VarName, string ConcatedVars)[] replacements,
+		Span<(string VarName, string ConcatedVars)> replacements,
 		string? templateStr)
 	{
 		string varName;
@@ -66,13 +66,13 @@ internal static class MethodBodyExtension
 
 					// Don't need go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
-					if (FindReplacement() == -1) goto default;
+					if (varName.FindInReplacements(replacements) == -1) goto default;
 					sb.AppendWoTrim(varName)
 						.AppendWoTrim(syntax.Name.ToString());
 					break;
 				case ArgumentSyntax argSyntax:
 					varName = argSyntax.Expression.ToString();
-					int replacementIndex = FindReplacement();
+					int replacementIndex = varName.FindInReplacements(replacements);
 					if (replacementIndex == -1) goto default;
 					sb.AppendWoTrim(replacements[replacementIndex].ConcatedVars);
 					break;
@@ -88,12 +88,12 @@ internal static class MethodBodyExtension
 					}
 					else if (localReplacements.IsEmpty)
 					{
-						sb.HandleChildren(node, replacements, templateStr);
+						sb.WriteChildren(node, replacements, templateStr);
 					}
 					else
 					{
 						using var statementSb = sb.GetDependentInstance();
-						statementSb.HandleChildren(node, replacements, templateStr);
+						statementSb.WriteChildren(node, replacements, templateStr);
 						string statementStr = statementSb.ToString();
 						foreach ((string key, string value) in localReplacements)
 							statementStr = statementStr.Replace(key, value);
@@ -105,24 +105,23 @@ internal static class MethodBodyExtension
 					break;
 				}
 				default:
-					sb.HandleChildren(node, replacements, templateStr);
+					sb.WriteChildren(node, replacements, templateStr);
 					break;
 			}
 		}
-
-
-		int FindReplacement()
-		{
-			for (int index = 0; index < replacements.Length; index++)
-			{
-				if (!replacements[index].VarName.Equals(varName)) continue;
-				return index;
-			}
-
-			return -1;
-		}
 	}
 
+	private static int FindInReplacements(this string value, Span<(string VarName, string ConcatedVars)> replacements)
+	{
+		for (int index = 0; index < replacements.Length; index++)
+		{
+			if (!replacements[index].VarName.Equals(value)) continue;
+			return index;
+		}
+
+		return -1;
+	}
+	
 	private static string? ParseTrivia(this SyntaxTriviaList triviaList, (string, string)[] buffer,
 		string? templateStr, out Span<(string, string)> replacements)
 	{
@@ -146,14 +145,14 @@ internal static class MethodBodyExtension
 
 					switch (strTrivia[2])
 					{
-						// Replace operation
+						// Replace operator
 						case '#':
 							var kv = strTriviaSpan.SplitAsKV("->");
 							if (kv.Value.IndexOf("${T}", StringComparison.Ordinal) != -1 && templateStr is null) break;
 							kv.Value = kv.Value.Replace("${T}", templateStr);
 							buffer[size++] = kv;
 							break;
-						// Change line operation
+						// Change line operator
 						case '$':
 							var newStatement = strTriviaSpan.Slice(3).Trim();
 							if (newStatement.IndexOf("${T}".AsSpan()) != -1 && templateStr is null) break;

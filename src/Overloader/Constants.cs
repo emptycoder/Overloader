@@ -17,6 +17,7 @@ internal static class Constants
 
 	// ReSharper disable once InconsistentNaming
 	public const string TAttr = "T";
+	public const string CombineWith = "CombineWith";
 	public const string IntegrityAttr = "Integrity";
 	public const string IgnoreForAttr = "IgnoreFor";
 	public const string BlackListModeAttr = "BlackListMode";
@@ -32,37 +33,34 @@ namespace {nameof(Overloader)};
 {AttributesSource}";
 
 	private const string AttributesSource = $@"
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = false)]
-public sealed class {OverloadAttr}Attribute : Attribute
-{{
-	public {OverloadAttr}Attribute(Type type, string? nameRegex = null, string? regexReplace = null) {{ }}
-}}
+/* Global attributes */
 
 [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public sealed class {FormatterAttr}Attribute : Attribute
 {{
-	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params) {{ }}
+	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
 }}
 
-[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue, AllowMultiple = true, Inherited = false)]
-public sealed class {TAttr}Attribute : Attribute
+/* Class or struct attributes */
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = false)]
+public sealed class {OverloadAttr}Attribute : Attribute
 {{
-	public {TAttr}Attribute(Type? newType = null, Type? forType = null) {{ }}
+	public {OverloadAttr}Attribute(Type? type = null, string? nameRegex = null, string? regexReplace = null) {{ }}
 }}
 
-[AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
-public sealed class {IntegrityAttr}Attribute : Attribute {{ }}
-
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
 public sealed class {BlackListModeAttr}Attribute : Attribute {{ }}
 
-[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+/* Method attribtes */
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
 public sealed class {IgnoreForAttr}Attribute : Attribute
 {{
 	public {IgnoreForAttr}Attribute(Type? type = null) {{ }}
 }}
 
-[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
 public sealed class {AllowForAttr}Attribute : Attribute
 {{
 	public {AllowForAttr}Attribute(Type? type = null) {{ }}
@@ -72,6 +70,23 @@ public sealed class {AllowForAttr}Attribute : Attribute
 public sealed class {ChangeModifierAttr}Attribute : Attribute
 {{
 	public {ChangeModifierAttr}Attribute(string modifier, string newModifier, Type? forType = null) {{ }}
+}}
+
+/* Parameter attributes */
+
+[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue, AllowMultiple = true, Inherited = false)]
+public sealed class {TAttr}Attribute : Attribute
+{{
+	public {TAttr}Attribute(Type? newType = null, Type? forType = null) {{ }}
+}}
+
+[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
+public sealed class {IntegrityAttr}Attribute : Attribute {{ }}
+
+[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
+public sealed class {CombineWith}Attribute : Attribute
+{{
+	public {CombineWith}Attribute(string parameterName) {{ }}
 }}
 ";
 }

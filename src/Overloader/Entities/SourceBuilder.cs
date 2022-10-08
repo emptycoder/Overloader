@@ -86,12 +86,33 @@ internal sealed class SourceBuilder : IDisposable
 
 	public override string ToString() => _builder.ToString();
 
+	public string ToStringAndClear()
+	{
+		var result = _builder.ToString();
+		Clear();
+		return result;
+	}
+
+	public string ToStringAndDispose()
+	{
+		string result = _builder.ToString();
+		Dispose();
+		return result;
+	}
+
 	public SourceBuilder GetDependentInstance()
 	{
 		var instance = GetInstance();
 		instance._nestedLevel = _nestedLevel;
 
 		return instance;
+	}
+
+	public SourceBuilder GetClonedInstance()
+	{
+		var newInstance = GetInstance();
+		newInstance._builder.Append(_builder);
+		return newInstance;
 	}
 
 	public static SourceBuilder GetInstance() => SPoolInstance.Allocate() ?? throw new ArgumentException(

@@ -56,25 +56,32 @@ internal static class SyntaxNodeExtensions
 	public static bool TryGetTAttrByTemplate(this ParameterSyntax syntaxNode,
 		IGeneratorProps props,
 		out AttributeSyntax? attr,
-		out bool forceOverloadIntegrity)
+		out bool forceOverloadIntegrity,
+		out string? combineWith)
 	{
+		combineWith = default;
 		forceOverloadIntegrity = false;
 		attr = default;
 		foreach (var attrList in syntaxNode.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
 			string attrName = attribute.Name.GetName();
-			if (attrName.Equals(Constants.IntegrityAttr))
+			switch (attrName)
 			{
-				forceOverloadIntegrity = true;
-				continue;
+				case Constants.IntegrityAttr:
+					forceOverloadIntegrity = true;
+					continue;
+				case Constants.CombineWith:
+					var args = attribute.ArgumentList!.Arguments;
+					if (args.Count != 1) throw new ArgumentException().WithLocation(syntaxNode);
+					combineWith = args[0].GetVariableName();
+					continue;
+				case Constants.TAttr:
+					if (attribute.ArgumentList is {Arguments.Count: > 1} &&
+					    (props.Template is null || attribute.ArgumentList.Arguments[1].EqualsToTemplate(props))) continue;
+					attr = attribute;
+					continue;
 			}
-
-			if (!attrName.Equals(Constants.TAttr)) continue;
-			if (attribute.ArgumentList is {Arguments.Count: > 1} &&
-			    (props.Template is null || attribute.ArgumentList.Arguments[1].EqualsToTemplate(props))) continue;
-
-			attr = attribute;
 		}
 
 		return attr != null;
@@ -86,7 +93,7 @@ internal static class SyntaxNodeExtensions
 		IdentifierNameSyntax identifierSyntax => identifierSyntax.Identifier.ValueText,
 		// [namespace.name]
 		QualifiedNameSyntax qualifiedNameSyntax => qualifiedNameSyntax.Right.Identifier.ValueText,
-		_ => throw new ArgumentException("Unknown attribute.").WithLocation(nameSyntax.GetLocation())
+		_ => throw new ArgumentException("Unknown attribute.").WithLocation(nameSyntax)
 	};
 
 	public static SyntaxNode GetTopParent(this SyntaxNode syntax)
@@ -100,18 +107,21 @@ internal static class SyntaxNodeExtensions
 
 	public static ITypeSymbol GetType(this AttributeArgumentSyntax type, Compilation compilation) =>
 		GetType(type.Expression, compilation);
+	
+	public static ITypeSymbol GetType(this ParameterSyntax type, Compilation compilation) =>
+		GetType(type.Type!, compilation);
 
-	public static ITypeSymbol GetType(this CSharpSyntaxNode node, Compilation compilation)
+	public static ITypeSymbol GetType(this CSharpSyntaxNode syntaxNode, Compilation compilation)
 	{
-		if (node is TypeOfExpressionSyntax typeOfExpressionSyntax)
-			node = typeOfExpressionSyntax.Type;
+		if (syntaxNode is TypeOfExpressionSyntax typeOfExpressionSyntax)
+			syntaxNode = typeOfExpressionSyntax.Type;
 
-		if (node is RefTypeSyntax refTypeSyntax)
-			node = refTypeSyntax.Type;
+		if (syntaxNode is RefTypeSyntax refTypeSyntax)
+			syntaxNode = refTypeSyntax.Type;
 
-		var semanticModel = compilation.GetSemanticModel(node.SyntaxTree);
-		return semanticModel.GetTypeInfo(node).Type ??
-		       throw new ArgumentException("Type not found.").WithLocation(node.GetLocation());
+		var semanticModel = compilation.GetSemanticModel(syntaxNode.SyntaxTree);
+		return semanticModel.GetTypeInfo(syntaxNode).Type ?? throw new ArgumentException(
+			$"Type not found or {syntaxNode.ToFullString()} isn't type.").WithLocation(syntaxNode);
 	}
 
 	public static Dictionary<ITypeSymbol, Formatter> GetFormatters(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
@@ -119,7 +129,7 @@ internal static class SyntaxNodeExtensions
 		var dict = new Dictionary<ITypeSymbol, Formatter>(attributeSyntaxes.Count, SymbolEqualityComparer.Default);
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
-			var result = Formatter.ParseFormatter(formatterSyntax, compilation);
+			var result = Formatter.Parse(formatterSyntax, compilation);
 			dict.Add(result.Type, result.Formatter);
 		}
 
@@ -145,4 +155,30 @@ internal static class SyntaxNodeExtensions
 		typeSyntax is RefTypeSyntax refSyntax
 			? $"{refSyntax.RefKeyword.ToFullString()}{refSyntax.ReadOnlyKeyword.ToFullString()}"
 			: string.Empty;
+
+	public static string GetVariableName(this SyntaxNode syntaxNode)
+	{
+		string name;
+		switch (syntaxNode)
+		{
+			case LiteralExpressionSyntax str:
+				name = str.GetInnerText();
+				break;
+			case InvocationExpressionSyntax {Expression: IdentifierNameSyntax {Identifier.Text: "nameof"}} invocationExpressionSyntax:
+				var args = invocationExpressionSyntax.ArgumentList.Arguments;
+				if (args.Count != 1)
+					throw new ArgumentException("args.Count != 1")
+						.WithLocation(invocationExpressionSyntax);
+				if (args[0].Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax)
+					throw new ArgumentException("Expression isn't MemberAccessExpressionSyntax")
+						.WithLocation(invocationExpressionSyntax);
+				name = memberAccessExpressionSyntax.Name.Identifier.Text;
+				break;
+			default:
+				throw new ArgumentException("Expression isn't literal or nameof syntax.")
+					.WithLocation(syntaxNode);
+		}
+
+		return name;
+	}
 }

@@ -21,7 +21,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 	{
 		using var gsb = (GeneratorProperties) obj;
 		gsb.Builder.AppendWoTrim(Constants.DefaultHeader);
-		if (Chains.Main.Execute(gsb, gsb.StartEntry.Syntax) != ChainResult.BreakChain)
+		if (Chains.Main.Execute(gsb, gsb.StartEntry.Syntax) != ChainAction.Break)
 			gsb.ReleaseAsOutput();
 	};
 
@@ -120,53 +120,63 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 	private sealed class SyntaxReceiver : ISyntaxReceiver
 	{
-		public readonly List<AttributeSyntax> GlobalFormatterSyntaxes = new();
-		public List<TypeEntrySyntax> Candidates { get; } = new();
+		public readonly List<AttributeSyntax> GlobalFormatterSyntaxes = new(64);
+		public readonly List<AttributeSyntax> Transitions = new(64);
+		public List<TypeEntrySyntax> Candidates { get; } = new(128);
 
 		public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
 		{
 			if (syntaxNode is AttributeListSyntax {Target.Identifier.Text: "assembly"} attributeListSyntax)
 				foreach (var attribute in attributeListSyntax.Attributes)
-					if (attribute.Name.GetName() == Constants.FormatterAttr)
-						GlobalFormatterSyntaxes.Add(attribute);
+					switch (attribute.Name.GetName())
+					{
+						case Constants.FormatterAttr:
+							GlobalFormatterSyntaxes.Add(attribute);
+							break;
+					}
 
 			if (syntaxNode is not TypeDeclarationSyntax {AttributeLists.Count: >= 1} declarationSyntax) return;
 
 			var typeEntry = new TypeEntrySyntax(declarationSyntax);
+			bool isCandidate = false;
 			foreach (var attributeList in declarationSyntax.AttributeLists)
 			foreach (var attribute in attributeList.Attributes)
 			{
-				string attrName = attribute.Name.GetName();
-				if (attrName == Constants.OverloadAttr
-				    && attribute.ArgumentList is not null
-				    && attribute.ArgumentList.Arguments.Count > 0)
+				switch (attribute.Name.GetName())
 				{
-					var args = attribute.ArgumentList.Arguments;
-					string className = declarationSyntax.Identifier.ValueText;
-					className = args.Count switch
+					case Constants.OverloadAttr 
+				    when attribute.ArgumentList is not null :
 					{
-						1 => className,
-						2 => throw new ArgumentException($"Must be set regex replacement parameter for {Constants.OverloadAttr}.")
-							.WithLocation(attribute.GetLocation()),
-						3 => Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText()),
-						_ => throw new ArgumentException($"Unexpected count of args for {Constants.OverloadAttr}.")
-							.WithLocation(attribute.GetLocation())
-					};
+						var args = attribute.ArgumentList.Arguments;
+						if (args.Count > 0)
+						{
+							string className = declarationSyntax.Identifier.ValueText;
+							className = args.Count switch
+							{
+								1 => className,
+								2 => throw new ArgumentException($"Must be set regex replacement parameter for {Constants.OverloadAttr}.")
+									.WithLocation(attribute),
+								3 => Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText()),
+								_ => throw new ArgumentException($"Unexpected count of args for {Constants.OverloadAttr}.")
+									.WithLocation(attribute)
+							};
 
-					typeEntry.OverloadTypes.Add((className, args[0]));
-				}
-				else if (attrName == Constants.BlackListModeAttr)
-				{
-					typeEntry.IsBlackListMode = true;
-				}
-				else if (attrName == Constants.FormatterAttr)
-				{
-					typeEntry.FormatterSyntaxes.Add(attribute);
+							typeEntry.OverloadTypes.Add((className, args[0]));
+						}
+
+						isCandidate = true;
+						break;
+					}
+					case Constants.BlackListModeAttr:
+						typeEntry.IsBlackListMode = true;
+						break;
+					case Constants.FormatterAttr:
+						typeEntry.FormatterSyntaxes.Add(attribute);
+						break;
 				}
 			}
 
-			if (typeEntry.OverloadTypes.Any())
-				Candidates.Add(typeEntry);
+			if (isCandidate) Candidates.Add(typeEntry);
 		}
 	}
 }

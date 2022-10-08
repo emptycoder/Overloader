@@ -7,18 +7,21 @@ namespace Overloader.ChainDeclarations;
 
 public static class Chains
 {
-	internal static readonly IChainObj Main = new Main();
-
-	internal static readonly IChainObj[] MethodWorkers =
+	internal static readonly IChainMember Main = new Main();
+	internal static readonly IChainMember[] MethodWorkers =
 	{
-		new AnalyzeMethodAttributes(),
-		new AnalyzeMethodParams(),
-		new GenerateFormatterOverloads(),
-		new GenerateTypeOverloads()
+		/* 1 */ new AnalyzeMethodAttributes(),
+		/* 2 */ new AnalyzeMethodParams(),
+		/* 3 */ new DeconstructOverload(),
+		/* 3.1 */ new CombinedDeconstructOverload(),
+		/* 3.2 */ new TransitionDeconstructOverloads(),
+		/* 3.3 */ new CombinedTransitionDeconstructOverloads(),
+		/* 4 */ new IntegrityOverload(),
+		/* 4.1 */ new CombinedIntegrityOverload()
 	};
 }
 
-internal interface IChainObj
+internal interface IChainMember
 {
-	internal ChainResult Execute(GeneratorProperties gsb, SyntaxNode syntaxNode);
+	internal ChainAction Execute(GeneratorProperties props, SyntaxNode syntaxNode);
 }

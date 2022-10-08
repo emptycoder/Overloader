@@ -8,24 +8,28 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-internal sealed class AnalyzeMethodParams : IChainObj
+internal sealed class AnalyzeMethodParams : IChainMember
 {
-	unsafe ChainResult IChainObj.Execute(GeneratorProperties gsb, SyntaxNode syntaxNode)
+	unsafe ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
+		props.Store.FormattersWoIntegrityCount = 0;
+		
+		
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
-		gsb.Store.OverloadMap = ArrayPool<(ParameterAction ParameterAction, ITypeSymbol Type)>.Shared.Rent(parameters.Count);
+		props.Store.OverloadMap = ArrayPool<ParameterData>.Shared.Rent(parameters.Count);
 		for (int index = 0; index < parameters.Count; index++)
 		{
-			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(gsb, out var attribute, out bool forceOverloadIntegrity);
+			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(props, out var attribute,
+				out bool forceOverloadIntegrity,
+				out string? combineWith);
 			var parameterType = (parameters[index].Type ?? throw new ArgumentException(
-						$"Parameter {parameters[index].Identifier} type is null.")
-					.WithLocation(parameters[index].GetLocation()))
-				.GetType(gsb.Compilation);
+						$"Parameter {parameters[index].Identifier} type is null.").WithLocation(parameters[index]))
+				.GetType(props.Compilation);
 
 			var parameterAction = shouldBeReplaced switch
 			{
-				true when gsb.TryGetFormatter(parameterType.GetRootType(), out var formatter) =>
+				true when props.TryGetFormatter(parameterType.GetClearType(), out var formatter) =>
 					forceOverloadIntegrity || formatter.Params.Length == 0 || parameterType is not INamedTypeSymbol
 						? ParameterAction.FormatterIntegrityReplacement
 						: ParameterAction.FormatterReplacement,
@@ -36,19 +40,19 @@ internal sealed class AnalyzeMethodParams : IChainObj
 			var newParameterType = parameterAction switch
 			{
 				ParameterAction.Nothing => default,
-				ParameterAction.SimpleReplacement => gsb.Template,
-				ParameterAction.CustomReplacement => attribute!.ArgumentList!.Arguments[0].GetType(gsb.Compilation),
+				ParameterAction.SimpleReplacement => props.Template,
+				ParameterAction.CustomReplacement => attribute!.ArgumentList!.Arguments[0].GetType(props.Compilation),
 				ParameterAction.FormatterReplacement => default,
 				ParameterAction.FormatterIntegrityReplacement => default,
 				_ => throw new ArgumentOutOfRangeException()
 			} ?? parameterType;
 
-			gsb.Store.OverloadMap[index] = (parameterAction, newParameterType);
+			props.Store.OverloadMap[index] = new ParameterData(parameterAction, newParameterType, combineWith);
 			bool isFormatter = parameterAction is ParameterAction.FormatterReplacement;
-			gsb.Store.FormattersWoIntegrityCount += *(byte*) &isFormatter;
-			gsb.Store.IsSmthChanged |= shouldBeReplaced;
+			props.Store.FormattersWoIntegrityCount += *(byte*) &isFormatter;
+			props.Store.IsSmthChanged |= shouldBeReplaced;
 		}
 
-		return ChainResult.NextChainMember;
+		return ChainAction.NextMember;
 	}
 }
