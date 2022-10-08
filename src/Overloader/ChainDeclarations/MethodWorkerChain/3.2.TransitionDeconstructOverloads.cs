@@ -34,6 +34,7 @@ internal sealed class TransitionDeconstructOverloads : IChainMember {
 			maxTransitionsCount[formatterIndex++] = formatter.Transitions.Length;
 		}
 
+		// Check that transitions exists
 		for (int index = 0;;)
 		{
 			if (maxTransitionsCount[index] != 0) break;
@@ -46,7 +47,7 @@ internal sealed class TransitionDeconstructOverloads : IChainMember {
 		{
 			props.Builder.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 				.Append("(");
-			WriteOverload(props.Builder, bodyBuilder, props, parameters, transitionIndexes);
+			props.Builder.WriteOverload(bodyBuilder, props, parameters, transitionIndexes);
 			props.Builder.Append(")")
 				.AppendWoTrim(" =>\n\t")
 				.Append(bodyBuilder.ToStringAndClear())
@@ -75,74 +76,6 @@ internal sealed class TransitionDeconstructOverloads : IChainMember {
 				if (++index == transitionIndexes.Length)
 					return ChainAction.NextMember;
 			}
-		}
-	}
-
-	private static void WriteOverload(SourceBuilder headerBuilder,
-		SourceBuilder bodyBuilder,
-		GeneratorProperties props,
-		SeparatedSyntaxList<ParameterSyntax> parameters,
-		Span<int> transitionIndexes)
-	{
-		for (int index = 0, paramIndex = 0; index < parameters.Count; index++)
-		{
-			var mappedParam = props.Store.OverloadMap![index];
-			var parameter = parameters[index];
-
-			string paramName = parameter.Identifier.ToString();
-			switch (mappedParam.ParameterAction)
-			{
-				case ParameterAction.FormatterIntegrityReplacement when props.Template is null:
-				case ParameterAction.Nothing:
-					headerBuilder.Append(parameter.ToFullString());
-					bodyBuilder.AppendWoTrim(paramName);
-					break;
-				case ParameterAction.SimpleReplacement:
-				case ParameterAction.CustomReplacement:
-					headerBuilder.AppendParameter(parameter, mappedParam.Type, props.Compilation);
-					bodyBuilder.AppendWoTrim(paramName);
-					break;
-				case ParameterAction.FormatterIntegrityReplacement:
-					headerBuilder.AppendIntegrityParam(props, mappedParam.Type, parameter);
-					bodyBuilder.AppendWoTrim(paramName);
-					break;
-				case ParameterAction.FormatterReplacement:
-					// string concatedParams = props.AppendFormatterParam(mappedParam.Type, paramName);
-					if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
-						throw new ArgumentException("Unexpected exception. Formatters changed in real time.")
-							.WithLocation(parameter);
-					
-					var transition = formatter.Transitions[transitionIndexes[paramIndex++]];
-					for (int linkIndex = 0;;)
-					{
-						var transitionLink = transition.Links[linkIndex];
-						string variableName = $"{paramName}{linkIndex.ToString()}";
-						headerBuilder.AppendWith(transitionLink.Type.ToDisplayString(), " ")
-							.Append(variableName);
-
-						if (++linkIndex == transition.Links.Length) break;
-						headerBuilder.AppendWoTrim(", ");
-					}
-					
-					for (int transitionParamIndex = 0;;)
-					{
-						var formatterParam = formatter.Params[transitionParamIndex];
-						var replacement = transition.FindReplacement(formatterParam.Name, out int linkIndex);
-						bodyBuilder.Append($"{paramName}{linkIndex.ToString()}.{replacement}");
-						
-						if (++transitionParamIndex == formatter.Params.Length) break;
-						bodyBuilder.AppendWoTrim(", ");
-					}
-
-					break;
-				default:
-					throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
-						.WithLocation(parameter);
-			}
-			
-			if (++index == parameters.Count) break;
-			headerBuilder.AppendWoTrim(", ");
-			bodyBuilder.AppendWoTrim(", ");
 		}
 	}
 }

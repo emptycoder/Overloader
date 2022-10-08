@@ -27,7 +27,6 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 		props.Builder.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 			.Append("(");
 		
-		var entryType = entry.GetType(props.Compilation);
 		for (int index = 0;;)
 		{
 			var parameter = parameters[index];
@@ -61,11 +60,6 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 				if (++index == parameters.Count) break;
 				props.Builder.AppendWoTrim(", ");
 				bodyBuilder.AppendWoTrim(", ");
-			}
-			else if (SymbolEqualityComparer.Default.Equals(
-				         entryType.GetMemberType(mappedParam.CombineWith), mappedParam.Type))
-			{
-				// TODO: 
 			}
 			else
 			{
