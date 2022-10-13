@@ -1,9 +1,8 @@
-﻿using System.Buffers;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 namespace Overloader.Entities;
 
-internal sealed class StoreDictionary : IDisposable
+internal sealed class StoreDictionary
 {
 	public ushort FormattersWoIntegrityCount;
 	public ushort CombineParametersCount;
@@ -12,10 +11,4 @@ internal sealed class StoreDictionary : IDisposable
 	public string[]? Modifiers;
 	public ParameterData[]? OverloadMap;
 	public ITypeSymbol ReturnType = default!;
-
-	public void Dispose()
-	{
-		if (OverloadMap is not null)
-			ArrayPool<ParameterData>.Shared.Return(OverloadMap);
-	}
 }

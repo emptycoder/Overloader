@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Overloader.ChainDeclarations;
@@ -121,12 +122,12 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 	private sealed class SyntaxReceiver : ISyntaxReceiver
 	{
 		public readonly List<AttributeSyntax> GlobalFormatterSyntaxes = new(64);
-		public readonly List<AttributeSyntax> Transitions = new(64);
 		public List<TypeEntrySyntax> Candidates { get; } = new(128);
 
 		public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
 		{
-			if (syntaxNode is AttributeListSyntax {Target.Identifier.Text: "assembly"} attributeListSyntax)
+			if (syntaxNode is AttributeListSyntax {Target.Identifier.RawKind: (int) SyntaxKind.AssemblyKeyword} attributeListSyntax)
+			{
 				foreach (var attribute in attributeListSyntax.Attributes)
 					switch (attribute.Name.GetName())
 					{
@@ -134,6 +135,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 							GlobalFormatterSyntaxes.Add(attribute);
 							break;
 					}
+			}
 
 			if (syntaxNode is not TypeDeclarationSyntax {AttributeLists.Count: >= 1} declarationSyntax) return;
 

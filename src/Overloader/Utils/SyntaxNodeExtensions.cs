@@ -9,7 +9,7 @@ namespace Overloader.Utils;
 
 internal static class SyntaxNodeExtensions
 {
-	public static string GetNamespace(this BaseTypeDeclarationSyntax syntax)
+	public static string GetNamespace(this SyntaxNode syntax)
 	{
 		// If we don't have a namespace at all we'll return an empty string
 		// This accounts for the "default namespace" case
@@ -17,35 +17,53 @@ internal static class SyntaxNodeExtensions
 
 		// Get the containing syntax node for the type declaration
 		// (could be a nested type, for example)
-		var potentialNamespaceParent = syntax.Parent;
+		var potentialNamespaceParent = syntax;
 
 		// Keep moving "out" of nested classes etc until we get to a namespace
 		// or until we run out of parents
-		while (potentialNamespaceParent != null &&
-		       potentialNamespaceParent is not NamespaceDeclarationSyntax
+		while (potentialNamespaceParent is not NamespaceDeclarationSyntax
 		       && potentialNamespaceParent is not FileScopedNamespaceDeclarationSyntax)
 		{
-			potentialNamespaceParent = potentialNamespaceParent.Parent;
+			var parent = potentialNamespaceParent.Parent;
+			if (parent is null) break;
+			potentialNamespaceParent = parent;
 		}
 
 		// Build up the final namespace by looping until we no longer have a namespace declaration
-		if (potentialNamespaceParent is BaseNamespaceDeclarationSyntax namespaceParent)
+		NameSpace:
+		switch (potentialNamespaceParent)
 		{
-			// We have a namespace. Use that as the type
-			nameSpace = namespaceParent.Name.ToString();
-
-			// Keep moving "out" of the namespace declarations until we 
-			// run out of nested namespace declarations
-			while (true)
+			case BaseNamespaceDeclarationSyntax namespaceParent:
 			{
-				if (namespaceParent.Parent is not NamespaceDeclarationSyntax parent)
+				// We have a namespace. Use that as the type
+				nameSpace = namespaceParent.Name.ToString();
+
+				// Keep moving "out" of the namespace declarations until we 
+				// run out of nested namespace declarations
+				while (true)
 				{
-					break;
+					if (namespaceParent.Parent is not NamespaceDeclarationSyntax parent)
+					{
+						break;
+					}
+
+					// Add the outer namespace as a prefix to the final namespace
+					nameSpace = $"{namespaceParent.Name}.{nameSpace}";
+					namespaceParent = parent;
 				}
 
-				// Add the outer namespace as a prefix to the final namespace
-				nameSpace = $"{namespaceParent.Name}.{nameSpace}";
-				namespaceParent = parent;
+				break;
+			}
+			case CompilationUnitSyntax unitSyntax:
+			{
+				foreach (var member in unitSyntax.Members)
+				{
+					if (member is not (NamespaceDeclarationSyntax or FileScopedNamespaceDeclarationSyntax)) continue;
+					potentialNamespaceParent = member;
+					goto NameSpace;
+				}
+
+				break;
 			}
 		}
 
@@ -74,7 +92,7 @@ internal static class SyntaxNodeExtensions
 				case Constants.CombineWith:
 					var args = attribute.ArgumentList!.Arguments;
 					if (args.Count != 1) throw new ArgumentException().WithLocation(syntaxNode);
-					combineWith = args[0].GetVariableName();
+					combineWith = args[0].Expression.GetVariableName();
 					continue;
 				case Constants.TAttr:
 					if (attribute.ArgumentList is {Arguments.Count: > 1} &&
@@ -169,10 +187,13 @@ internal static class SyntaxNodeExtensions
 				if (args.Count != 1)
 					throw new ArgumentException("args.Count != 1")
 						.WithLocation(invocationExpressionSyntax);
-				if (args[0].Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax)
-					throw new ArgumentException("Expression isn't MemberAccessExpressionSyntax")
-						.WithLocation(invocationExpressionSyntax);
-				name = memberAccessExpressionSyntax.Name.Identifier.Text;
+				name = args[0].Expression switch
+				{
+					MemberAccessExpressionSyntax syntax => syntax.Name.Identifier.Text,
+					IdentifierNameSyntax syntax => syntax.Identifier.Text,
+					_ => throw new ArgumentException("Expression isn't MemberAccessExpressionSyntax")
+						.WithLocation(invocationExpressionSyntax)
+				};
 				break;
 			default:
 				throw new ArgumentException("Expression isn't literal or nameof syntax.")

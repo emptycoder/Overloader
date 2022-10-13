@@ -5,10 +5,18 @@ namespace Overloader.Entities;
 internal struct TypeEntrySyntax
 {
 	public readonly TypeDeclarationSyntax Syntax;
-	// TODO: Lazy initialization for List
-	public readonly List<(string ClassName, AttributeArgumentSyntax TypeSyntax)> OverloadTypes = new();
-	public readonly List<AttributeSyntax> FormatterSyntaxes = new();
+	private LazyList<(string ClassName, AttributeArgumentSyntax TypeSyntax)> _overloadTypes = new();
+	public List<(string ClassName, AttributeArgumentSyntax TypeSyntax)> OverloadTypes => _overloadTypes.Value;
+	private LazyList<AttributeSyntax> _formatterSyntaxes = new();
+	public List<AttributeSyntax> FormatterSyntaxes => _formatterSyntaxes.Value;
 	public bool IsBlackListMode = false;
 
+	public TypeEntrySyntax() => throw new NotSupportedException();
 	public TypeEntrySyntax(TypeDeclarationSyntax syntax) => Syntax = syntax;
+	
+	private struct LazyList<T>
+	{
+		private List<T>? _list;
+		public List<T> Value => _list ??= new List<T>();
+	}
 }

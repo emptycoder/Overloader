@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
+using Overloader.Entities.Builders;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -16,22 +17,30 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 		    || props.Store.FormattersWoIntegrityCount == 0
 		    || props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;
+		
+		if (!props.Store.OverloadMap.Any(param =>
+			    param.ParameterAction is ParameterAction.FormatterReplacement
+			    && param.CombineIndex == -1))
+			return ChainAction.NextMember;
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
 
 		using var bodyBuilder = SourceBuilder.GetInstance();
-		bodyBuilder.Append(entry.Identifier.ToString())
+		bodyBuilder
+			.Append(entry.Identifier.ToString())
 			.Append("(");
 
-		props.Builder.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+		props.Builder
+			.AppendStepNameComment(nameof(CombinedDeconstructOverload))
+			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 			.Append("(");
 		
 		for (int index = 0;;)
 		{
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
-			if (mappedParam.CombineWith is null)
+			if (mappedParam.CombineIndex == -1)
 			{
 				string paramName = parameter.Identifier.ToString();
 				switch (mappedParam.ParameterAction)
@@ -39,31 +48,34 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 					case ParameterAction.FormatterIntegrityReplacement when props.Template is null:
 					case ParameterAction.Nothing:
 						props.Builder.Append(parameter.ToFullString());
+						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
 						props.Builder.AppendParameter(parameter, mappedParam.Type, props.Compilation);
+						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:
 						props.Builder.AppendIntegrityParam(props, mappedParam.Type, parameter);
+						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterReplacement:
-						props.AppendFormatterParam(mappedParam.Type, paramName);
+						var concatedParams = props.Builder.AppendFormatterParam(props, mappedParam.Type, paramName);
+						bodyBuilder.AppendWoTrim(concatedParams);
 						break;
 					default:
 						throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
 							.WithLocation(parameter);
 				}
 
-				bodyBuilder.AppendWoTrim(paramName);
-				
 				if (++index == parameters.Count) break;
-				props.Builder.AppendWoTrim(", ");
+				if (props.Store.OverloadMap[index].CombineIndex == -1)
+					props.Builder.AppendWoTrim(", ");
 				bodyBuilder.AppendWoTrim(", ");
 			}
 			else
 			{
-				bodyBuilder.AppendWoTrim(mappedParam.CombineWith);
+				bodyBuilder.AppendCombined(props, mappedParam, parameters[mappedParam.CombineIndex]);
 				if (++index == parameters.Count) break;
 				bodyBuilder.AppendWoTrim(", ");
 			}
@@ -71,8 +83,9 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 
 		props.Builder.Append(")")
 			.AppendWoTrim(" =>\n\t")
+			.AppendWoTrim(entry.ReturnType.GetPreTypeValues())
 			.Append(bodyBuilder.ToString())
-			.Append(");");
+			.AppendWoTrim(");", 1);
 
 		return ChainAction.NextMember;
 	}

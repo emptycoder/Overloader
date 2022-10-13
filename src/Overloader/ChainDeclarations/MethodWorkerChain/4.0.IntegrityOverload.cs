@@ -24,8 +24,11 @@ internal sealed class IntegrityOverload : IChainMember
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
 		
-		props.Builder.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+		props.Builder
+			.AppendStepNameComment(nameof(IntegrityOverload))
+			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 			.Append("(");
+		
 		if (parameters.Count == 0) goto CloseParameterBracket;
 		
 		for (int index = 0;;)

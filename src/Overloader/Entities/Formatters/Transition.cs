@@ -35,13 +35,18 @@ internal sealed record TransitionLink(ITypeSymbol Type, Dictionary<string, strin
 {
 	public static TransitionLink Parse(ExpressionSyntax expression, Compilation compilation)
 	{
-		// TODO: Description of errors
 		if (expression is not InitializerExpressionSyntax { Expressions: var transitionExpressions })
-			throw new ArgumentException($"");
-		if (transitionExpressions.Count != 2) throw new ArgumentException($"Not key/value");
+			throw new ArgumentException($"Expression isn't {nameof(InitializerExpressionSyntax)} expression.")
+				.WithLocation(expression);
+		if (transitionExpressions.Count != 2)
+			throw new ArgumentException($"Not key/value. Count of expressions ({transitionExpressions.Count}) not equals to 2.")
+				.WithLocation(expression);
 		if (transitionExpressions[1] is not InitializerExpressionSyntax { Expressions: var mapExpressions })
-			throw new ArgumentException();
-		if (mapExpressions.Count % 2 != 0) throw new ArgumentException();
+			throw new ArgumentException($"Expression isn't {nameof(InitializerExpressionSyntax)} expression.")
+				.WithLocation(expression);
+		if (mapExpressions.Count % 2 != 0)
+			throw new ArgumentException("Not key/value. Map for expressions must contains only even count of links.")
+				.WithLocation(expression);
 
 		var paramsMap = new Dictionary<string, string>(mapExpressions.Count / 2);
 		for (int index = 0; index < mapExpressions.Count; index++)

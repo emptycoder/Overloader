@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
+using Overloader.Entities.Builders;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -45,13 +46,15 @@ internal sealed class TransitionDeconstructOverloads : IChainMember {
 		using var bodyBuilder = SourceBuilder.GetInstance();
 		for (;;)
 		{
-			props.Builder.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+			props.Builder
+				.AppendStepNameComment(nameof(TransitionDeconstructOverloads))
+				.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 				.Append("(");
-			props.Builder.WriteOverload(bodyBuilder, props, parameters, transitionIndexes);
+			props.Builder.WriteTransitionOverload(bodyBuilder, props, parameters, transitionIndexes);
 			props.Builder.Append(")")
 				.AppendWoTrim(" =>\n\t")
 				.Append(bodyBuilder.ToStringAndClear())
-				.Append(");");
+				.AppendWoTrim(");", 1);
 			
 			/*
 				0 0 0 0 0

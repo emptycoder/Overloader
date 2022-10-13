@@ -3,4 +3,4 @@ using Overloader.Enums;
 
 namespace Overloader.Entities;
 
-internal sealed record ParameterData(ParameterAction ParameterAction, ITypeSymbol Type, string? CombineWith);
+internal sealed record ParameterData(ParameterAction ParameterAction, ITypeSymbol Type, int CombineIndex);

@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
+using Overloader.Entities.Builders;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -26,7 +27,7 @@ internal sealed class CombinedTransitionDeconstructOverloads : IChainMember {
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap![index];
 			if (mappedParam.ParameterAction != ParameterAction.FormatterReplacement) continue;
-			if (mappedParam.CombineWith is not null)
+			if (mappedParam.CombineIndex != -1)
 			{
 				countOfCombineWith++;
 				continue;
@@ -39,6 +40,7 @@ internal sealed class CombinedTransitionDeconstructOverloads : IChainMember {
 
 		maxTransitionsCount = maxTransitionsCount.Slice(0, props.Store.FormattersWoIntegrityCount - countOfCombineWith);
 
+		if (maxTransitionsCount.Length == 0) return ChainAction.NextMember;
 		// Check that transitions exists
 		for (int index = 0;;)
 		{
@@ -50,13 +52,16 @@ internal sealed class CombinedTransitionDeconstructOverloads : IChainMember {
 		using var bodyBuilder = SourceBuilder.GetInstance();
 		for (;;)
 		{
-			props.Builder.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+			props.Builder
+				.AppendStepNameComment(nameof(CombinedTransitionDeconstructOverloads))
+				.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 				.Append("(");
-			props.Builder.WriteOverload(bodyBuilder, props, parameters, transitionIndexes, true);
+			props.Builder.WriteTransitionOverload(bodyBuilder, props, parameters, transitionIndexes, true);
 			props.Builder.Append(")")
 				.AppendWoTrim(" =>\n\t")
+				.AppendWoTrim(entry.ReturnType.GetPreTypeValues())
 				.Append(bodyBuilder.ToStringAndClear())
-				.Append(");");
+				.AppendWoTrim(");", 1);
 			
 			/*
 				0 0 0 0 0

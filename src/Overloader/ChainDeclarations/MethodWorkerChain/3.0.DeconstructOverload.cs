@@ -28,7 +28,9 @@ internal sealed class DeconstructOverload : IChainMember
 		var replacementVariableNames = ArrayPool<(string Replacement, string ConcatedParams)>
 			.Shared.Rent(props.Store.FormattersWoIntegrityCount);
 
-		props.Builder.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+		props.Builder
+			.AppendStepNameComment(nameof(DeconstructOverload))
+			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 			.Append("(");
 
 		for (int index = 0;;)
@@ -51,7 +53,7 @@ internal sealed class DeconstructOverload : IChainMember
 					break;
 				case ParameterAction.FormatterReplacement:
 					string paramName = parameter.Identifier.ToString();
-					string concatedParams = props.AppendFormatterParam(mappedParam.Type, paramName);
+					string concatedParams = props.Builder.AppendFormatterParam(props, mappedParam.Type, paramName);
 					replacementVariableNames[replacementVariableIndex++] = (paramName, concatedParams);
 					break;
 				default:

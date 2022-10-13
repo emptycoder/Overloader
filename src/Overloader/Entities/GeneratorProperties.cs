@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Overloader.Entities.Builders;
 using Overloader.Entities.Formatters;
 
 namespace Overloader.Entities;
@@ -42,11 +43,7 @@ internal class GeneratorProperties : IGeneratorProps, IDisposable
 		}
 	}
 	
-	void IDisposable.Dispose()
-	{
-		Builder.Dispose();
-		Store.Dispose();
-	}
+	void IDisposable.Dispose() => Builder.Dispose();
 }
 
 public interface IGeneratorProps

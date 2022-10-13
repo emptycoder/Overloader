@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
+using Overloader.Entities.Builders;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -9,10 +11,10 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 
 internal static class TransitionExtensions
 {
-	public static void WriteOverload(this SourceBuilder headerBuilder,
+	public static void WriteTransitionOverload(this SourceBuilder headerBuilder,
 		SourceBuilder bodyBuilder,
 		GeneratorProperties props,
-		SeparatedSyntaxList<ParameterSyntax> parameters,
+		in SeparatedSyntaxList<ParameterSyntax> parameters,
 		Span<int> transitionIndexes,
 		bool combineWithMode = false)
 	{
@@ -21,7 +23,7 @@ internal static class TransitionExtensions
 			var mappedParam = props.Store.OverloadMap![index];
 			var parameter = parameters[index];
 
-			if (combineWithMode && mappedParam.CombineWith is null)
+			if (!combineWithMode || mappedParam.CombineIndex == -1)
 			{
 				string paramName = parameter.Identifier.ToString();
 				switch (mappedParam.ParameterAction)
@@ -29,16 +31,16 @@ internal static class TransitionExtensions
 					case ParameterAction.FormatterIntegrityReplacement when props.Template is null:
 					case ParameterAction.Nothing:
 						headerBuilder.Append(parameter.ToFullString());
-						bodyBuilder.AppendWoTrim(paramName);
+						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
 						headerBuilder.AppendParameter(parameter, mappedParam.Type, props.Compilation);
-						bodyBuilder.AppendWoTrim(paramName);
+						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:
 						headerBuilder.AppendIntegrityParam(props, mappedParam.Type, parameter);
-						bodyBuilder.AppendWoTrim(paramName);
+						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterReplacement:
 						if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
@@ -76,15 +78,51 @@ internal static class TransitionExtensions
 				}
 				
 				if (++index == parameters.Count) break;
-				headerBuilder.AppendWoTrim(", ");
+				if (!combineWithMode || props.Store.OverloadMap[index].CombineIndex == -1)
+					headerBuilder.AppendWoTrim(", ");
 				bodyBuilder.AppendWoTrim(", ");
 			}
 			else
 			{
-				bodyBuilder.AppendWoTrim(mappedParam.CombineWith);
+				bodyBuilder.AppendCombined(props, mappedParam, parameters[mappedParam.CombineIndex]);
 				if (++index == parameters.Count) break;
 				bodyBuilder.AppendWoTrim(", ");
 			}
 		}
+	}
+
+	public static void AppendCombined(this SourceBuilder bodyBuilder,
+		GeneratorProperties props,
+		ParameterData mappedParam,
+		ParameterSyntax parameter)
+	{
+		switch (mappedParam.ParameterAction)
+		{
+			case ParameterAction.FormatterReplacement:
+			{
+				bodyBuilder.AppendWoTrim(EmptySourceBuilder.Instance
+					.AppendFormatterParam(props,
+						props.Store.OverloadMap![mappedParam.CombineIndex].Type,
+						parameter.Identifier.ValueText));
+				break;
+			}
+			default:
+				bodyBuilder.AppendCombinedSimple(mappedParam, parameter);
+				break;
+		}
+	}
+
+	public static void AppendCombinedSimple(this SourceBuilder bodyBuilder, ParameterData mappedParam, ParameterSyntax parameter)
+	{
+		if (mappedParam.Type.IsRefLikeType)
+			bodyBuilder.AppendWoTrim("ref ");
+		bodyBuilder.AppendWoTrim(parameter.Identifier.ValueText);
+	}
+
+	public static void AppendVariableToBody(this SourceBuilder bodyBuilder, ParameterSyntax parameter, string? paramName = null)
+	{
+		if (parameter.Modifiers.Any(SyntaxKind.RefKeyword))
+			bodyBuilder.AppendWoTrim("ref ");
+		bodyBuilder.AppendWoTrim(paramName ?? parameter.Identifier.ValueText);
 	}
 }

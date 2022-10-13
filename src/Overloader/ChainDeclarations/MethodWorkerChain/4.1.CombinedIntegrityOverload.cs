@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
 using Overloader.Entities;
+using Overloader.Entities.Builders;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -25,18 +26,19 @@ internal sealed  class CombinedIntegrityOverload : IChainMember {
 		bodyBuilder.Append(entry.Identifier.ToString())
 			.Append("(");
 		
-		props.Builder.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+		props.Builder
+			.AppendStepNameComment(nameof(CombinedIntegrityOverload))
+			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 			.Append("(");
+		
 		if (parameters.Count == 0) goto CloseParameterBracket;
 
-		var entryType = entry.GetType(props.Compilation);
 		for (int index = 0;;)
 		{
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
 
-			if (mappedParam.CombineWith is null || !SymbolEqualityComparer.Default.Equals(
-				    entryType.GetMemberType(mappedParam.CombineWith), mappedParam.Type))
+			if (mappedParam.CombineIndex == -1)
 			{
 				string paramName = parameter.Identifier.ToString();
 				switch (mappedParam.ParameterAction)
@@ -57,15 +59,16 @@ internal sealed  class CombinedIntegrityOverload : IChainMember {
 							.WithLocation(entry);
 				}
 				
-				bodyBuilder.AppendWoTrim(paramName);
+				bodyBuilder.AppendVariableToBody(parameter, paramName);
 				
 				if (++index == parameters.Count) break;
-				props.Builder.AppendWoTrim(", ");
+				if (props.Store.OverloadMap[index].CombineIndex == -1)
+					props.Builder.AppendWoTrim(", ");
 				bodyBuilder.AppendWoTrim(", ");
 			}
 			else
 			{
-				bodyBuilder.AppendWoTrim(mappedParam.CombineWith);
+				bodyBuilder.AppendCombinedSimple(mappedParam, parameters[mappedParam.CombineIndex]);
 				if (++index == parameters.Count) break;
 				bodyBuilder.AppendWoTrim(", ");
 			}
@@ -74,8 +77,9 @@ internal sealed  class CombinedIntegrityOverload : IChainMember {
 		CloseParameterBracket:
 		props.Builder.Append(")")
 			.AppendWoTrim(" =>\n\t")
+			.AppendWoTrim(entry.ReturnType.GetPreTypeValues())
 			.Append(bodyBuilder.ToString())
-			.Append(");");
+			.AppendWoTrim(");", 1);
 
 		return ChainAction.NextMember;
 	}
