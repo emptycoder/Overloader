@@ -125,7 +125,7 @@ internal static class SyntaxNodeExtensions
 
 	public static ITypeSymbol GetType(this AttributeArgumentSyntax type, Compilation compilation) =>
 		GetType(type.Expression, compilation);
-	
+
 	public static ITypeSymbol GetType(this ParameterSyntax type, Compilation compilation) =>
 		GetType(type.Type!, compilation);
 
@@ -168,11 +168,6 @@ internal static class SyntaxNodeExtensions
 			_ => throw new ArgumentException($"Member with name '{name}' isn't property or field.")
 		};
 	}
-
-	public static string GetPreTypeValues(this TypeSyntax typeSyntax) =>
-		typeSyntax is RefTypeSyntax refSyntax
-			? $"{refSyntax.RefKeyword.ToFullString()}{refSyntax.ReadOnlyKeyword.ToFullString()}"
-			: string.Empty;
 
 	public static string GetVariableName(this SyntaxNode syntaxNode)
 	{

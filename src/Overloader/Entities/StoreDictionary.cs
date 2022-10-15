@@ -4,8 +4,8 @@ namespace Overloader.Entities;
 
 internal sealed class StoreDictionary
 {
-	public ushort FormattersWoIntegrityCount;
-	public ushort CombineParametersCount;
+	public sbyte CombineParametersCount;
+	public sbyte FormattersWoIntegrityCount;
 	public bool IsSmthChanged;
 	public bool MemberSkip;
 	public string[]? Modifiers;

@@ -8,6 +8,7 @@ namespace Overloader.ChainDeclarations;
 public static class Chains
 {
 	internal static readonly IChainMember Main = new Main();
+
 	internal static readonly IChainMember[] MethodWorkers =
 	{
 		/* 1 */ new AnalyzeMethodAttributes(),

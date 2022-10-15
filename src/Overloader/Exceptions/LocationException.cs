@@ -6,7 +6,7 @@ internal static class ExceptionExtensions
 {
 	public static Exception WithLocation(this Exception ex, Location location) =>
 		new LocationException("Expected exception occured.", ex, location);
-	
+
 	public static Exception WithLocation(this Exception ex, SyntaxNode location) =>
 		new LocationException("Expected exception occured.", ex, location.GetLocation());
 }

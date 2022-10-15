@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
+using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 using Overloader.Entities;
 using Overloader.Entities.Builders;
 using Overloader.Enums;
@@ -10,9 +10,10 @@ using Overloader.Utils;
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
 /// <summary>
-/// Generate transitions for types that don't use specific methods and can be decomposed
+///     Generate transitions for types that don't use specific methods and can be decomposed
 /// </summary>
-internal sealed class TransitionDeconstructOverloads : IChainMember {
+internal sealed class TransitionDeconstructOverloads : IChainMember
+{
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		if (props.Store.OverloadMap is null
@@ -22,7 +23,7 @@ internal sealed class TransitionDeconstructOverloads : IChainMember {
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
-		
+
 		Span<int> maxTransitionsCount = stackalloc int[props.Store.FormattersWoIntegrityCount];
 		for (int index = 0, formatterIndex = 0; index < parameters.Count; index++)
 		{
@@ -41,21 +42,25 @@ internal sealed class TransitionDeconstructOverloads : IChainMember {
 			if (maxTransitionsCount[index] != 0) break;
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
-		
+
 		Span<int> transitionIndexes = stackalloc int[props.Store.FormattersWoIntegrityCount];
 		using var bodyBuilder = SourceBuilder.GetInstance();
 		for (;;)
 		{
+			bodyBuilder.Append(entry.Identifier.ToString())
+				.AppendWoTrim("(");
 			props.Builder
-				.AppendStepNameComment(nameof(TransitionDeconstructOverloads))
+				.AppendChainMemberNameComment(nameof(TransitionDeconstructOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 				.Append("(");
-			props.Builder.WriteTransitionOverload(bodyBuilder, props, parameters, transitionIndexes);
-			props.Builder.Append(")")
-				.AppendWoTrim(" =>\n\t")
+			props.Builder.WriteParamsTransitionOverload(bodyBuilder, props, parameters, transitionIndexes);
+			props.Builder.Append(") =>", 1)
+				.NestedIncrease()
+				.AppendRefReturnValues(entry.ReturnType)
 				.Append(bodyBuilder.ToStringAndClear())
-				.AppendWoTrim(");", 1);
-			
+				.AppendWoTrim(");", 1)
+				.NestedDecrease();
+
 			/*
 				0 0 0 0 0
 				^

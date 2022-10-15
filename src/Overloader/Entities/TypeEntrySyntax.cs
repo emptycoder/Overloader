@@ -13,7 +13,7 @@ internal struct TypeEntrySyntax
 
 	public TypeEntrySyntax() => throw new NotSupportedException();
 	public TypeEntrySyntax(TypeDeclarationSyntax syntax) => Syntax = syntax;
-	
+
 	private struct LazyList<T>
 	{
 		private List<T>? _list;

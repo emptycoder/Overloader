@@ -38,7 +38,7 @@ namespace {nameof(Overloader)};
 [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public sealed class {FormatterAttr}Attribute : Attribute
 {{
-	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
+	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params, object[]? transitions = null) {{ }}
 }}
 
 /* Class or struct attributes */

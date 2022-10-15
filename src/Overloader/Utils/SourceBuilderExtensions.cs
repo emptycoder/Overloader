@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities;
 using Overloader.Entities.Builders;
 
 namespace Overloader.Utils;
@@ -15,22 +14,14 @@ internal static class SourceBuilderExtensions
 		return sb.Append(string.Empty, 1);
 	}
 
-	public static SourceBuilder AppendMethodDeclarationSpecifics(this SourceBuilder sb,
-		MethodDeclarationSyntax syntax,
-		string[] modifiers,
-		ITypeSymbol? returnType) =>
-		sb.Append(syntax.AttributeLists.ToFullString(), 1)
-			.AppendWith(string.Join(" ", modifiers), " ")
-			.AppendWoTrim(syntax.ReturnType.GetPreTypeValues())
-			.AppendWith(returnType?.ToDisplayString() ?? syntax.ReturnType.ToFullString(), " ")
-			.Append(syntax.Identifier.ToFullString());
+	public static SourceBuilder AppendNamespace(this SourceBuilder sb, string @namespace) =>
+		sb.AppendWith("namespace", " ")
+			.AppendWith(@namespace, ";");
 
-	public static SourceBuilder AppendParameter(this SourceBuilder sb,
-		ParameterSyntax parameter,
-		ITypeSymbol newType,
-		Compilation compilation) =>
-		sb.AppendWith(parameter.AttributeLists.ToFullString(), " ")
-			.AppendWith(parameter.Type!.GetType(compilation)
-				.ConstructWithClearType(newType, compilation).ToDisplayString(), " ")
-			.Append(parameter.Identifier.ToString());
+	public static SourceBuilder AppendRefReturnValues(this SourceBuilder sb, TypeSyntax typeSyntax)
+	{
+		if (typeSyntax is not RefTypeSyntax refSyntax) return sb;
+		return sb.AppendWoTrim(refSyntax.RefKeyword.ToFullString())
+			.AppendWoTrim(refSyntax.ReadOnlyKeyword.ToFullString());
+	}
 }

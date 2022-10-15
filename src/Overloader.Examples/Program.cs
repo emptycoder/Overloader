@@ -4,20 +4,37 @@ using System.Runtime.CompilerServices;
 using Overloader;
 using Overloader.Examples;
 
-[assembly: Formatter(typeof(Vector2<>),
+[assembly: Formatter(typeof(Vector3<>),
 	new object[] {"T"},
 	new object[]
 	{
-		"X", "T",
-		"Y", "T"
+		nameof(Vector3<double>.X), "T",
+		nameof(Vector3<double>.Y), "T",
+		nameof(Vector3<double>.Z), "T"
+	},
+	new object[]
+	{
+		typeof(Vector2<>),
+		new object[]
+		{
+			nameof(Vector3<double>.X), nameof(Vector2<double>.X),
+			nameof(Vector3<double>.Y), nameof(Vector2<double>.Y)
+		}
 	})]
 
-var vec2 = new Vector2<float>();
-vec2.Sum();
+var vec3 = new Vector3<float>();
+vec3.Sum();
 Console.WriteLine("TEST");
 
 namespace Overloader.Examples
 {
+	public struct Vector3<T>
+	{
+		public T X;
+		public T Y;
+		public T Z;
+	}
+	
 	public struct Vector2<T>
 	{
 		public T X;
@@ -29,7 +46,7 @@ namespace Overloader.Examples
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[return: T]
-		public static ref Vector2<double> Sum([Integrity] [T] this ref Vector2<double> vec1, [T][CombineWith(nameof(vec1))] in Vector2<double> vec2)
+		public static ref Vector3<double> Sum([Integrity] [T] this ref Vector3<double> vec1, [T][CombineWith(nameof(vec1))] in Vector3<double> vec2)
 		{
 			vec1.X += vec2.X;
 			vec1.Y += vec2.Y;

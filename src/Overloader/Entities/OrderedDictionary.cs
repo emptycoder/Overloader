@@ -5,17 +5,17 @@ namespace Overloader.Entities;
 public class OrderedDictionary<TKey, TValue>
 {
 	public static readonly OrderedDictionary<TKey, TValue> Empty = new(0);
-
-	private readonly TValue[] _values;
 	private readonly Dictionary<TKey, int> _indexes;
 
-	public int Count { get; private set; }
+	private readonly TValue[] _values;
 
 	public OrderedDictionary(int size)
 	{
 		_values = new TValue[size];
 		_indexes = new Dictionary<TKey, int>(size);
 	}
+
+	public int Count { get; private set; }
 
 	public void Add(TKey key, TValue value)
 	{
@@ -29,7 +29,7 @@ public class OrderedDictionary<TKey, TValue>
 	{
 		private readonly TValue[] _values;
 		private Dictionary<TKey, int>.Enumerator _dictEnumerator;
-		
+
 		public Enumerator(OrderedDictionary<TKey, TValue> dict)
 		{
 			_values = dict._values;

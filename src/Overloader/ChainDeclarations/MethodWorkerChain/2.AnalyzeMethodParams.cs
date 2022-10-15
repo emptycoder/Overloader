@@ -13,15 +13,17 @@ internal sealed class AnalyzeMethodParams : IChainMember
 	{
 		props.Store.FormattersWoIntegrityCount = 0;
 		props.Store.CombineParametersCount = 0;
-		
+
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
 		props.Store.OverloadMap = new ParameterData[parameters.Count];
 		for (int index = 0; index < parameters.Count; index++)
 		{
-			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(props, out var attribute,
+			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(props,
+				out var attribute,
 				out bool forceOverloadIntegrity,
 				out string? combineWith);
+
 			var parameterType = (parameters[index].Type ?? throw new NullReferenceException(
 						$"Parameter {parameters[index].Identifier} type is null.")
 					.WithLocation(parameters[index]))
@@ -50,12 +52,12 @@ internal sealed class AnalyzeMethodParams : IChainMember
 			props.Store.OverloadMap[index] = new ParameterData(
 				parameterAction,
 				newParameterType,
-				combineWith is null ? -1 : parameters.IndexOf(param => param.Identifier.ValueText == combineWith));
-			
+				combineWith is null ? SByte.MaxValue : (sbyte) parameters.IndexOf(param => param.Identifier.ValueText == combineWith));
+
 			bool isFormatter = parameterAction is ParameterAction.FormatterReplacement;
-			props.Store.FormattersWoIntegrityCount += *(byte*) &isFormatter;
+			props.Store.FormattersWoIntegrityCount += *(sbyte*) &isFormatter;
 			bool isCombineWith = combineWith is not null;
-			props.Store.CombineParametersCount += *(byte*) &isCombineWith;
+			props.Store.CombineParametersCount += *(sbyte*) &isCombineWith;
 			props.Store.IsSmthChanged |= shouldBeReplaced;
 		}
 

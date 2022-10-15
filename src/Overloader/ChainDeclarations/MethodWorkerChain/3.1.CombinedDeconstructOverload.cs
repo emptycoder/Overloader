@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
+using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 using Overloader.Entities;
 using Overloader.Entities.Builders;
 using Overloader.Enums;
@@ -9,7 +9,8 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-internal sealed class CombinedDeconstructOverload : IChainMember {
+internal sealed class CombinedDeconstructOverload : IChainMember
+{
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		if (props.Store.OverloadMap is null
@@ -17,10 +18,10 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 		    || props.Store.FormattersWoIntegrityCount == 0
 		    || props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;
-		
+
 		if (!props.Store.OverloadMap.Any(param =>
 			    param.ParameterAction is ParameterAction.FormatterReplacement
-			    && param.CombineIndex == -1))
+			    && param.IsCombineNotExists))
 			return ChainAction.NextMember;
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
@@ -32,15 +33,15 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 			.Append("(");
 
 		props.Builder
-			.AppendStepNameComment(nameof(CombinedDeconstructOverload))
+			.AppendChainMemberNameComment(nameof(CombinedDeconstructOverload))
 			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 			.Append("(");
-		
+
 		for (int index = 0;;)
 		{
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
-			if (mappedParam.CombineIndex == -1)
+			if (mappedParam.IsCombineNotExists)
 			{
 				string paramName = parameter.Identifier.ToString();
 				switch (mappedParam.ParameterAction)
@@ -60,7 +61,11 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterReplacement:
-						var concatedParams = props.Builder.AppendFormatterParam(props, mappedParam.Type, paramName);
+						string concatedParams = props.Builder.AppendFormatterParam(
+							props,
+							parameter.Modifiers,
+							mappedParam.Type,
+							paramName);
 						bodyBuilder.AppendWoTrim(concatedParams);
 						break;
 					default:
@@ -69,7 +74,7 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 				}
 
 				if (++index == parameters.Count) break;
-				if (props.Store.OverloadMap[index].CombineIndex == -1)
+				if (props.Store.OverloadMap[index].IsCombineNotExists)
 					props.Builder.AppendWoTrim(", ");
 				bodyBuilder.AppendWoTrim(", ");
 			}
@@ -81,11 +86,12 @@ internal sealed class CombinedDeconstructOverload : IChainMember {
 			}
 		}
 
-		props.Builder.Append(")")
-			.AppendWoTrim(" =>\n\t")
-			.AppendWoTrim(entry.ReturnType.GetPreTypeValues())
+		props.Builder.Append(") =>", 1)
+			.NestedIncrease()
+			.AppendRefReturnValues(entry.ReturnType)
 			.Append(bodyBuilder.ToString())
-			.AppendWoTrim(");", 1);
+			.AppendWoTrim(");", 1)
+			.NestedDecrease();
 
 		return ChainAction.NextMember;
 	}

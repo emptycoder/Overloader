@@ -1,6 +1,3 @@
 ﻿namespace Overloader.Tests;
 
-public class TransitionTests
-{
-	
-}
+public class TransitionTests { }

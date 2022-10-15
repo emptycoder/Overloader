@@ -15,7 +15,7 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 		props.Store.IsSmthChanged = false;
 		props.Store.ReturnType = entry.ReturnType.GetType(props.Compilation);
 		props.Store.Modifiers = new string[entry.Modifiers.Count];
-		
+
 		for (int index = 0; index < props.Store.Modifiers.Length; index++)
 			props.Store.Modifiers[index] = entry.Modifiers[index].ToString();
 
@@ -84,7 +84,8 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 							props.Store.ReturnType = props.Template;
 							props.Store.IsSmthChanged = true;
 							break;
-						default: throw new ArgumentException(
+						default:
+							throw new ArgumentException(
 								$"Unexpected count of arguments in {Constants.TAttr}.").WithLocation(attribute);
 					}
 

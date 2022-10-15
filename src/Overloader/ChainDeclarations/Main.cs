@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
 using Overloader.Enums;
@@ -14,17 +15,17 @@ internal class Main : IChainMember
 		if (props.Template is null && !props.StartEntry.Syntax.Modifiers.Any(modifier => modifier.Text.Equals("partial")))
 			return ChainAction.Break;
 
-		sb.AppendUsings(props.StartEntry.Syntax.GetTopParent())
-			.AppendWith("namespace", " ")
-			.AppendWith(props.StartEntry.Syntax.GetNamespace(), ";")
+		var entrySyntax = props.StartEntry.Syntax;
+		sb.AppendUsings(entrySyntax.GetTopParent())
+			.AppendNamespace(entrySyntax.GetNamespace())
 			.Append(string.Empty, 2);
 
 		// Declare class/struct/record signature
-		sb.Append(props.StartEntry.Syntax.AttributeLists.ToFullString(), 1)
-			.AppendWith(props.StartEntry.Syntax.Modifiers.ToFullString(), " ")
-			.AppendWith(props.StartEntry.Syntax.Keyword.ToFullString(), " ")
+		sb.Append(entrySyntax.AttributeLists.ToFullString(), 1)
+			.AppendWith(entrySyntax.Modifiers.ToFullString(), " ")
+			.AppendWith(entrySyntax.Keyword.ToFullString(), " ")
 			.Append(props.ClassName, 1)
-			.NestedIncrease();
+			.NestedIncrease(SyntaxKind.OpenBraceToken);
 
 		foreach (var member in props.StartEntry.Syntax.Members)
 		{
@@ -36,7 +37,7 @@ internal class Main : IChainMember
 					break;
 		}
 
-		sb.NestedDecrease();
+		sb.NestedDecrease(SyntaxKind.CloseBraceToken);
 
 		return ChainAction.NextMember;
 	}

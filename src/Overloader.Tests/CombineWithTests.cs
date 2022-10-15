@@ -27,7 +27,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(CombineWithBaseTest)}(ref [T] Vector3<double> vec, [T][CombineWith(nameof(vec))] Vector3<double> vec1) {{ }}
+	public static void {nameof(CombineWithBaseTest)}([T] ref Vector3<double> vec, [T][CombineWith(""vec"")] Vector3<double> vec1) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -37,7 +37,7 @@ internal struct Vector3<T>
 	internal T Z {{ get; private set; }}
 }}
 ";
-		
+
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);

@@ -7,23 +7,23 @@ using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
+namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 internal static class TransitionExtensions
 {
-	public static void WriteTransitionOverload(this SourceBuilder headerBuilder,
+	public static void WriteParamsTransitionOverload(this SourceBuilder headerBuilder,
 		SourceBuilder bodyBuilder,
 		GeneratorProperties props,
 		in SeparatedSyntaxList<ParameterSyntax> parameters,
 		Span<int> transitionIndexes,
 		bool combineWithMode = false)
 	{
-		for (int index = 0, paramIndex = 0; index < parameters.Count; index++)
+		for (int index = 0, paramIndex = 0;;)
 		{
 			var mappedParam = props.Store.OverloadMap![index];
 			var parameter = parameters[index];
 
-			if (!combineWithMode || mappedParam.CombineIndex == -1)
+			if (!combineWithMode || mappedParam.IsCombineNotExists)
 			{
 				string paramName = parameter.Identifier.ToString();
 				switch (mappedParam.ParameterAction)
@@ -47,27 +47,48 @@ internal static class TransitionExtensions
 							throw new ArgumentException("Unexpected exception. Formatters changed in real time.")
 								.WithLocation(parameter);
 
-						// Build header for transition method
 						var transition = formatter.Transitions[transitionIndexes[paramIndex++]];
+						// Build transition method header
 						for (int linkIndex = 0;;)
 						{
 							var transitionLink = transition.Links[linkIndex];
-							string variableName = $"{paramName}{linkIndex.ToString()}";
-							headerBuilder.AppendWith(transitionLink.Type.ToDisplayString(), " ")
-								.Append(variableName);
+							var paramType = props.SetDeepestTypeWithTemplateFilling(transitionLink.TemplateType);
+							if (paramType.IsValueType && !paramType.IsDefinition)
+								headerBuilder.AppendWith("in", " ");
+
+							headerBuilder
+								.AppendWith(paramType.ToDisplayString(), " ")
+								.Append(paramName)
+								.Append(linkIndex.ToString());
 
 							if (++linkIndex == transition.Links.Length) break;
 							headerBuilder.AppendWoTrim(", ");
 						}
 
-						// Build body for transition method-
-						for (int transitionParamIndex = 0;;)
+						// Build transition method body and least header parts
+						for (int formatterParamIndex = 0;;)
 						{
-							var formatterParam = formatter.Params[transitionParamIndex];
-							var replacement = transition.FindReplacement(formatterParam.Name, out int linkIndex);
-							bodyBuilder.Append($"{paramName}{linkIndex.ToString()}.{replacement}");
+							var formatterParam = formatter.Params[formatterParamIndex];
+							if (transition.TryToFindReplacement(
+								    formatterParam.Name,
+								    out string? replacement,
+								    out int linkIndex))
+							{
+								bodyBuilder.Append($"{paramName}{linkIndex.ToString()}.{replacement}");
+							}
+							else
+							{
+								var templateType = formatterParam.Param.GetType(props.Template) ??
+								                   mappedParam.Type.GetMemberType(formatterParam.Name);
+								headerBuilder
+									.AppendWoTrim(", ")
+									.AppendWith(props.SetDeepestTypeWithTemplateFilling(templateType).ToDisplayString(), " ")
+									.Append(paramName)
+									.Append(formatterParam.Name);
+								bodyBuilder.AppendWoTrim(paramName).AppendWoTrim(formatterParam.Name);
+							}
 
-							if (++transitionParamIndex == formatter.Params.Length) break;
+							if (++formatterParamIndex == formatter.Params.Length) break;
 							bodyBuilder.AppendWoTrim(", ");
 						}
 
@@ -76,9 +97,9 @@ internal static class TransitionExtensions
 						throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
 							.WithLocation(parameter);
 				}
-				
+
 				if (++index == parameters.Count) break;
-				if (!combineWithMode || props.Store.OverloadMap[index].CombineIndex == -1)
+				if (!combineWithMode || props.Store.OverloadMap[index].IsCombineNotExists)
 					headerBuilder.AppendWoTrim(", ");
 				bodyBuilder.AppendWoTrim(", ");
 			}
@@ -102,6 +123,7 @@ internal static class TransitionExtensions
 			{
 				bodyBuilder.AppendWoTrim(EmptySourceBuilder.Instance
 					.AppendFormatterParam(props,
+						parameter.Modifiers,
 						props.Store.OverloadMap![mappedParam.CombineIndex].Type,
 						parameter.Identifier.ValueText));
 				break;

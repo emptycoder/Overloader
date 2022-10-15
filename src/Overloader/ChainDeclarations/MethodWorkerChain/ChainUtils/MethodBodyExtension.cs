@@ -7,7 +7,7 @@ using Overloader.Entities.Builders;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.ChainDeclarations.MethodWorkerChain.Utils;
+namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 internal static class MethodBodyExtension
 {
@@ -34,7 +34,6 @@ internal static class MethodBodyExtension
 		Span<(string VarName, string ConcatedVars)> replacements,
 		string? templateStr)
 	{
-		string varName;
 		foreach (var nodeOrToken in syntaxNode.ChildNodesAndTokens())
 		{
 			if (!nodeOrToken.IsNode)
@@ -42,10 +41,10 @@ internal static class MethodBodyExtension
 				switch (nodeOrToken.AsToken().Kind())
 				{
 					case SyntaxKind.OpenBraceToken:
-						sb.NestedIncrease();
+						sb.NestedIncrease(SyntaxKind.OpenBraceToken);
 						continue;
 					case SyntaxKind.CloseBraceToken:
-						sb.NestedDecrease();
+						sb.NestedDecrease(SyntaxKind.CloseBraceToken);
 						continue;
 					default:
 						sb.AppendWoTrim(nodeOrToken.HasLeadingTrivia ? nodeOrToken.WithLeadingTrivia().ToFullString() : nodeOrToken.ToFullString());
@@ -56,6 +55,7 @@ internal static class MethodBodyExtension
 			var node = nodeOrToken.AsNode() ?? throw new ArgumentException("Unexpected exception. Node isn't node.")
 				.WithLocation(nodeOrToken.GetLocation() ?? Location.None);
 
+			string varName;
 			switch (node)
 			{
 				case MemberAccessExpressionSyntax syntax:
@@ -122,7 +122,7 @@ internal static class MethodBodyExtension
 
 		return -1;
 	}
-	
+
 	private static string? ParseTrivia(this SyntaxTriviaList triviaList, (string, string)[] buffer,
 		string? templateStr, out Span<(string, string)> replacements)
 	{

@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
+using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 using Overloader.Entities;
 using Overloader.Entities.Builders;
 using Overloader.Enums;
@@ -9,7 +9,8 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-internal sealed  class CombinedIntegrityOverload : IChainMember {
+internal sealed class CombinedIntegrityOverload : IChainMember
+{
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		if (props.Store.OverloadMap is null
@@ -24,13 +25,13 @@ internal sealed  class CombinedIntegrityOverload : IChainMember {
 
 		using var bodyBuilder = SourceBuilder.GetInstance();
 		bodyBuilder.Append(entry.Identifier.ToString())
-			.Append("(");
-		
+			.AppendWoTrim("(");
+
 		props.Builder
-			.AppendStepNameComment(nameof(CombinedIntegrityOverload))
+			.AppendChainMemberNameComment(nameof(CombinedIntegrityOverload))
 			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
-			.Append("(");
-		
+			.AppendWoTrim("(");
+
 		if (parameters.Count == 0) goto CloseParameterBracket;
 
 		for (int index = 0;;)
@@ -38,7 +39,7 @@ internal sealed  class CombinedIntegrityOverload : IChainMember {
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
 
-			if (mappedParam.CombineIndex == -1)
+			if (mappedParam.IsCombineNotExists)
 			{
 				string paramName = parameter.Identifier.ToString();
 				switch (mappedParam.ParameterAction)
@@ -58,11 +59,11 @@ internal sealed  class CombinedIntegrityOverload : IChainMember {
 						throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
 							.WithLocation(entry);
 				}
-				
+
 				bodyBuilder.AppendVariableToBody(parameter, paramName);
-				
+
 				if (++index == parameters.Count) break;
-				if (props.Store.OverloadMap[index].CombineIndex == -1)
+				if (props.Store.OverloadMap[index].IsCombineNotExists)
 					props.Builder.AppendWoTrim(", ");
 				bodyBuilder.AppendWoTrim(", ");
 			}
@@ -75,11 +76,12 @@ internal sealed  class CombinedIntegrityOverload : IChainMember {
 		}
 
 		CloseParameterBracket:
-		props.Builder.Append(")")
-			.AppendWoTrim(" =>\n\t")
-			.AppendWoTrim(entry.ReturnType.GetPreTypeValues())
+		props.Builder.AppendWoTrim(") =>", 1)
+			.NestedIncrease()
+			.AppendRefReturnValues(entry.ReturnType)
 			.Append(bodyBuilder.ToString())
-			.AppendWoTrim(");", 1);
+			.AppendWoTrim(");", 1)
+			.NestedDecrease();
 
 		return ChainAction.NextMember;
 	}

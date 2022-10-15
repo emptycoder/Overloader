@@ -99,7 +99,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 				new DiagnosticDescriptor(
 					$"{nameof(Overloader)[0]}-0001",
 					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)}",
-					ex.ToString(),
+					ex.InnerException!.ToString(),
 					nameof(Overloader),
 					DiagnosticSeverity.Error,
 					true),
@@ -146,8 +146,8 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 			{
 				switch (attribute.Name.GetName())
 				{
-					case Constants.OverloadAttr 
-				    when attribute.ArgumentList is not null :
+					case Constants.OverloadAttr
+						when attribute.ArgumentList is not null:
 					{
 						var args = attribute.ArgumentList.Arguments;
 						if (args.Count > 0)

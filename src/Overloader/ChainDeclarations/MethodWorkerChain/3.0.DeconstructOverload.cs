@@ -1,16 +1,15 @@
 ﻿using System.Buffers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ChainDeclarations.MethodWorkerChain.Utils;
+using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
-using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
 /// <summary>
-/// Generate main overload which decompose method on simple params using formatters
+///     Generate main overload which decompose method on simple params using formatters
 /// </summary>
 internal sealed class DeconstructOverload : IChainMember
 {
@@ -23,13 +22,13 @@ internal sealed class DeconstructOverload : IChainMember
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
-		
+
 		int replacementVariableIndex = 0;
 		var replacementVariableNames = ArrayPool<(string Replacement, string ConcatedParams)>
 			.Shared.Rent(props.Store.FormattersWoIntegrityCount);
 
 		props.Builder
-			.AppendStepNameComment(nameof(DeconstructOverload))
+			.AppendChainMemberNameComment(nameof(DeconstructOverload))
 			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 			.Append("(");
 
@@ -53,14 +52,18 @@ internal sealed class DeconstructOverload : IChainMember
 					break;
 				case ParameterAction.FormatterReplacement:
 					string paramName = parameter.Identifier.ToString();
-					string concatedParams = props.Builder.AppendFormatterParam(props, mappedParam.Type, paramName);
+					string concatedParams = props.Builder.AppendFormatterParam(
+						props,
+						parameter.Modifiers,
+						mappedParam.Type,
+						paramName);
 					replacementVariableNames[replacementVariableIndex++] = (paramName, concatedParams);
 					break;
 				default:
 					throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
 						.WithLocation(parameter);
 			}
-			
+
 			if (++index == parameters.Count) break;
 			props.Builder.AppendWoTrim(", ");
 		}
