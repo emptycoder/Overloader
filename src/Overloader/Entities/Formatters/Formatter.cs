@@ -11,16 +11,20 @@ internal sealed record Formatter(IParam[] GenericParams, (string Name, IParam Pa
 	public static (ITypeSymbol Type, Formatter Formatter) Parse(AttributeSyntax formatterSyntax, Compilation compilation)
 	{
 		var args = formatterSyntax.ArgumentList?.Arguments ??
-		           throw new ArgumentException("Argument list for formatter can't be null.").WithLocation(formatterSyntax);
+		           throw new ArgumentException("Argument list for formatter can't be null.")
+			           .WithLocation(formatterSyntax);
 		if (args.Count < 3)
-			throw new ArgumentException("Not enough parameters for formatter.").WithLocation(formatterSyntax);
+			throw new ArgumentException("Not enough parameters for formatter.")
+				.WithLocation(formatterSyntax);
 
 		if (args[1].Expression is not ArrayCreationExpressionSyntax arg1)
 			throw new ArgumentException(
-				$"{nameof(arg1)} of {nameof(Formatter)} must be {nameof(ArrayCreationExpressionSyntax)}.");
+				$"{nameof(arg1)} of {nameof(Formatter)} must be {nameof(ArrayCreationExpressionSyntax)}.")
+				.WithLocation(args[1].Expression);
 		if (args[2].Expression is not ArrayCreationExpressionSyntax arg2)
 			throw new ArgumentException(
-				$"{nameof(arg2)} of {nameof(Formatter)} must be {nameof(ArrayCreationExpressionSyntax)}.");
+				$"{nameof(arg2)} of {nameof(Formatter)} must be {nameof(ArrayCreationExpressionSyntax)}.")
+				.WithLocation(args[2].Expression);
 
 		var type = args[0].GetType(compilation);
 		var namedTypeSymbol = type.GetClearType();
@@ -52,8 +56,8 @@ internal sealed record Formatter(IParam[] GenericParams, (string Name, IParam Pa
 	{
 		if (initializer is null || initializer.Expressions.Count == 0) return Array.Empty<(string, IParam)>();
 		if (initializer.Expressions.Count % 2 != 0)
-			throw new ArgumentException(
-				$"Problem with count of expressions for named array in {initializer}.").WithLocation(initializer);
+			throw new ArgumentException($"Problem with count of expressions for named array in {initializer}.")
+				.WithLocation(initializer);
 
 		var @params = new (string, IParam)[initializer.Expressions.Count / 2];
 
@@ -77,8 +81,7 @@ internal sealed record Formatter(IParam[] GenericParams, (string Name, IParam Pa
 			case ImplicitArrayCreationExpressionSyntax implicitArrayCreationExpressionSyntax:
 				var expressions = implicitArrayCreationExpressionSyntax.Initializer.Expressions;
 				if (expressions.Count == 0 || expressions.Count % 2 != 0)
-					throw new ArgumentException(
-							"expressions.Count == 0 || expressions.Count % 2 != 0")
+					throw new ArgumentException("expressions.Count == 0 || expressions.Count % 2 != 0")
 						.WithLocation(implicitArrayCreationExpressionSyntax);
 
 				var switchDict = new Dictionary<ITypeSymbol, IParam>(expressions.Count / 2, SymbolEqualityComparer.Default);
@@ -94,7 +97,8 @@ internal sealed record Formatter(IParam[] GenericParams, (string Name, IParam Pa
 
 				return SwitchParam.Create(switchDict);
 			default:
-				throw new ArgumentException($"Can't recognize syntax when try to parse parameter in {expressionSyntax.ToString()}.")
+				throw new ArgumentException(
+						$"Can't recognize syntax when try to parse parameter in {expressionSyntax.ToString()}.")
 					.WithLocation(expressionSyntax);
 		}
 	}

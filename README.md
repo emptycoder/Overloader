@@ -22,6 +22,7 @@ public static class GenericMath
 ## Solution
 
 ```csharp
+[TSpecify(typeof(double))]
 [Overload(typeof(float), "D", "F")]
 public static class GenericMathD
 {
@@ -32,14 +33,13 @@ public static class GenericMathD
 ## Generated part
 
 ```csharp
-[Overload(typeof(float), "D", "F")]
 public static partial class GenericMathF
 {
-	public static double Square([T] float val) => val * val;
+	public static double Square(float val) => val * val;
 }
 ```
 
-P.S. GenericMath provided in preview versions of .net try to resolve this problem, but we can't restrict needed types.
+P.S. GenericMath provided in preview versions of .NET try to resolve this problem, but we can't restrict needed types.
 
 # Parameter overload creation to avoid additional struct/class allocation
 
@@ -53,6 +53,7 @@ P.S. GenericMath provided in preview versions of .net try to resolve this proble
 		"X", "T",
 		"Y", "T"
 	})]
+[TSpecify(typeof(double))]
 [Overload(typeof(float), "2D", "2F")]
 public static partial class Vector2DExtension
 {
@@ -71,12 +72,10 @@ public static partial class Vector2DExtension
 ## Generated part
 
 ```csharp
-[Overload(typeof(float), "2D", "2F")]
 public static partial class Vector2FExtension
 {
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	[return: T]
-	public static ref Overloader.Examples.Vector2<float> Sum([Integrity][T] this ref Overloader.Examples.Vector2<float> vec1, [T] float vec2X, float vec2Y)
+	public static ref Overloader.Examples.Vector2<float> Sum(this ref Overloader.Examples.Vector2<float> vec1, float vec2X, float vec2Y)
 	{
 		vec1.X += vec2X;
 		vec1.Y += vec2Y;
@@ -84,8 +83,7 @@ public static partial class Vector2FExtension
 	}
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	[return: T]
-	public static ref Overloader.Examples.Vector2<float> Sum([Integrity][T] this ref Overloader.Examples.Vector2<float> vec1, [T] in Overloader.Examples.Vector2<float> vec2)
+	public static ref Overloader.Examples.Vector2<float> Sum(this ref Overloader.Examples.Vector2<float> vec1, in Overloader.Examples.Vector2<float> vec2)
 	{
 		vec1.X += vec2.X;
 		vec1.Y += vec2.Y;

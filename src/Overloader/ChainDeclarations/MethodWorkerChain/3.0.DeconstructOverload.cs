@@ -39,7 +39,6 @@ internal sealed class DeconstructOverload : IChainMember
 
 			switch (mappedParam.ParameterAction)
 			{
-				// case ParameterAction.FormatterIntegrityReplacement when props.Template is null:
 				case ParameterAction.Nothing:
 					props.Builder.Append(parameter.ToFullString());
 					break;
