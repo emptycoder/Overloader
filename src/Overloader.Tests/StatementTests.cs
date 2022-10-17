@@ -19,6 +19,7 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
@@ -63,6 +64,7 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
@@ -107,6 +109,7 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
@@ -144,6 +147,7 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
@@ -179,12 +183,14 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 }}
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
@@ -197,7 +203,7 @@ internal class Program
 					typeof(double), typeof(long)
 				}}
 			}})]
-[Overload(typeof(float), ""3D"", ""3F"")]
+[{Constants.OverloadAttr}(typeof(float), ""3D"", ""3F"")]
 public static class Vec3DExt
 {{
 	[return: T]
@@ -242,6 +248,7 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
@@ -276,6 +283,7 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{

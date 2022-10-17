@@ -15,6 +15,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]

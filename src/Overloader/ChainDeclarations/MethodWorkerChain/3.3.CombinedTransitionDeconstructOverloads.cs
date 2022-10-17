@@ -54,6 +54,8 @@ internal sealed class CombinedTransitionDeconstructOverloads : IChainMember
 		using var bodyBuilder = SourceBuilder.GetInstance();
 		for (;;)
 		{
+			bodyBuilder.Append(entry.Identifier.ToString())
+				.AppendWoTrim("(");
 			props.Builder
 				.AppendChainMemberNameComment(nameof(CombinedTransitionDeconstructOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
@@ -83,7 +85,7 @@ internal sealed class CombinedTransitionDeconstructOverloads : IChainMember
 			 */
 			for (int index = 0;;)
 			{
-				if (++transitionIndexes[index] != maxTransitionsCount[index]) continue;
+				if (++transitionIndexes[index] != maxTransitionsCount[index]) break;
 				transitionIndexes[index] = 0;
 
 				if (++index == transitionIndexes.Length)

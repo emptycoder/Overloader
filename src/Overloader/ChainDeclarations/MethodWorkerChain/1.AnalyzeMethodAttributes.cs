@@ -63,15 +63,13 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 						}
 						case 2:
 							break;
-						case 0 when props.Template is null:
-							break;
+						// case 0 when props.Template is null:
+						// 	break;
 						case 0 when props.TryGetFormatter(returnTypeSymbolRoot, out var formatter):
 							var @params = new ITypeSymbol[formatter.GenericParams.Length];
 
 							for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
-								@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(props.Template) ?? throw new ArgumentException(
-										$"Can't get type of formatter param (key: {returnTypeSymbol}) by index {paramIndex}.")
-									.WithLocation(attribute);
+								@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(props.Template);
 
 							props.Store.ReturnType = returnTypeSymbol.ConstructWithClearType(
 								returnTypeSymbolRoot

@@ -46,7 +46,7 @@ internal sealed class CombinedDeconstructOverload : IChainMember
 				string paramName = parameter.Identifier.ToString();
 				switch (mappedParam.ParameterAction)
 				{
-					case ParameterAction.FormatterIntegrityReplacement when props.Template is null:
+					// case ParameterAction.FormatterIntegrityReplacement when props.Template is null:
 					case ParameterAction.Nothing:
 						props.Builder.Append(parameter.ToFullString());
 						bodyBuilder.AppendVariableToBody(parameter, paramName);
@@ -63,7 +63,6 @@ internal sealed class CombinedDeconstructOverload : IChainMember
 					case ParameterAction.FormatterReplacement:
 						string concatedParams = props.Builder.AppendFormatterParam(
 							props,
-							parameter.Modifiers,
 							mappedParam.Type,
 							paramName);
 						bodyBuilder.AppendWoTrim(concatedParams);

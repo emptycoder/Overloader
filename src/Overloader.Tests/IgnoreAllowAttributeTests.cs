@@ -13,6 +13,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 [{Constants.BlackListModeAttr}]
 internal class Program
@@ -46,6 +47,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 {(isBlackList ? $"[{Constants.BlackListModeAttr}]" : string.Empty)}
 internal class Program

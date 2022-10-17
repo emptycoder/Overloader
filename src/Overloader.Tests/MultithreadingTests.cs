@@ -25,6 +25,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
@@ -65,6 +66,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class TestClass{index}
 {{

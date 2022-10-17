@@ -12,7 +12,7 @@ internal class Main : IChainMember
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		var sb = props.Builder;
-		if (props.Template is null && !props.StartEntry.Syntax.Modifiers.Any(modifier => modifier.Text.Equals("partial")))
+		if (props.IsTSpecified && !props.StartEntry.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword))
 			return ChainAction.Break;
 
 		var entrySyntax = props.StartEntry.Syntax;
@@ -21,7 +21,7 @@ internal class Main : IChainMember
 			.Append(string.Empty, 2);
 
 		// Declare class/struct/record signature
-		sb.Append(entrySyntax.AttributeLists.ToFullString(), 1)
+		sb.AppendAttributes(entrySyntax.AttributeLists, "\n")
 			.AppendWith(entrySyntax.Modifiers.ToFullString(), " ")
 			.AppendWith(entrySyntax.Keyword.ToFullString(), " ")
 			.Append(props.ClassName, 1)

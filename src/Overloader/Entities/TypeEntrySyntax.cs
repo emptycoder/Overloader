@@ -10,6 +10,7 @@ internal struct TypeEntrySyntax
 	private LazyList<AttributeSyntax> _formatterSyntaxes = new();
 	public List<AttributeSyntax> FormatterSyntaxes => _formatterSyntaxes.Value;
 	public bool IsBlackListMode = false;
+	public TypeSyntax? DefaultType;
 
 	public TypeEntrySyntax() => throw new NotSupportedException();
 	public TypeEntrySyntax(TypeDeclarationSyntax syntax) => Syntax = syntax;

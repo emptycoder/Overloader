@@ -17,7 +17,7 @@ internal sealed class IntegrityOverload : IChainMember
 		if (props.Store.OverloadMap is null
 		    || props.Store.Modifiers is null
 		    || !props.Store.IsSmthChanged
-		    || props.Template is null)
+		    || props.IsTSpecified)
 			return ChainAction.NextMember;
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;

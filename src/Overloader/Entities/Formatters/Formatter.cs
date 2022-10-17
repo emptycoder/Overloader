@@ -28,7 +28,7 @@ internal sealed record Formatter(IParam[] GenericParams, (string Name, IParam Pa
 
 		var genericParams = ParseParams(arg1.Initializer, compilation);
 		var @params = ParseParamsWithNames(arg2.Initializer, compilation);
-
+		
 		int transitionsCount = args.Count - 3;
 		var transitions = new Transition[transitionsCount];
 		for (int argIndex = 3, mapIndex = 0; argIndex < args.Count; argIndex++, mapIndex++)

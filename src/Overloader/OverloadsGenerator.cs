@@ -41,12 +41,14 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 	public void Execute(GeneratorExecutionContext context)
 	{
-		if (context.Compilation.Language is not "C#") return;
-		if (context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver
-		    || !syntaxReceiver.Candidates.Any()) return;
+		if (context.Compilation.Language is not "C#" ||
+		    context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver) return;
 
 		try
 		{
+			if (syntaxReceiver.Exception is not null) throw syntaxReceiver.Exception;
+			if (!syntaxReceiver.Candidates.Any()) return;
+			
 #if !DEBUG || ForceTasks
 			var tasks = new List<Task>();
 			var taskFactory = new TaskFactory();
@@ -62,7 +64,9 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 					StartEntry = candidate,
 					ClassName = candidateClassName,
 					GlobalFormatters = globalFormatters,
-					Formatters = formatters
+					Formatters = formatters,
+					Template = candidate.DefaultType!.GetType(context.Compilation),
+					IsTSpecified = true
 				};
 #if !DEBUG || ForceTasks
 				tasks.Add(taskFactory.StartNew(OverloadCreation, formatterOverloadProps));
@@ -79,7 +83,8 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 						ClassName = className,
 						GlobalFormatters = globalFormatters,
 						Formatters = formatters,
-						Template = argSyntax.GetType(context.Compilation)
+						Template = argSyntax.GetType(context.Compilation),
+						IsTSpecified = false
 					};
 #if !DEBUG || ForceTasks
 					tasks.Add(taskFactory.StartNew(OverloadCreation, genericWithFormatterOverloadProps));
@@ -123,62 +128,84 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 	{
 		public readonly List<AttributeSyntax> GlobalFormatterSyntaxes = new(64);
 		public List<TypeEntrySyntax> Candidates { get; } = new(128);
+		public Exception? Exception;
 
 		public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
 		{
-			if (syntaxNode is AttributeListSyntax {Target.Identifier.RawKind: (int) SyntaxKind.AssemblyKeyword} attributeListSyntax)
+			try
 			{
-				foreach (var attribute in attributeListSyntax.Attributes)
+				if (syntaxNode is AttributeListSyntax {Target.Identifier.RawKind: (int) SyntaxKind.AssemblyKeyword} attributeListSyntax)
+				{
+					foreach (var attribute in attributeListSyntax.Attributes)
+						switch (attribute.Name.GetName())
+						{
+							case Constants.FormatterAttr:
+								GlobalFormatterSyntaxes.Add(attribute);
+								break;
+						}
+				}
+
+				if (syntaxNode is not TypeDeclarationSyntax {AttributeLists.Count: >= 1} declarationSyntax) return;
+
+				var typeEntry = new TypeEntrySyntax(declarationSyntax);
+				bool isCandidate = false;
+				foreach (var attributeList in declarationSyntax.AttributeLists)
+				foreach (var attribute in attributeList.Attributes)
+				{
 					switch (attribute.Name.GetName())
 					{
-						case Constants.FormatterAttr:
-							GlobalFormatterSyntaxes.Add(attribute);
-							break;
-					}
-			}
-
-			if (syntaxNode is not TypeDeclarationSyntax {AttributeLists.Count: >= 1} declarationSyntax) return;
-
-			var typeEntry = new TypeEntrySyntax(declarationSyntax);
-			bool isCandidate = false;
-			foreach (var attributeList in declarationSyntax.AttributeLists)
-			foreach (var attribute in attributeList.Attributes)
-			{
-				switch (attribute.Name.GetName())
-				{
-					case Constants.OverloadAttr
-						when attribute.ArgumentList is not null:
-					{
-						var args = attribute.ArgumentList.Arguments;
-						if (args.Count > 0)
+						case Constants.OverloadAttr
+							when attribute.ArgumentList is not null:
 						{
-							string className = declarationSyntax.Identifier.ValueText;
-							className = args.Count switch
+							var args = attribute.ArgumentList.Arguments;
+							if (args.Count > 0)
 							{
-								1 => className,
-								2 => throw new ArgumentException($"Must be set regex replacement parameter for {Constants.OverloadAttr}.")
-									.WithLocation(attribute),
-								3 => Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText()),
-								_ => throw new ArgumentException($"Unexpected count of args for {Constants.OverloadAttr}.")
-									.WithLocation(attribute)
-							};
+								string className = declarationSyntax.Identifier.ValueText;
+								className = args.Count switch
+								{
+									1 => className,
+									2 => throw new ArgumentException($"Must be set regex replacement parameter for {Constants.OverloadAttr}.")
+										.WithLocation(attribute),
+									3 => Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText()),
+									_ => throw new ArgumentException($"Unexpected count of args for {Constants.OverloadAttr}.")
+										.WithLocation(attribute)
+								};
 
-							typeEntry.OverloadTypes.Add((className, args[0]));
+								typeEntry.OverloadTypes.Add((className, args[0]));
+							}
+
+							isCandidate = true;
+							break;
 						}
-
-						isCandidate = true;
-						break;
+						case Constants.BlackListModeAttr:
+							typeEntry.IsBlackListMode = true;
+							break;
+						case Constants.FormatterAttr:
+							typeEntry.FormatterSyntaxes.Add(attribute);
+							break;
+						case Constants.TSpecifyAttr:
+							if (attribute.ArgumentList is not {Arguments.Count: 1})
+								throw new ArgumentException("Count of arguments must be equals to 1.")
+									.WithLocation(declarationSyntax);
+							if (attribute.ArgumentList.Arguments[0].Expression is not TypeOfExpressionSyntax type)
+								throw new ArgumentException($"Argument must be {nameof(TypeOfExpressionSyntax)}.")
+									.WithLocation(declarationSyntax);
+							typeEntry.DefaultType = type.Type;
+							continue;
 					}
-					case Constants.BlackListModeAttr:
-						typeEntry.IsBlackListMode = true;
-						break;
-					case Constants.FormatterAttr:
-						typeEntry.FormatterSyntaxes.Add(attribute);
-						break;
 				}
-			}
 
-			if (isCandidate) Candidates.Add(typeEntry);
+				if (!isCandidate) return;
+				if (typeEntry.DefaultType is null)
+					throw new ArgumentException(
+							$"Please, specify T for default case using {Constants.TSpecifyAttr} attribute.")
+						.WithLocation(declarationSyntax);
+				Candidates.Add(typeEntry);
+			}
+			catch (Exception ex)
+			{
+				Exception = ex;
+			}
 		}
 	}
 }

@@ -16,7 +16,6 @@ internal sealed class CombinedIntegrityOverload : IChainMember
 		if (props.Store.OverloadMap is null
 		    || props.Store.Modifiers is null
 		    || !props.Store.IsSmthChanged
-		    || props.Template is null
 		    || props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;
 

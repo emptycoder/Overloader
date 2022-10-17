@@ -17,25 +17,22 @@ internal sealed class AnalyzeMethodParams : IChainMember
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
 		props.Store.OverloadMap = new ParameterData[parameters.Count];
+
 		for (int index = 0; index < parameters.Count; index++)
 		{
-			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(props,
-				out var attribute,
-				out bool forceOverloadIntegrity,
-				out string? combineWith);
-
 			var parameterType = (parameters[index].Type ?? throw new NullReferenceException(
 						$"Parameter {parameters[index].Identifier} type is null.")
 					.WithLocation(parameters[index]))
 				.GetType(props.Compilation);
-
+			
+			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(props, out var tAttrDto);
 			var parameterAction = shouldBeReplaced switch
 			{
 				true when props.TryGetFormatter(parameterType.GetClearType(), out var formatter) =>
-					forceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
+					tAttrDto.ForceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
 						? ParameterAction.FormatterIntegrityReplacement
 						: ParameterAction.FormatterReplacement,
-				true when attribute?.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
+				true when tAttrDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
 				true => ParameterAction.SimpleReplacement,
 				false => ParameterAction.Nothing
 			};
@@ -43,20 +40,22 @@ internal sealed class AnalyzeMethodParams : IChainMember
 			{
 				ParameterAction.Nothing => default,
 				ParameterAction.SimpleReplacement => props.Template,
-				ParameterAction.CustomReplacement => attribute!.ArgumentList!.Arguments[0].GetType(props.Compilation),
+				ParameterAction.CustomReplacement => tAttrDto.Attribute.ArgumentList!.Arguments[0].GetType(props.Compilation),
 				ParameterAction.FormatterReplacement => default,
 				ParameterAction.FormatterIntegrityReplacement => default,
 				_ => throw new ArgumentOutOfRangeException()
 			} ?? parameterType;
 
+			bool isCombineWith = tAttrDto.CombineWith is not null;
 			props.Store.OverloadMap[index] = new ParameterData(
 				parameterAction,
 				newParameterType,
-				combineWith is null ? SByte.MaxValue : (sbyte) parameters.IndexOf(param => param.Identifier.ValueText == combineWith));
+				isCombineWith ?
+					(sbyte) parameters.IndexOf(param => param.Identifier.ValueText == tAttrDto.CombineWith)
+					: SByte.MaxValue);
 
-			bool isFormatter = parameterAction is ParameterAction.FormatterReplacement;
-			props.Store.FormattersWoIntegrityCount += *(sbyte*) &isFormatter;
-			bool isCombineWith = combineWith is not null;
+			bool isFormatterWoIntegrity = parameterAction is ParameterAction.FormatterReplacement;
+			props.Store.FormattersWoIntegrityCount += *(sbyte*) &isFormatterWoIntegrity;
 			props.Store.CombineParametersCount += *(sbyte*) &isCombineWith;
 			props.Store.IsSmthChanged |= shouldBeReplaced;
 		}

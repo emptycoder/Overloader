@@ -23,12 +23,12 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
-
+		
 		Span<int> maxTransitionsCount = stackalloc int[props.Store.FormattersWoIntegrityCount];
 		for (int index = 0, formatterIndex = 0; index < parameters.Count; index++)
 		{
 			var parameter = parameters[index];
-			var mappedParam = props.Store.OverloadMap![index];
+			var mappedParam = props.Store.OverloadMap[index];
 			if (mappedParam.ParameterAction != ParameterAction.FormatterReplacement) continue;
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
@@ -78,7 +78,7 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 			 */
 			for (int index = 0;;)
 			{
-				if (++transitionIndexes[index] != maxTransitionsCount[index]) continue;
+				if (++transitionIndexes[index] != maxTransitionsCount[index]) break;
 				transitionIndexes[index] = 0;
 
 				if (++index == transitionIndexes.Length)

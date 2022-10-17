@@ -73,13 +73,9 @@ internal static class SyntaxNodeExtensions
 
 	public static bool TryGetTAttrByTemplate(this ParameterSyntax syntaxNode,
 		IGeneratorProps props,
-		out AttributeSyntax? attr,
-		out bool forceOverloadIntegrity,
-		out string? combineWith)
+		out TAttributeDTO tAttrDto)
 	{
-		combineWith = default;
-		forceOverloadIntegrity = false;
-		attr = default;
+		tAttrDto = new TAttributeDTO();
 		foreach (var attrList in syntaxNode.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
@@ -87,22 +83,22 @@ internal static class SyntaxNodeExtensions
 			switch (attrName)
 			{
 				case Constants.IntegrityAttr:
-					forceOverloadIntegrity = true;
+					tAttrDto.ForceOverloadIntegrity = true;
 					continue;
-				case Constants.CombineWith:
+				case Constants.CombineWithAttr:
 					var args = attribute.ArgumentList!.Arguments;
 					if (args.Count != 1) throw new ArgumentException().WithLocation(syntaxNode);
-					combineWith = args[0].Expression.GetVariableName();
+					tAttrDto.CombineWith = args[0].Expression.GetVariableName();
 					continue;
 				case Constants.TAttr:
 					if (attribute.ArgumentList is {Arguments.Count: > 1} &&
-					    (props.Template is null || attribute.ArgumentList.Arguments[1].EqualsToTemplate(props))) continue;
-					attr = attribute;
+					    attribute.ArgumentList.Arguments[1].EqualsToTemplate(props)) continue;
+					tAttrDto.Attribute = attribute;
 					continue;
 			}
 		}
 
-		return attr != null;
+		return tAttrDto.Attribute != null;
 	}
 
 	public static string GetName(this NameSyntax nameSyntax) => nameSyntax switch

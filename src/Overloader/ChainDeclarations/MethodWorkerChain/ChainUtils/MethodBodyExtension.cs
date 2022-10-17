@@ -17,13 +17,13 @@ internal static class MethodBodyExtension
 	{
 		if (method.ExpressionBody is not null)
 		{
-			props.Builder.WriteChildren(method.ExpressionBody, replacements, props.Template?.ToDisplayString());
+			props.Builder.WriteChildren(method.ExpressionBody, replacements, props.Template.ToDisplayString());
 			props.Builder.Append(";", 1);
 		}
 		else if (method.Body is not null)
 		{
 			props.Builder.Append(String.Empty, 1)
-				.WriteChildren(method.Body, replacements, props.Template?.ToDisplayString());
+				.WriteChildren(method.Body, replacements, props.Template.ToDisplayString());
 		}
 
 		return props;
@@ -32,7 +32,7 @@ internal static class MethodBodyExtension
 	private static void WriteChildren(this SourceBuilder sb,
 		SyntaxNodeOrToken syntaxNode,
 		Span<(string VarName, string ConcatedVars)> replacements,
-		string? templateStr)
+		string templateStr)
 	{
 		foreach (var nodeOrToken in syntaxNode.ChildNodesAndTokens())
 		{
@@ -124,7 +124,7 @@ internal static class MethodBodyExtension
 	}
 
 	private static string? ParseTrivia(this SyntaxTriviaList triviaList, (string, string)[] buffer,
-		string? templateStr, out Span<(string, string)> replacements)
+		string templateStr, out Span<(string, string)> replacements)
 	{
 		int size = 0;
 		string? changeLine = default;

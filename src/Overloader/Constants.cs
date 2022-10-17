@@ -12,12 +12,14 @@ internal static class Constants
 
 ";
 
+	// ReSharper disable once InconsistentNaming
+	public const string TSpecifyAttr = "TSpecify";
 	public const string OverloadAttr = "Overload";
 	public const string FormatterAttr = "Formatter";
-
+	
 	// ReSharper disable once InconsistentNaming
 	public const string TAttr = "T";
-	public const string CombineWith = "CombineWith";
+	public const string CombineWithAttr = "CombineWith";
 	public const string IntegrityAttr = "Integrity";
 	public const string IgnoreForAttr = "IgnoreFor";
 	public const string BlackListModeAttr = "BlackListMode";
@@ -38,10 +40,16 @@ namespace {nameof(Overloader)};
 [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public sealed class {FormatterAttr}Attribute : Attribute
 {{
-	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params, object[]? transitions = null) {{ }}
+	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
 }}
 
 /* Class or struct attributes */
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+public sealed class {TSpecifyAttr}Attribute : Attribute
+{{
+	public {TSpecifyAttr}Attribute(Type templateType) {{ }}
+}}
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = false)]
 public sealed class {OverloadAttr}Attribute : Attribute
@@ -84,9 +92,9 @@ public sealed class {TAttr}Attribute : Attribute
 public sealed class {IntegrityAttr}Attribute : Attribute {{ }}
 
 [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
-public sealed class {CombineWith}Attribute : Attribute
+public sealed class {CombineWithAttr}Attribute : Attribute
 {{
-	public {CombineWith}Attribute(string parameterName) {{ }}
+	public {CombineWithAttr}Attribute(string parameterName) {{ }}
 }}
 ";
 }

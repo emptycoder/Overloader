@@ -20,6 +20,29 @@ using Overloader.Examples;
 			nameof(Vector3<double>.X), nameof(Vector2<double>.X),
 			nameof(Vector3<double>.Y), nameof(Vector2<double>.Y)
 		}
+	},
+	new object[]
+	{
+		typeof(Vector2Test<>),
+		new object[]
+		{
+			nameof(Vector3<double>.X), nameof(Vector2Test<double>.X),
+			nameof(Vector3<double>.Y), nameof(Vector2Test<double>.Y)
+		}
+	})]
+[assembly: Formatter(typeof(Vector2<>),
+	new object[] {"T"},
+	new object[]
+	{
+		nameof(Vector3<double>.X), "T",
+		nameof(Vector3<double>.Y), "T"
+	})]
+[assembly: Formatter(typeof(Vector2Test<>),
+	new object[] {"T"},
+	new object[]
+	{
+		nameof(Vector3<double>.X), "T",
+		nameof(Vector3<double>.Y), "T"
 	})]
 
 var vec3 = new Vector3<float>();
@@ -40,17 +63,25 @@ namespace Overloader.Examples
 		public T X;
 		public T Y;
 	}
+	
+	public struct Vector2Test<T>
+	{
+		public T X;
+		public T Y;
+	}
 
+	[TSpecify(typeof(double))]
 	[Overload(typeof(float), "2D", "2F")]
-	public static class Vector2DExtension
+	public static partial class Vector2DExtension
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[return: T]
-		public static ref Vector3<double> Sum([Integrity] [T] this ref Vector3<double> vec1, [T][CombineWith(nameof(vec1))] in Vector3<double> vec2)
+		public static ref Vector3<double> Sum([Integrity] [T] this ref Vector3<double> vec1,
+			[T][CombineWith(nameof(vec1))] in Vector3<double> vec2)
 		{
 			vec1.X += vec2.X;
 			vec1.Y += vec2.Y;
-			Console.WriteLine("dd");
+			Console.WriteLine("dd1232");
 
 			return ref vec1;
 		}

@@ -15,7 +15,8 @@ internal class GeneratorProperties : IGeneratorProps, IDisposable
 
 	void IDisposable.Dispose() => Builder.Dispose();
 	public string ClassName { get; init; } = default!;
-	public ITypeSymbol? Template { get; init; }
+	public ITypeSymbol Template { get; init; } = default!;
+	public bool IsTSpecified { get; init; }
 
 	public Compilation Compilation => Context.Compilation;
 

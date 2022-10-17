@@ -25,6 +25,7 @@ internal class Program
 	static void Main(string[] args) {{ }}
 }}
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.OverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
 {accessModifier} static class {className} {{ }}
 ";

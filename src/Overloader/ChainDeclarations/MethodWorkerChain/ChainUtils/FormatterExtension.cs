@@ -10,7 +10,6 @@ internal static class FormatterExtension
 {
 	public static string AppendFormatterParam(this SourceBuilder sb,
 		GeneratorProperties props,
-		SyntaxTokenList modifiers,
 		ITypeSymbol type,
 		string paramName)
 	{
@@ -32,10 +31,10 @@ internal static class FormatterExtension
 		for (int paramIndex = 0;;)
 		{
 			var formatterParam = formatter.Params[paramIndex];
-			var templateType = formatterParam.Param.GetType(props.Template) ??
-			                   type.GetMemberType(formatterParam.Name);
-			var paramType = props.SetDeepestTypeWithTemplateFilling(templateType);
-			if (paramType.IsValueType && !paramType.IsDefinition)
+			var templateType = formatterParam.Param.GetType(props.Template);
+			var paramType = props.SetDeepestTypeWithTemplateFilling(templateType, props.Template);
+
+			if (paramType.IsValueType && paramType.SpecialType == SpecialType.System_ValueType)
 				sb.AppendWith("in", " ");
 
 			sb.AppendWith(paramType.ToDisplayString(), " ")
@@ -52,8 +51,8 @@ internal static class FormatterExtension
 	}
 
 	public static SourceBuilder AppendIntegrityParam(this SourceBuilder sb, GeneratorProperties props, ITypeSymbol type, ParameterSyntax parameter) =>
-		sb.AppendWith(parameter.AttributeLists.ToFullString(), " ")
+		sb.AppendAttributes(parameter.AttributeLists, " ")
 			.AppendWith(parameter.Modifiers.ToFullString(), " ")
-			.AppendWith(props.SetDeepestType(type, props.Template ?? type).ToDisplayString(), " ")
+			.AppendWith(props.SetDeepestType(type, props.Template, props.Template).ToDisplayString(), " ")
 			.Append(parameter.Identifier.ToFullString());
 }

@@ -11,7 +11,7 @@ internal static class MethodHeaderExtension
 		MethodDeclarationSyntax syntax,
 		string[] modifiers,
 		ITypeSymbol? returnType) =>
-		sb.Append(syntax.AttributeLists.ToFullString(), 1)
+		sb.AppendAttributes(syntax.AttributeLists, "\n")
 			.AppendWith(string.Join(" ", modifiers), " ")
 			.AppendRefReturnValues(syntax.ReturnType)
 			.AppendWith(returnType?.ToDisplayString() ?? syntax.ReturnType.ToFullString(), " ")
@@ -21,7 +21,7 @@ internal static class MethodHeaderExtension
 		ParameterSyntax parameter,
 		ITypeSymbol newType,
 		Compilation compilation) =>
-		sb.AppendWith(parameter.AttributeLists.ToFullString(), " ")
+		sb.AppendAttributes(parameter.AttributeLists, " ")
 			.AppendWith(parameter.Type!.GetType(compilation)
 				.ConstructWithClearType(newType, compilation).ToDisplayString(), " ")
 			.Append(parameter.Identifier.ToString());

@@ -50,6 +50,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 {(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
@@ -73,7 +74,7 @@ internal struct Vector3<T>
 
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
-			{"double,double,double", false},
+			{"double,double,long", false},
 			{"float,double,double", false},
 			{"TestProject.Vector3<float>", false}
 		};
@@ -108,6 +109,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 {(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
@@ -149,6 +151,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 {(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
@@ -184,6 +187,7 @@ using Overloader;
 
 namespace TestProject;
 
+[{Constants.TSpecifyAttr}(typeof(double))]
 [{Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
