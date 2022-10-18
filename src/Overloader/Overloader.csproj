@@ -21,10 +21,11 @@
 		<PackageReadmeFile>NuGetReadme.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/emptycoder/Overloader</RepositoryUrl>
-		<PackageTags>source; generator; generics</PackageTags>
-		<AssemblyVersion>1.1.3</AssemblyVersion>
-		<FileVersion>1.1.3</FileVersion>
-		<Version>1.1.3</Version>
+		<PackageTags>source; generator; generics; csharp-sourcegenerator</PackageTags>
+		<AssemblyVersion>2.0.0</AssemblyVersion>
+		<FileVersion>2.0.0</FileVersion>
+		<Version>2.0.0</Version>
+		<PackageIcon>OverloaderLogo.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<SignAssembly>False</SignAssembly>
 		<DevelopmentDependency>true</DevelopmentDependency>
@@ -43,6 +44,7 @@
 
 	<ItemGroup>
 		<None Include="../../documentation/NuGetReadme.md" Pack="true" PackagePath="" Visible="false" />
+		<None Include="../../documentation/images/OverloaderLogo.png" Pack="true" PackagePath="" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>
