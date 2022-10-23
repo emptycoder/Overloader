@@ -42,7 +42,7 @@ internal sealed class CombinedTransitionDeconstructOverloads : IChainMember
 
 		maxTransitionsCount = maxTransitionsCount.Slice(0, props.Store.FormattersWoIntegrityCount - countOfCombineWith);
 
-		if (maxTransitionsCount.Length == 0) return ChainAction.NextMember;
+		if (maxTransitionsCount.Length == 0 || countOfCombineWith == 0) return ChainAction.NextMember;
 		// Check that transitions exists
 		for (int index = 0;;)
 		{

@@ -16,7 +16,7 @@ internal static class Constants
 	public const string TSpecifyAttr = "TSpecify";
 	public const string OverloadAttr = "Overload";
 	public const string FormatterAttr = "Formatter";
-	
+
 	// ReSharper disable once InconsistentNaming
 	public const string TAttr = "T";
 	public const string CombineWithAttr = "CombineWith";

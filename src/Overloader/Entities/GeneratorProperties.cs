@@ -12,11 +12,11 @@ internal class GeneratorProperties : IGeneratorProps, IDisposable
 	public Dictionary<ITypeSymbol, Formatter> GlobalFormatters { private get; init; } = default!;
 	public GeneratorExecutionContext Context { private get; init; }
 	public TypeEntrySyntax StartEntry { get; init; }
+	public bool IsTSpecified { get; init; }
 
 	void IDisposable.Dispose() => Builder.Dispose();
 	public string ClassName { get; init; } = default!;
 	public ITypeSymbol Template { get; init; } = default!;
-	public bool IsTSpecified { get; init; }
 
 	public Compilation Compilation => Context.Compilation;
 

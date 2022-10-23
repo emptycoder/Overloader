@@ -66,7 +66,7 @@ internal sealed class DeconstructOverload : IChainMember
 			props.Builder.AppendWoTrim(", ");
 		}
 
-		props.Builder.Append(")");
+		props.Builder.AppendWoTrim(") ");
 		props.WriteMethodBody(entry, replacementVariableNames.AsSpan(0, replacementVariableIndex));
 		ArrayPool<(string, string)>.Shared.Return(replacementVariableNames);
 

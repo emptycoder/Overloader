@@ -144,7 +144,8 @@ internal static class SyntaxNodeExtensions
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
 			var result = Formatter.Parse(formatterSyntax, compilation);
-			dict.Add(result.Type, result.Formatter);
+			foreach (var type in result.Types)
+				dict.Add(type, result.Formatter);
 		}
 
 		return dict;
@@ -170,8 +171,14 @@ internal static class SyntaxNodeExtensions
 		string name;
 		switch (syntaxNode)
 		{
-			case LiteralExpressionSyntax str:
-				name = str.GetInnerText();
+			case LiteralExpressionSyntax literalExpression:
+				name = literalExpression.Kind() switch
+				{
+					SyntaxKind.StringLiteralExpression => literalExpression.GetInnerText(),
+					SyntaxKind.NumericLiteralExpression => literalExpression.ToString(),
+					_ => throw new ArgumentException($"Literal ({literalExpression.ToString()}) isn't allowed.")
+						.WithLocation(syntaxNode)
+				};
 				break;
 			case InvocationExpressionSyntax {Expression: IdentifierNameSyntax {Identifier.Text: "nameof"}} invocationExpressionSyntax:
 				var args = invocationExpressionSyntax.ArgumentList.Arguments;

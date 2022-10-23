@@ -17,8 +17,12 @@ internal static class MethodBodyExtension
 	{
 		if (method.ExpressionBody is not null)
 		{
-			props.Builder.WriteChildren(method.ExpressionBody, replacements, props.Template.ToDisplayString());
-			props.Builder.Append(";", 1);
+			props.Builder
+				.NestedIncrease()
+				.WriteChildren(method.ExpressionBody, replacements, props.Template.ToDisplayString());
+			props.Builder
+				.NestedDecrease()
+				.Append(";", 1);
 		}
 		else if (method.Body is not null)
 		{
@@ -58,6 +62,19 @@ internal static class MethodBodyExtension
 			string varName;
 			switch (node)
 			{
+				case ElementAccessExpressionSyntax syntax:
+					if (syntax.Expression is not IdentifierNameSyntax)
+					{
+						sb.Append(syntax.ToFullString());
+						break;
+					}
+
+					// Don't need go deep to get name, because that's case can't be supported
+					varName = syntax.Expression.ToString();
+					if (varName.FindInReplacements(replacements) == -1) goto default;
+					sb.AppendWoTrim(varName)
+						.AppendWoTrim(string.Join("", syntax.ArgumentList.Arguments));
+					break;
 				case MemberAccessExpressionSyntax syntax:
 					if (syntax.Expression is not IdentifierNameSyntax)
 					{

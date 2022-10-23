@@ -48,7 +48,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 		{
 			if (syntaxReceiver.Exception is not null) throw syntaxReceiver.Exception;
 			if (!syntaxReceiver.Candidates.Any()) return;
-			
+
 #if !DEBUG || ForceTasks
 			var tasks = new List<Task>();
 			var taskFactory = new TaskFactory();
@@ -127,8 +127,8 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 	private sealed class SyntaxReceiver : ISyntaxReceiver
 	{
 		public readonly List<AttributeSyntax> GlobalFormatterSyntaxes = new(64);
-		public List<TypeEntrySyntax> Candidates { get; } = new(128);
 		public Exception? Exception;
+		public List<TypeEntrySyntax> Candidates { get; } = new(128);
 
 		public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
 		{
@@ -148,7 +148,6 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 				if (syntaxNode is not TypeDeclarationSyntax {AttributeLists.Count: >= 1} declarationSyntax) return;
 
 				var typeEntry = new TypeEntrySyntax(declarationSyntax);
-				bool isCandidate = false;
 				foreach (var attributeList in declarationSyntax.AttributeLists)
 				foreach (var attribute in attributeList.Attributes)
 				{
@@ -174,7 +173,6 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 								typeEntry.OverloadTypes.Add((className, args[0]));
 							}
 
-							isCandidate = true;
 							break;
 						}
 						case Constants.BlackListModeAttr:
@@ -195,11 +193,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 					}
 				}
 
-				if (!isCandidate) return;
-				if (typeEntry.DefaultType is null)
-					throw new ArgumentException(
-							$"Please, specify T for default case using {Constants.TSpecifyAttr} attribute.")
-						.WithLocation(declarationSyntax);
+				if (typeEntry.DefaultType is null) return;
 				Candidates.Add(typeEntry);
 			}
 			catch (Exception ex)

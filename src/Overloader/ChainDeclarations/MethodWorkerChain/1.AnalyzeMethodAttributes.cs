@@ -63,8 +63,6 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 						}
 						case 2:
 							break;
-						// case 0 when props.Template is null:
-						// 	break;
 						case 0 when props.TryGetFormatter(returnTypeSymbolRoot, out var formatter):
 							var @params = new ITypeSymbol[formatter.GenericParams.Length];
 

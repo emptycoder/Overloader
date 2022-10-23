@@ -8,6 +8,8 @@ namespace Overloader.Entities.Builders;
 
 internal class SourceBuilder : IDisposable
 {
+	private const string PaddingStr = "\t";
+
 	private static readonly HashSet<string> AttributesToRemove = new()
 	{
 		Constants.TSpecifyAttr,
@@ -20,8 +22,6 @@ internal class SourceBuilder : IDisposable
 		Constants.AllowForAttr,
 		Constants.ChangeModifierAttr
 	};
-	
-	private const string PaddingStr = "\t";
 
 	// ReSharper disable once RedundantSuppressNullableWarningExpression
 	private static readonly ObjectPool<SourceBuilder> SPoolInstance = new(() =>
@@ -61,6 +61,7 @@ internal class SourceBuilder : IDisposable
 				}
 				else
 					AppendWoTrim(", ");
+
 				Append(attr.ToString());
 			}
 

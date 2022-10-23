@@ -24,7 +24,7 @@ internal sealed class AnalyzeMethodParams : IChainMember
 						$"Parameter {parameters[index].Identifier} type is null.")
 					.WithLocation(parameters[index]))
 				.GetType(props.Compilation);
-			
+
 			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(props, out var tAttrDto);
 			var parameterAction = shouldBeReplaced switch
 			{
@@ -50,8 +50,8 @@ internal sealed class AnalyzeMethodParams : IChainMember
 			props.Store.OverloadMap[index] = new ParameterData(
 				parameterAction,
 				newParameterType,
-				isCombineWith ?
-					(sbyte) parameters.IndexOf(param => param.Identifier.ValueText == tAttrDto.CombineWith)
+				isCombineWith
+					? (sbyte) parameters.IndexOf(param => param.Identifier.ValueText == tAttrDto.CombineWith)
 					: SByte.MaxValue);
 
 			bool isFormatterWoIntegrity = parameterAction is ParameterAction.FormatterReplacement;

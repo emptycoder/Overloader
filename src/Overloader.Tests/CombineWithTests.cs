@@ -43,7 +43,7 @@ internal struct Vector3<T>
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
-		
+
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
 			{"double,double,double,double,double,double", false},

@@ -22,7 +22,7 @@ internal static class TransitionExtensions
 		{
 			var mappedParam = props.Store.OverloadMap![index];
 			var parameter = parameters[index];
-			
+
 			if (!combineWithMode || mappedParam.IsCombineNotExists)
 			{
 				headerBuilder.WriteParamTransitionOverload(bodyBuilder, props, mappedParam, parameter, transitionIndexes, ref paramIndex);
@@ -94,7 +94,7 @@ internal static class TransitionExtensions
 						transitionLink.TemplateType,
 						props.Template,
 						transitionLink.TemplateType);
-					
+
 					if (paramType.IsValueType && paramType.SpecialType == SpecialType.System_ValueType)
 						headerBuilder.AppendWith("in", " ");
 
@@ -112,7 +112,7 @@ internal static class TransitionExtensions
 				{
 					var formatterParam = formatter.Params[formatterParamIndex];
 					if (transition.TryToFindReplacement(
-						    formatterParam.Name,
+						    formatterParam.Identifier,
 						    out string? replacement,
 						    out int linkIndex))
 					{
@@ -125,11 +125,11 @@ internal static class TransitionExtensions
 							.AppendWoTrim(", ")
 							.AppendWith(props.SetDeepestTypeWithTemplateFilling(templateType, props.Template).ToDisplayString(), " ")
 							.Append(paramName)
-							.Append(formatterParam.Name);
+							.Append(formatterParam.Identifier);
 
 						bodyBuilder
 							.AppendWoTrim(paramName)
-							.AppendWoTrim(formatterParam.Name);
+							.AppendWoTrim(formatterParam.Identifier);
 					}
 
 					if (++formatterParamIndex == formatter.Params.Length) break;

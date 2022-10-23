@@ -23,7 +23,7 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
-		
+
 		Span<int> maxTransitionsCount = stackalloc int[props.Store.FormattersWoIntegrityCount];
 		for (int index = 0, formatterIndex = 0; index < parameters.Count; index++)
 		{

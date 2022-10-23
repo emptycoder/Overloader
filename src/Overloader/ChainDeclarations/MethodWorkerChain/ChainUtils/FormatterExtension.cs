@@ -39,8 +39,8 @@ internal static class FormatterExtension
 
 			sb.AppendWith(paramType.ToDisplayString(), " ")
 				.Append(paramName)
-				.Append(formatterParam.Name);
-			bodyBuilder.AppendWoTrim(paramName).AppendWoTrim(formatterParam.Name);
+				.Append(formatterParam.Identifier);
+			bodyBuilder.AppendWoTrim(paramName).AppendWoTrim(formatterParam.Identifier);
 
 			if (++paramIndex == formatter.Params.Length) break;
 			sb.AppendWoTrim(", ");
