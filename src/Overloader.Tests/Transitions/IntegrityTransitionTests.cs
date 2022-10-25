@@ -1,12 +1,12 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Tests.GeneratorRunner;
 
-namespace Overloader.Tests;
+namespace Overloader.Tests.Transitions;
 
-public class DeconstructTransitionTests
+public class IntegrityTransitionTests
 {
 	[Test]
-	public void TransitionBaseTest()
+	public void IntegrityTransitionBaseTest()
 	{
 		const string programCs = @$"
 using Overloader;
@@ -18,6 +18,11 @@ using Overloader;
 				""X"", ""T"",
 				""Y"", ""T"",
 				""Z"", ""T""
+			}},
+			new object[]
+			{{
+				typeof(TestProject.Vector2<>),
+				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}""
 			}},
 			new object[]
 			{{
@@ -87,6 +92,10 @@ internal record struct Vector2<T>
 			{"TestProject.Vector2<double>,double,TestProject.Vector2<double>,double", false},
 			{"TestProject.Vector2<double>,double", false},
 			{"TestProject.Vector3<double>", false},
+			{"TestProject.Vector2<double>,TestProject.Vector3<double>", false},
+			{"TestProject.Vector3<double>,TestProject.Vector2<double>", false},
+			{"TestProject.Vector2<double>,TestProject.Vector2<double>", false},
+			{"TestProject.Vector2<double>", false},
 			{"TestProject.Vector3<float>,Vector3<double>", false},
 			{"float,float,float,float,float,float", false},
 			{"float,float,float", false},
@@ -94,6 +103,10 @@ internal record struct Vector2<T>
 			{"TestProject.Vector2<float>,float", false},
 			{"TestProject.Vector3<float>,TestProject.Vector3<float>", false},
 			{"TestProject.Vector3<float>", false},
+			{"TestProject.Vector2<float>,TestProject.Vector3<float>", false},
+			{"TestProject.Vector3<float>,TestProject.Vector2<float>", false},
+			{"TestProject.Vector2<float>,TestProject.Vector2<float>", false},
+			{"TestProject.Vector2<float>", false},
 			{"Vector3<double>,float", false}
 		};
 
