@@ -18,6 +18,7 @@ internal static class MethodBodyExtension
 		if (method.ExpressionBody is not null)
 		{
 			props.Builder
+				.AppendWoTrim(" ")
 				.NestedIncrease()
 				.WriteChildren(method.ExpressionBody, replacements, props.Template.ToDisplayString());
 			props.Builder
@@ -28,6 +29,10 @@ internal static class MethodBodyExtension
 		{
 			props.Builder.Append(String.Empty, 1)
 				.WriteChildren(method.Body, replacements, props.Template.ToDisplayString());
+		}
+		else
+		{
+			props.Builder.AppendWoTrim(";", 1);
 		}
 
 		return props;

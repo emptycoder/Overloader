@@ -16,6 +16,10 @@ internal class Main : IChainMember
 			return ChainAction.Break;
 
 		var entrySyntax = props.StartEntry.Syntax;
+		if (entrySyntax.AttributeLists.Any(attrList => attrList.Attributes.Any(attr =>
+			    attr.Name.GetName() == Constants.RemoveBodyAttr)))
+			props.Store.IsNeedToRemoveBody = true;
+		
 		sb.AppendUsings(entrySyntax.GetTopParent())
 			.AppendNamespace(entrySyntax.GetNamespace())
 			.Append(string.Empty, 2);

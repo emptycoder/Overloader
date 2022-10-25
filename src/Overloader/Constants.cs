@@ -11,18 +11,19 @@ internal static class Constants
 #pragma warning disable CS0219 // Variable assigned but never used
 
 ";
+	public const string FormatterAttr = "Formatter";
 
 	// ReSharper disable once InconsistentNaming
 	public const string TSpecifyAttr = "TSpecify";
 	public const string OverloadAttr = "Overload";
-	public const string FormatterAttr = "Formatter";
+	public const string BlackListModeAttr = "BlackListMode";
+	public const string RemoveBodyAttr = "RemoveBody";
 
 	// ReSharper disable once InconsistentNaming
 	public const string TAttr = "T";
 	public const string CombineWithAttr = "CombineWith";
 	public const string IntegrityAttr = "Integrity";
 	public const string IgnoreForAttr = "IgnoreFor";
-	public const string BlackListModeAttr = "BlackListMode";
 	public const string AllowForAttr = "AllowFor";
 	public const string ChangeModifierAttr = "ChangeModifier";
 
@@ -37,28 +38,36 @@ namespace {nameof(Overloader)};
 	private const string AttributesSource = $@"
 /* Global attributes */
 
-[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+[AttributeUsage(AttributeTargets.Assembly
+	| AttributeTargets.Struct
+	| AttributeTargets.Class
+	| AttributeTargets.Interface,
+	AllowMultiple = true,
+	Inherited = false)]
 public sealed class {FormatterAttr}Attribute : Attribute
 {{
 	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
 }}
 
-/* Class or struct attributes */
+/* Class or struct or interface attributes */
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
 public sealed class {TSpecifyAttr}Attribute : Attribute
 {{
 	public {TSpecifyAttr}Attribute(Type templateType) {{ }}
 }}
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
 public sealed class {OverloadAttr}Attribute : Attribute
 {{
 	public {OverloadAttr}Attribute(Type? type = null, string? nameRegex = null, string? regexReplace = null) {{ }}
 }}
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
 public sealed class {BlackListModeAttr}Attribute : Attribute {{ }}
+
+[AttributeUsage(AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+public sealed class {RemoveBodyAttr}Attribute : Attribute {{ }}
 
 /* Method attribtes */
 

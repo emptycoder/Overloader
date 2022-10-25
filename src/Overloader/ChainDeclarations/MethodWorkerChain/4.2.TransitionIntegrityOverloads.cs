@@ -61,12 +61,17 @@ public sealed class TransitionIntegrityOverloads : IChainMember
 				props,
 				parameters,
 				transitionIndexes);
-			props.Builder.Append(") =>", 1)
-				.NestedIncrease()
-				.AppendRefReturnValues(entry.ReturnType)
-				.Append(bodyBuilder.ToStringAndClear())
-				.AppendWoTrim(");", 1)
-				.NestedDecrease();
+			props.Builder.Append(")");
+
+			if (props.Store.IsNeedToRemoveBody)
+				props.Builder.Append(";");
+			else
+				props.Builder.Append(" =>", 1)
+					.NestedIncrease()
+					.AppendRefReturnValues(entry.ReturnType)
+					.Append(bodyBuilder.ToStringAndClear())
+					.AppendWoTrim(");", 1)
+					.NestedDecrease();
 
 			/*
 				0 0 0 0 0

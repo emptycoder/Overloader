@@ -20,7 +20,8 @@ internal class SourceBuilder : IDisposable
 		Constants.IgnoreForAttr,
 		Constants.BlackListModeAttr,
 		Constants.AllowForAttr,
-		Constants.ChangeModifierAttr
+		Constants.ChangeModifierAttr,
+		Constants.RemoveBodyAttr
 	};
 
 	// ReSharper disable once RedundantSuppressNullableWarningExpression

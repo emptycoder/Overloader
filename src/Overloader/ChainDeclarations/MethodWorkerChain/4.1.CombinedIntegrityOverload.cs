@@ -75,12 +75,17 @@ internal sealed class CombinedIntegrityOverload : IChainMember
 		}
 
 		CloseParameterBracket:
-		props.Builder.AppendWoTrim(") =>", 1)
-			.NestedIncrease()
-			.AppendRefReturnValues(entry.ReturnType)
-			.Append(bodyBuilder.ToString())
-			.AppendWoTrim(");", 1)
-			.NestedDecrease();
+		props.Builder.Append(")");
+
+		if (props.Store.IsNeedToRemoveBody)
+			props.Builder.Append(";");
+		else
+			props.Builder.Append(" =>", 1)
+				.NestedIncrease()
+				.AppendRefReturnValues(entry.ReturnType)
+				.Append(bodyBuilder.ToString())
+				.AppendWoTrim(");", 1)
+				.NestedDecrease();
 
 		return ChainAction.NextMember;
 	}
