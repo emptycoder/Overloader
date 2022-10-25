@@ -80,7 +80,7 @@ using Overloader.Examples;
 // vec3.Sum();
 var vec = Vector128.Create(123d, 123d);
 vec.Sum(vec);
-Console.WriteLine("TEST123");
+Console.WriteLine("TEST12");
 
 namespace Overloader.Examples
 {

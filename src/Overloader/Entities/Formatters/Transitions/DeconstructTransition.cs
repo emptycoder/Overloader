@@ -53,7 +53,7 @@ internal sealed record DeconstructTransitionLink(
 			throw new ArgumentException($"Expression isn't {nameof(ArrayCreationExpressionSyntax)} expression.")
 				.WithLocation(mapParams);
 
-		if (expressions.Count % 2 != 0)
+		if (expressions.Count == 0 || expressions.Count % 2 != 0)
 			throw new ArgumentException("Not key/value. Map for expressions must contains only even count of links.")
 				.WithLocation(mapParams);
 
