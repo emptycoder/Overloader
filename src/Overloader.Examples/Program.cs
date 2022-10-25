@@ -80,7 +80,7 @@ using Overloader.Examples;
 // vec3.Sum();
 var vec = Vector128.Create(123d, 123d);
 vec.Sum(vec);
-Console.WriteLine("TEST12");
+Console.WriteLine("TEST123");
 
 namespace Overloader.Examples
 {
@@ -104,17 +104,6 @@ namespace Overloader.Examples
 	}
 
 	[TSpecify(typeof(double))]
-	[RemoveBody]
-	// ReSharper disable once PartialTypeWithSinglePart
-	public partial interface IVectorTest
-	{
-		[return: T]
-		Vector128<double> Sum(
-			[T] Vector128<double> curr,
-			[T] [CombineWith(nameof(curr))] Vector128<double> vector);
-	}
-
-	[TSpecify(typeof(double))]
 	// [Overload(typeof(float), "2D", "2F")]
 	public static partial class Vector2DExtension
 	{
@@ -133,8 +122,8 @@ namespace Overloader.Examples
 
 		[return: T]
 		public static Vector128<double> Sum(
-			[T] this Vector128<double> curr,
-			[T] [CombineWith(nameof(curr))] Vector128<double> vector) =>
+			[T] [Integrity] this Vector128<double> curr,
+			[T] [Integrity] [CombineWith(nameof(curr))] Vector128<double> vector) =>
 			Vector128.Create(curr[1] + vector[0], curr[1] + vector[1]);
 	}
 }

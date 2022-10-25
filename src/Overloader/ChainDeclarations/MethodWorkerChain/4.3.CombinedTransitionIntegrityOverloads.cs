@@ -28,8 +28,8 @@ public sealed class CombinedTransitionIntegrityOverloads : IChainMember
 		{
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap![index];
-			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement
-			    or ParameterAction.FormatterIntegrityReplacement) continue;
+			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement 
+			    and not ParameterAction.FormatterIntegrityReplacement) continue;
 			if (!mappedParam.IsCombineNotExists)
 			{
 				countOfCombineWith++;
