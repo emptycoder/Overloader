@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Runtime.Intrinsics;
+using Overloader;
 using Overloader.Examples;
 
 // [assembly: Formatter(typeof(Vector3<>),
@@ -57,20 +58,29 @@ using Overloader.Examples;
 	{
 		0, "T",
 		1, "T"
-	},
+	}, 
+	// ReSharper disable once RedundantExplicitParamsArrayCreation
 	new object[]
 	{
 		typeof(Vector2<>),
-		new object[]
-		{
-			0, "X",
-			1, "Y"
-		}
-	})]
+		"System.Runtime.CompilerServices.Unsafe.As<${T}, Vector128<${T}>>(ref ${Var}.X)"
+	}
+	// new object[]
+	// {
+	// 	typeof(Vector2<>),
+	// 	new object[]
+	// 	{
+	// 		// 0, nameof(Vector2<double>.X),
+	// 		// 1, nameof(Vector2<double>.Y)
+	// 	}
+	// }
+)]
 
 // var vec3 = new Vector3<float>();
 // vec3.Sum();
-Console.WriteLine("TEST");
+var vec = Vector128.Create(123d, 123d);
+vec.Sum(vec);
+Console.WriteLine("TEST122");
 
 namespace Overloader.Examples
 {
@@ -95,7 +105,7 @@ namespace Overloader.Examples
 
 	[TSpecify(typeof(double))]
 	// [Overload(typeof(float), "2D", "2F")]
-	public static class Vector2DExtension
+	public static partial class Vector2DExtension
 	{
 		// [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		// [return: T]
@@ -112,8 +122,8 @@ namespace Overloader.Examples
 
 		[return: T]
 		public static Vector128<double> Sum(
-			[T] [Integrity] Vector128<double> curr,
-			[T] Vector128<double> vector) =>
-			Vector128.Create(curr[0] + vector[0], curr[1] + vector[1]);
+			[T] this Vector128<double> curr,
+			[T] [CombineWith(nameof(curr))] Vector128<double> vector) =>
+			Vector128.Create(curr[1] + vector[0], curr[1] + vector[1]);
 	}
 }

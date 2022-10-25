@@ -18,7 +18,9 @@ public static class Chains
 		/* 3.2 */ new TransitionDeconstructOverloads(),
 		/* 3.3 */ new CombinedTransitionDeconstructOverloads(),
 		/* 4 */ new IntegrityOverload(),
-		/* 4.1 */ new CombinedIntegrityOverload()
+		/* 4.1 */ new CombinedIntegrityOverload(),
+		/* 4.2 */ new TransitionIntegrityOverloads(),
+		/* 4.3 */ new CombinedTransitionIntegrityOverloads()
 	};
 }
 

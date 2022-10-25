@@ -1,12 +1,18 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities.Formatters.Params.Value;
+using Overloader.Entities.Formatters.Transitions;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
 namespace Overloader.Entities.Formatters;
 
-internal sealed record Formatter(IParamValue[] GenericParams, (string Identifier, IParamValue Param)[] Params, Transition[] Transitions)
+internal sealed record Formatter(
+	IParamValue[] GenericParams,
+	(string Identifier, IParamValue Param)[] Params,
+	Memory<IntegrityTransition> IntegrityTransitions,
+	Memory<DeconstructTransition> DeconstructTransitions)
 {
 	public static (ITypeSymbol[] Types, Formatter Formatter) Parse(AttributeSyntax formatterSyntax, Compilation compilation)
 	{
@@ -54,11 +60,33 @@ internal sealed record Formatter(IParamValue[] GenericParams, (string Identifier
 		var @params = ParseParamsWithNames(arg2.Initializer, compilation);
 
 		int transitionsCount = args.Count - 3;
-		var transitions = new Transition[transitionsCount];
-		for (int argIndex = 3, mapIndex = 0; argIndex < args.Count; argIndex++, mapIndex++)
-			transitions[mapIndex] = Transition.Parse(args[argIndex].Expression, compilation);
+		int integrityTransitionIndex = 0;
+		int deconstructTransitionIndex = transitionsCount - 1;
+		var transitionMemory = new Memory<object>(new object[transitionsCount]);
+		var transitions = transitionMemory.Span;
+		for (int argIndex = 3; argIndex < args.Count; argIndex++)
+		{
+			if (args[argIndex].Expression is not ArrayCreationExpressionSyntax {Initializer.Expressions: var argExpressions})
+				throw new ArgumentException(
+						$"Arg of {nameof(Formatter)} must be {nameof(ArrayCreationExpressionSyntax)}.")
+					.WithLocation(args[argIndex].Expression);
+			if (argExpressions.Count < 2)
+				throw new ArgumentException("Empty transition not allowed")
+					.WithLocation(args[argIndex].Expression);
 
-		return (types, new Formatter(genericParams, @params, transitions));
+			if (argExpressions[1] is LiteralExpressionSyntax)
+				transitions[integrityTransitionIndex++] = IntegrityTransition.Parse(argExpressions, compilation);
+			else
+				transitions[deconstructTransitionIndex--] = DeconstructTransition.Parse(argExpressions, compilation);
+		}
+
+		var integrityTransitions = transitionMemory.Slice(0, integrityTransitionIndex);
+		var deconstructTransitions = transitionMemory.Slice(integrityTransitionIndex);
+
+		return (types, new Formatter(genericParams, @params,
+			Unsafe.As<Memory<object>, Memory<IntegrityTransition>>(ref integrityTransitions),
+			Unsafe.As<Memory<object>, Memory<DeconstructTransition>>(ref deconstructTransitions)
+		));
 	}
 
 	private static IParamValue[] ParseParams(InitializerExpressionSyntax? initializer, Compilation compilation)
@@ -83,7 +111,6 @@ internal sealed record Formatter(IParamValue[] GenericParams, (string Identifier
 
 		for (int index = 0, paramIndex = 0; index < initializer.Expressions.Count; index++)
 		{
-			// TODO:
 			string name = initializer.Expressions[index++].GetVariableName();
 			@params[paramIndex++] = (name, ParseParam(initializer.Expressions[index], compilation));
 		}

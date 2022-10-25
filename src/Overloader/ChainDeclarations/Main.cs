@@ -22,7 +22,7 @@ internal class Main : IChainMember
 
 		// Declare class/struct/record signature
 		sb.AppendAttributes(entrySyntax.AttributeLists, "\n")
-			.AppendWith(entrySyntax.Modifiers.ToFullString(), " ")
+			.AppendWith(entrySyntax.Modifiers.ToString(), " ")
 			.AppendWith(entrySyntax.Keyword.ToFullString(), " ")
 			.Append(props.ClassName, 1)
 			.NestedIncrease(SyntaxKind.OpenBraceToken);

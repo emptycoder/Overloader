@@ -15,6 +15,7 @@ internal sealed class CombinedDeconstructOverload : IChainMember
 	{
 		if (props.Store.OverloadMap is null
 		    || props.Store.Modifiers is null
+		    || !props.Store.IsSmthChanged
 		    || props.Store.FormattersWoIntegrityCount == 0
 		    || props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;

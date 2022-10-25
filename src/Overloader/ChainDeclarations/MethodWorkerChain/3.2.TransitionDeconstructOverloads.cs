@@ -18,6 +18,7 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 	{
 		if (props.Store.OverloadMap is null
 		    || props.Store.Modifiers is null
+		    || !props.Store.IsSmthChanged
 		    || props.Store.FormattersWoIntegrityCount == 0)
 			return ChainAction.NextMember;
 
@@ -29,11 +30,11 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 		{
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
-			if (mappedParam.ParameterAction != ParameterAction.FormatterReplacement) continue;
+			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement) continue;
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
-			maxTransitionsCount[formatterIndex++] = formatter.Transitions.Length;
+			maxTransitionsCount[formatterIndex++] = formatter.DeconstructTransitions.Length;
 		}
 
 		// Check that transitions exists
@@ -53,7 +54,12 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 				.AppendChainMemberNameComment(nameof(TransitionDeconstructOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
 				.Append("(");
-			props.Builder.WriteParamsTransitionOverload(bodyBuilder, props, parameters, transitionIndexes);
+			props.Builder.WriteTransitionOverload(
+				TransitionExtensions.ParamTransitionOverloadWriter,
+				bodyBuilder,
+				props,
+				parameters,
+				transitionIndexes);
 			props.Builder.Append(") =>", 1)
 				.NestedIncrease()
 				.AppendRefReturnValues(entry.ReturnType)

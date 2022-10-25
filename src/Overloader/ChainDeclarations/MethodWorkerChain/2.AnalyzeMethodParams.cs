@@ -12,6 +12,7 @@ internal sealed class AnalyzeMethodParams : IChainMember
 	unsafe ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		props.Store.FormattersWoIntegrityCount = 0;
+		props.Store.FormattersIntegrityCount = 0;
 		props.Store.CombineParametersCount = 0;
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
@@ -55,7 +56,10 @@ internal sealed class AnalyzeMethodParams : IChainMember
 					: SByte.MaxValue);
 
 			bool isFormatterWoIntegrity = parameterAction is ParameterAction.FormatterReplacement;
+			bool isFormatterIntegrity = parameterAction is ParameterAction.FormatterIntegrityReplacement;
+
 			props.Store.FormattersWoIntegrityCount += *(sbyte*) &isFormatterWoIntegrity;
+			props.Store.FormattersIntegrityCount += *(sbyte*) &isFormatterIntegrity;
 			props.Store.CombineParametersCount += *(sbyte*) &isCombineWith;
 			props.Store.IsSmthChanged |= shouldBeReplaced;
 		}
