@@ -11,6 +11,7 @@ internal static class Constants
 #pragma warning disable CS0219 // Variable assigned but never used
 
 ";
+
 	public const string FormatterAttr = "Formatter";
 
 	// ReSharper disable once InconsistentNaming

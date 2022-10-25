@@ -58,7 +58,7 @@ using Overloader.Examples;
 	{
 		0, "T",
 		1, "T"
-	}, 
+	},
 	// ReSharper disable once RedundantExplicitParamsArrayCreation
 	new object[]
 	{
@@ -102,7 +102,7 @@ namespace Overloader.Examples
 		public T X;
 		public T Y;
 	}
-	
+
 	[TSpecify(typeof(double))]
 	[RemoveBody]
 	// ReSharper disable once PartialTypeWithSinglePart
