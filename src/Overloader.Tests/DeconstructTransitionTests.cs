@@ -3,7 +3,7 @@ using Overloader.Tests.GeneratorRunner;
 
 namespace Overloader.Tests;
 
-public class TransitionTests
+public class DeconstructTransitionTests
 {
 	[Test]
 	public void TransitionBaseTest()
