@@ -71,36 +71,6 @@ internal static class SyntaxNodeExtensions
 		return nameSpace;
 	}
 
-	public static bool TryGetTAttrByTemplate(this ParameterSyntax syntaxNode,
-		IGeneratorProps props,
-		out TAttributeDTO tAttrDto)
-	{
-		tAttrDto = new TAttributeDTO();
-		foreach (var attrList in syntaxNode.AttributeLists)
-		foreach (var attribute in attrList.Attributes)
-		{
-			string attrName = attribute.Name.GetName();
-			switch (attrName)
-			{
-				case Constants.IntegrityAttr:
-					tAttrDto.ForceOverloadIntegrity = true;
-					continue;
-				case Constants.CombineWithAttr:
-					var args = attribute.ArgumentList!.Arguments;
-					if (args.Count != 1) throw new ArgumentException().WithLocation(syntaxNode);
-					tAttrDto.CombineWith = args[0].Expression.GetVariableName();
-					continue;
-				case Constants.TAttr:
-					if (attribute.ArgumentList is {Arguments.Count: > 1} &&
-					    attribute.ArgumentList.Arguments[1].EqualsToTemplate(props)) continue;
-					tAttrDto.Attribute = attribute;
-					continue;
-			}
-		}
-
-		return tAttrDto.Attribute != null;
-	}
-
 	public static string GetName(this NameSyntax nameSyntax) => nameSyntax switch
 	{
 		// [name]
@@ -154,18 +124,6 @@ internal static class SyntaxNodeExtensions
 	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>
 		SymbolEqualityComparer.Default.Equals(arg.GetType(props.Compilation), props.Template);
 
-	public static ITypeSymbol GetMemberType(this ITypeSymbol type, string name)
-	{
-		var member = type.GetMembers(name).FirstOrDefault() ??
-		             throw new ArgumentException($"Member name ({name}) wasn't found in parameter types.");
-		return member switch
-		{
-			IFieldSymbol fieldSymbol => fieldSymbol.Type,
-			IPropertySymbol propertySymbol => propertySymbol.Type,
-			_ => throw new ArgumentException($"Member with name '{name}' isn't property or field.")
-		};
-	}
-
 	public static string GetVariableName(this SyntaxNode syntaxNode)
 	{
 		string name;
@@ -180,11 +138,13 @@ internal static class SyntaxNodeExtensions
 						.WithLocation(syntaxNode)
 				};
 				break;
-			case InvocationExpressionSyntax {Expression: IdentifierNameSyntax {Identifier.Text: "nameof"}} invocationExpressionSyntax:
+			case InvocationExpressionSyntax invocationExpressionSyntax
+				when invocationExpressionSyntax.Expression.IsKind(SyntaxKind.IdentifierName):
 				var args = invocationExpressionSyntax.ArgumentList.Arguments;
 				if (args.Count != 1)
 					throw new ArgumentException("args.Count != 1")
 						.WithLocation(invocationExpressionSyntax);
+
 				name = args[0].Expression switch
 				{
 					MemberAccessExpressionSyntax syntax => syntax.Name.Identifier.Text,

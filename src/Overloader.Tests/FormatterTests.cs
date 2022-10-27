@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Tests.GeneratorRunner;
-
-namespace Overloader.Tests;
+﻿namespace Overloader.Tests;
 
 public class FormatterTests
 {
@@ -57,7 +54,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(FormatterTest)}([T] Vector3<double> vec) {{ }}
+	public static void {nameof(FormatterTest)}([{Constants.TAttr}] Vector3<double> vec) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -116,7 +113,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(AutoParamIntegrityTest)}([T] Vector3<double> vec) {{ }}
+	public static void {nameof(AutoParamIntegrityTest)}([{Constants.TAttr}] Vector3<double> vec) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -158,7 +155,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(DeepFormatterUsageTest)}([T] Vector3<Vector3<double>> vec) {{ }}
+	public static void {nameof(DeepFormatterUsageTest)}([{Constants.TAttr}] Vector3<Vector3<double>> vec) {{ }}
 	// For Overload conflict
 	public static void {nameof(DeepFormatterUsageTest)}(Vector3<float> vec) {{ }}
 	public static void {nameof(DeepFormatterUsageTest)}(float vec) {{ }}
@@ -201,7 +198,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(NameOfSupportTest)}([T] Vector3<Vector3<double>> vec) {{ }}
+	public static void {nameof(NameOfSupportTest)}([{Constants.TAttr}] Vector3<Vector3<double>> vec) {{ }}
 	// For Overload conflict
 	public static void {nameof(NameOfSupportTest)}(Vector3<float> vec) {{ }}
 	public static void {nameof(NameOfSupportTest)}(float vec) {{ }}

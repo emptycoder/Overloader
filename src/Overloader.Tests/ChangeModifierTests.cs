@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Tests.GeneratorRunner;
-
-namespace Overloader.Tests;
+﻿namespace Overloader.Tests;
 
 public class ChangeModifierTests
 {

@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Tests.GeneratorRunner;
-
-namespace Overloader.Tests;
+﻿namespace Overloader.Tests;
 
 public class CombineWithTests
 {
@@ -29,7 +26,9 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(CombineWithBaseTest)}([T] ref Vector3<double> vec, [T][CombineWith(""vec"")] Vector3<double> vec1) {{ }}
+	public static void {nameof(CombineWithBaseTest)}(
+		[{Constants.TAttr}] ref Vector3<double> vec,
+		[{Constants.TAttr}][{Constants.CombineWithAttr}(""vec"")] Vector3<double> vec1) {{ }}
 }}
 
 internal struct Vector3<T>

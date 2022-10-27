@@ -29,11 +29,11 @@ internal static partial class TransitionExtensions
 				break;
 			case ParameterAction.SimpleReplacement:
 			case ParameterAction.CustomReplacement:
-				headerBuilder.AppendParameter(parameter, mappedParam.Type, props.Compilation);
+				headerBuilder.AppendParameter(parameter, mappedParam, props.Compilation);
 				bodyBuilder.AppendVariableToBody(parameter, paramName);
 				break;
 			case ParameterAction.FormatterIntegrityReplacement:
-				headerBuilder.AppendIntegrityParam(props, mappedParam.Type, parameter);
+				headerBuilder.AppendIntegrityParam(props, mappedParam, parameter);
 				bodyBuilder.AppendVariableToBody(parameter, paramName);
 				break;
 			case ParameterAction.FormatterReplacement:

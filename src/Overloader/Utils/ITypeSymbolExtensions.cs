@@ -5,7 +5,10 @@ namespace Overloader.Utils;
 // ReSharper disable once InconsistentNaming
 internal static class ITypeSymbolExtensions
 {
-	public static ITypeSymbol ConstructWithClearType(this ITypeSymbol typeSymbol, ITypeSymbol newClearType, Compilation compilation) =>
+	public static ITypeSymbol ConstructWithClearType(
+		this ITypeSymbol typeSymbol,
+		ITypeSymbol newClearType,
+		Compilation compilation) =>
 		typeSymbol switch
 		{
 			IArrayTypeSymbol arrayTypeSymbol => compilation.CreateArrayTypeSymbol(

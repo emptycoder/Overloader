@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Overloader.Entities;
 using Overloader.Entities.Builders;
 using Overloader.Utils;
 
@@ -7,7 +8,8 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 internal static class MethodHeaderExtension
 {
-	public static SourceBuilder AppendMethodDeclarationSpecifics(this SourceBuilder sb,
+	public static SourceBuilder AppendMethodDeclarationSpecifics(
+		this SourceBuilder sb,
 		MethodDeclarationSyntax syntax,
 		string[] modifiers,
 		ITypeSymbol? returnType) =>
@@ -17,12 +19,18 @@ internal static class MethodHeaderExtension
 			.AppendWith(returnType?.ToDisplayString() ?? syntax.ReturnType.ToFullString(), " ")
 			.Append(syntax.Identifier.ToFullString());
 
-	public static SourceBuilder AppendParameter(this SourceBuilder sb,
+	public static SourceBuilder AppendParameter(
+		this SourceBuilder sb,
 		ParameterSyntax parameter,
-		ITypeSymbol newType,
-		Compilation compilation) =>
-		sb.AppendAttributes(parameter.AttributeLists, " ")
-			.AppendWith(parameter.Type!.GetType(compilation)
-				.ConstructWithClearType(newType, compilation).ToDisplayString(), " ")
+		ParameterData mappedParam,
+		Compilation compilation)
+	{
+		var newType = parameter.Type!.GetType(compilation)
+			.ConstructWithClearType(mappedParam.Type, compilation);
+
+		return sb.AppendAttributes(parameter.AttributeLists, " ")
+			.AppendWoTrim(mappedParam.BuildModifiersWithWhitespace(parameter, newType))
+			.AppendWith(newType.ToDisplayString(), " ")
 			.Append(parameter.Identifier.ToString());
+	}
 }

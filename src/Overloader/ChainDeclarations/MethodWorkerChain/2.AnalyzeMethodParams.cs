@@ -26,14 +26,14 @@ internal sealed class AnalyzeMethodParams : IChainMember
 					.WithLocation(parameters[index]))
 				.GetType(props.Compilation);
 
-			bool shouldBeReplaced = parameters[index].TryGetTAttrByTemplate(props, out var tAttrDto);
+			bool shouldBeReplaced = ParameterDto.TryGetParameterDtoByTemplate(parameters[index], props, out var paramDto);
 			var parameterAction = shouldBeReplaced switch
 			{
 				true when props.TryGetFormatter(parameterType.GetClearType(), out var formatter) =>
-					tAttrDto.ForceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
+					paramDto.ForceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
 						? ParameterAction.FormatterIntegrityReplacement
 						: ParameterAction.FormatterReplacement,
-				true when tAttrDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
+				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
 				true => ParameterAction.SimpleReplacement,
 				false => ParameterAction.Nothing
 			};
@@ -41,18 +41,19 @@ internal sealed class AnalyzeMethodParams : IChainMember
 			{
 				ParameterAction.Nothing => default,
 				ParameterAction.SimpleReplacement => props.Template,
-				ParameterAction.CustomReplacement => tAttrDto.Attribute.ArgumentList!.Arguments[0].GetType(props.Compilation),
+				ParameterAction.CustomReplacement => paramDto.Attribute.ArgumentList!.Arguments[0].GetType(props.Compilation),
 				ParameterAction.FormatterReplacement => default,
 				ParameterAction.FormatterIntegrityReplacement => default,
 				_ => throw new ArgumentOutOfRangeException()
 			} ?? parameterType;
 
-			bool isCombineWith = tAttrDto.CombineWith is not null;
+			bool isCombineWith = paramDto.CombineWith is not null;
 			props.Store.OverloadMap[index] = new ParameterData(
 				parameterAction,
 				newParameterType,
+				paramDto.ModifierChangers,
 				isCombineWith
-					? (sbyte) parameters.IndexOf(param => param.Identifier.ValueText == tAttrDto.CombineWith)
+					? (sbyte) parameters.IndexOf(param => param.Identifier.ValueText == paramDto.CombineWith)
 					: SByte.MaxValue);
 
 			bool isFormatterWoIntegrity = parameterAction is ParameterAction.FormatterReplacement;

@@ -1,7 +1,5 @@
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Tests.GeneratorRunner;
 
 namespace Overloader.Tests;
 

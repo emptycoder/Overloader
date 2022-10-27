@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Tests.GeneratorRunner;
-
-namespace Overloader.Tests.Transitions;
+﻿namespace Overloader.Tests.Transitions;
 
 public class DeconstructTransitionTests
 {
@@ -44,10 +41,12 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([Integrity][T] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
-	[return: T]
-	public static double TestMethod2([T] Vector3<double> vec, [T][CombineWith(""vec"")] Vector3<double> vec1)
+	[return: {Constants.TAttr}]
+	public static double TestMethod2(
+		[{Constants.TAttr}] Vector3<double> vec,
+		[{Constants.TAttr}][{Constants.CombineWithAttr}(""vec"")] Vector3<double> vec1)
 	{{
 		Test(vec);
 		//# ""double"" -> ""${{T}}""
@@ -59,7 +58,7 @@ internal partial class Program
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void TestMethod3(Vector3<double> vec, [T] double vec1) {{ }}
+	public static void TestMethod3(Vector3<double> vec, [{Constants.TAttr}] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>

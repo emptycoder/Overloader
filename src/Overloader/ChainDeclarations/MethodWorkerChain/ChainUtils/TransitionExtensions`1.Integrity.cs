@@ -29,7 +29,7 @@ internal static partial class TransitionExtensions
 				break;
 			case ParameterAction.SimpleReplacement:
 			case ParameterAction.CustomReplacement:
-				headerBuilder.AppendParameter(parameter, mappedParam.Type, props.Compilation);
+				headerBuilder.AppendParameter(parameter, mappedParam, props.Compilation);
 				bodyBuilder.AppendVariableToBody(parameter, paramName);
 				break;
 			case ParameterAction.FormatterReplacement:
@@ -41,7 +41,7 @@ internal static partial class TransitionExtensions
 				int transitionIndex = transitionIndexes[paramIndex++];
 				if (transitionIndex == -1)
 				{
-					headerBuilder.AppendIntegrityParam(props, mappedParam.Type, parameter);
+					headerBuilder.AppendIntegrityParam(props, mappedParam, parameter);
 					bodyBuilder.AppendVariableToBody(parameter, paramName);
 					break;
 				}
@@ -52,15 +52,8 @@ internal static partial class TransitionExtensions
 					props.Template,
 					transition.TemplateType);
 
-
-				// TODO:
-				// .AppendWith(parameter.Modifiers.ToFullString(), " ")
-				// if (paramType.IsValueType
-				//     && paramType.SpecialType == SpecialType.System_ValueType
-				//     && parameter.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.InKeyword)))
-				// 	headerBuilder.AppendWith("in", " ");
-
 				headerBuilder
+					.AppendWoTrim(mappedParam.BuildModifiersWithWhitespace(parameter, paramType))
 					.AppendWith(paramType.ToDisplayString(), " ")
 					.Append(paramName);
 

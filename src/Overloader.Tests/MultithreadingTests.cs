@@ -1,6 +1,4 @@
-﻿using Overloader.Tests.GeneratorRunner;
-
-namespace Overloader.Tests;
+﻿namespace Overloader.Tests;
 
 public class MultithreadingTests
 {
@@ -31,10 +29,10 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([Integrity][T] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
-	[return: T]
-	public static double TestMethod2([T] Vector3<double> vec, [T] Vector3<double> vec1)
+	[return: {Constants.TAttr}]
+	public static double TestMethod2([{Constants.TAttr}] Vector3<double> vec, [{Constants.TAttr}] Vector3<double> vec1)
 	{{
 		Test(vec);
 		//# ""double"" -> ""${{T}}""
@@ -46,7 +44,7 @@ internal partial class Program
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void TestMethod3(Vector3<double> vec, [T] double vec1) {{ }}
+	public static void TestMethod3(Vector3<double> vec, [{Constants.TAttr}] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -70,16 +68,16 @@ namespace TestProject;
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class TestClass{index}
 {{
-	public static void TestMethod1([Integrity][T] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
-	[return: T]
-	public static double TestMethod2([T] Vector3<double> vec, [T] Vector3<double> vec1)
+	[return: {Constants.TAttr}]
+	public static double TestMethod2([{Constants.TAttr}] Vector3<double> vec, [{Constants.TAttr}] Vector3<double> vec1)
 	{{
 		//# ""double"" -> ""${{T}}""
 		return (double) (vec.X + vec1.X + vec.Y + vec1.Y + vec.Z + vec1.Z);
 	}}
 
-	public static void TestMethod3(Vector3<double> vec, [T] double vec1) {{ }}
+	public static void TestMethod3(Vector3<double> vec, [{Constants.TAttr}] double vec1) {{ }}
 }}
 ";
 

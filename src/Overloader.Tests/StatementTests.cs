@@ -1,6 +1,4 @@
-﻿using Overloader.Tests.GeneratorRunner;
-
-namespace Overloader.Tests;
+﻿namespace Overloader.Tests;
 
 public class StatementTests
 {
@@ -206,15 +204,19 @@ internal class Program
 [{Constants.OverloadAttr}(typeof(float), ""3D"", ""3F"")]
 public static class Vec3DExt
 {{
-	[return: T]
-	public static double AngleCos([Integrity][T] this ref Vector3<double> current, [T] in Vector3<double> vector)
+	[return: {Constants.TAttr}]
+	public static double AngleCos(
+		[{Constants.IntegrityAttr}][{Constants.TAttr}] this ref Vector3<double> current,
+		[{Constants.TAttr}] in Vector3<double> vector)
 	{{
 		// TEST
 		return 0;
 	}}
 
-	[return: T]
-	public static double Angle([Integrity][T] this ref Vector3<double> current, [T] in Vector3<double> vector)
+	[return: {Constants.TAttr}]
+	public static double Angle(
+		[{Constants.IntegrityAttr}][{Constants.TAttr}] this ref Vector3<double> current,
+		[{Constants.TAttr}] in Vector3<double> vector)
 	{{
 		return AngleCos(ref current, in vector);
 	}}
@@ -254,8 +256,8 @@ internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[return: T]
-	public static double {nameof(CommentAfterIfIgnoreProblemTest)}([T] double val)
+	[return: {Constants.TAttr}]
+	public static double {nameof(CommentAfterIfIgnoreProblemTest)}([{Constants.TAttr}] double val)
 	{{
 		//# ""double"" -> ""${{T}}""
 		double test = 123;
@@ -289,8 +291,12 @@ internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[return: T]
-	private static double ComputeLowestRoot([T] double a, [T] double b, [T] double c, [T] double maxR)
+	[return: {Constants.TAttr}]
+	private static double ComputeLowestRoot(
+		[{Constants.TAttr}] double a,
+		[{Constants.TAttr}] double b,
+		[{Constants.TAttr}] double c,
+		[{Constants.TAttr}] double maxR)
 	{{
 		//# ""double"" -> ""${{T}}""
 		double determinant = b * b - 4 * a * c;

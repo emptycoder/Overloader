@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Tests.GeneratorRunner;
-
-namespace Overloader.Tests;
+﻿namespace Overloader.Tests;
 
 // ReSharper disable once InconsistentNaming
 public class TAttributeTests
@@ -33,24 +30,28 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(TAttrTest)}1([Integrity][T] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void {nameof(TAttrTest)}1(
+		[{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec,
+		Vector3<double> vec1) {{ }}
 
-	[return: T]
-	public static double {nameof(TAttrTest)}2([T] Vector3<double> vec, [T] Vector3<double> vec1)
+	[return: {Constants.TAttr}]
+	public static double {nameof(TAttrTest)}2(
+		[{Constants.TAttr}] Vector3<double> vec,
+		[{Constants.TAttr}] Vector3<double> vec1)
 	{{
 		Test(vec);
 		//# ""double"" -> ""${{T}}""
 		return (double) (vec.X + vec1.X + vec.Y + vec1.Y + vec.Z + vec1.Z);
 	}}
 
-	[return: T]
-	public static double {nameof(TAttrTest)}3([T] double[] vec)
+	[return: {Constants.TAttr}]
+	public static double {nameof(TAttrTest)}3([{Constants.TAttr}] double[] vec)
 	{{
 		return vec[0] + vec[1] + vec[3];
 	}}
 
-	[return: T]
-	public static Vector3<double>[] {nameof(TAttrTest)}3([Integrity][T] Vector3<double>[] vec)
+	[return: {Constants.TAttr}]
+	public static Vector3<double>[] {nameof(TAttrTest)}3([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double>[] vec)
 	{{
 		// Check that auto integrity works
 		var test = vec[0].X + vec[1].X;
@@ -62,7 +63,7 @@ internal partial class Program
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void {nameof(TAttrTest)}4(Vector3<double> vec, [T] double vec1) {{ }}
+	public static void {nameof(TAttrTest)}4(Vector3<double> vec, [{Constants.TAttr}] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>

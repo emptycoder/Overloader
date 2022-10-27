@@ -53,11 +53,11 @@ internal sealed class CombinedDeconstructOverload : IChainMember
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
-						props.Builder.AppendParameter(parameter, mappedParam.Type, props.Compilation);
+						props.Builder.AppendParameter(parameter, mappedParam, props.Compilation);
 						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:
-						props.Builder.AppendIntegrityParam(props, mappedParam.Type, parameter);
+						props.Builder.AppendIntegrityParam(props, mappedParam, parameter);
 						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterReplacement:

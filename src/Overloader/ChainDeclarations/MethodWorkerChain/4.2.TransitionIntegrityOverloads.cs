@@ -27,7 +27,7 @@ public sealed class TransitionIntegrityOverloads : IChainMember
 		{
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
-			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement 
+			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement
 			    and not ParameterAction.FormatterIntegrityReplacement) continue;
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
 				continue;

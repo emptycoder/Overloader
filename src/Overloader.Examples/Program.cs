@@ -63,7 +63,7 @@ using Overloader.Examples;
 	new object[]
 	{
 		typeof(Vector2<>),
-		"System.Runtime.CompilerServices.Unsafe.As<${T}, Vector128<${T}>>(ref ${Var}.X)"
+		"System.Runtime.CompilerServices.Unsafe.As<${T}, Vector128<${T}>>(ref System.Runtime.CompilerServices.Unsafe.AsRef(${Var}.X))"
 	}
 	// new object[]
 	// {
@@ -80,7 +80,7 @@ using Overloader.Examples;
 // vec3.Sum();
 var vec = Vector128.Create(123d, 123d);
 vec.Sum(vec);
-Console.WriteLine("TEST123");
+Console.WriteLine("TEST");
 
 namespace Overloader.Examples
 {
@@ -122,8 +122,10 @@ namespace Overloader.Examples
 
 		[return: T]
 		public static Vector128<double> Sum(
-			[T] [Integrity] this Vector128<double> curr,
-			[T] [Integrity] [CombineWith(nameof(curr))] Vector128<double> vector) =>
+			[T] [Integrity] [ParamModifier("in", null, typeof(Vector2<>))]
+			this Vector128<double> curr,
+			[T] [Integrity] [CombineWith(nameof(curr))] [ParamModifier("in", null, typeof(Vector2<>))]
+			Vector128<double> vector) =>
 			Vector128.Create(curr[1] + vector[0], curr[1] + vector[1]);
 	}
 }

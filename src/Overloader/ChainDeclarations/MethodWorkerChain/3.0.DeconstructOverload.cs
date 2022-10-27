@@ -45,10 +45,10 @@ internal sealed class DeconstructOverload : IChainMember
 					break;
 				case ParameterAction.SimpleReplacement:
 				case ParameterAction.CustomReplacement:
-					props.Builder.AppendParameter(parameter, mappedParam.Type, props.Compilation);
+					props.Builder.AppendParameter(parameter, mappedParam, props.Compilation);
 					break;
 				case ParameterAction.FormatterIntegrityReplacement:
-					props.Builder.AppendIntegrityParam(props, mappedParam.Type, parameter);
+					props.Builder.AppendIntegrityParam(props, mappedParam, parameter);
 					break;
 				case ParameterAction.FormatterReplacement:
 					string paramName = parameter.Identifier.ToString();

@@ -50,9 +50,17 @@ internal static class FormatterExtension
 		return bodyBuilder.ToString();
 	}
 
-	public static SourceBuilder AppendIntegrityParam(this SourceBuilder sb, GeneratorProperties props, ITypeSymbol type, ParameterSyntax parameter) =>
-		sb.AppendAttributes(parameter.AttributeLists, " ")
-			.AppendWith(parameter.Modifiers.ToFullString(), " ")
-			.AppendWith(props.SetDeepestType(type, props.Template, props.Template).ToDisplayString(), " ")
+	public static SourceBuilder AppendIntegrityParam(
+		this SourceBuilder sb,
+		GeneratorProperties props,
+		ParameterData mappedParam,
+		ParameterSyntax parameter)
+	{
+		var newType = props.SetDeepestType(mappedParam.Type, props.Template, props.Template);
+
+		return sb.AppendAttributes(parameter.AttributeLists, " ")
+			.AppendWoTrim(mappedParam.BuildModifiersWithWhitespace(parameter, newType))
+			.AppendWith(newType.ToDisplayString(), " ")
 			.Append(parameter.Identifier.ToFullString());
+	}
 }

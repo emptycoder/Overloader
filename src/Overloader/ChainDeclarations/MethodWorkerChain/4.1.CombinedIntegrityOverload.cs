@@ -48,11 +48,11 @@ internal sealed class CombinedIntegrityOverload : IChainMember
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
-						props.Builder.AppendParameter(parameter, mappedParam.Type, props.Compilation);
+						props.Builder.AppendParameter(parameter, mappedParam, props.Compilation);
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:
 					case ParameterAction.FormatterReplacement:
-						props.Builder.AppendIntegrityParam(props, mappedParam.Type, parameter);
+						props.Builder.AppendIntegrityParam(props, mappedParam, parameter);
 						break;
 					default:
 						throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
