@@ -22,9 +22,9 @@
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/emptycoder/Overloader</RepositoryUrl>
 		<PackageTags>source; generator; generics; csharp-sourcegenerator</PackageTags>
-		<AssemblyVersion>2.0.3</AssemblyVersion>
-		<FileVersion>2.0.3</FileVersion>
-		<Version>2.0.3</Version>
+		<AssemblyVersion>2.0.4</AssemblyVersion>
+		<FileVersion>2.0.4</FileVersion>
+		<Version>2.0.4</Version>
 		<PackageIcon>logo-375x375.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<SignAssembly>False</SignAssembly>
