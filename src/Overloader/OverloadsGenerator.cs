@@ -58,22 +58,26 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 			foreach (var candidate in syntaxReceiver.Candidates)
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;
-				var formatters = new Dictionary<ITypeSymbol, Formatter>(candidate.FormattersToUse.Count, SymbolEqualityComparer.Default);
-				foreach (var formatterIdentifier in candidate.FormattersToUse)
+				Dictionary<ITypeSymbol, Formatter>? formatters = null;
+				if (candidate.FormattersToUse is not null)
 				{
-					if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))
-						throw new ArgumentException($"Can't find formatter with identifier '{formatterIdentifier}'.")
-							.WithLocation(candidate.Syntax);
-
-					foreach (var formatterType in formatter.Types)
+					formatters = new Dictionary<ITypeSymbol, Formatter>(candidate.FormattersToUse.Length, SymbolEqualityComparer.Default);
+					foreach (var formatterIdentifier in candidate.FormattersToUse)
 					{
-						if (formatters.TryGetValue(formatterType, out var sameTypeFormatter))
-							throw new ArgumentException($"Type has been already overridden by '{sameTypeFormatter.Identifier}' formatter.")
+						if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))
+							throw new ArgumentException($"Can't find formatter with identifier '{formatterIdentifier}'.")
 								.WithLocation(candidate.Syntax);
-						formatters.Add(formatterType, formatter);
+
+						foreach (var formatterType in formatter.Types)
+						{
+							if (formatters.TryGetValue(formatterType, out var sameTypeFormatter))
+								throw new ArgumentException($"Type has been already overridden by '{sameTypeFormatter.Identifier}' formatter.")
+									.WithLocation(candidate.Syntax);
+							formatters.Add(formatterType, formatter);
+						}
 					}
 				}
-				
+
 				var formatterOverloadProps = new GeneratorProperties
 				{
 					Context = context,
@@ -201,13 +205,14 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 								throw new ArgumentException($"Argument must be {nameof(TypeOfExpressionSyntax)}.")
 									.WithLocation(declarationSyntax);
 
-							for (int argIndex = 1; argIndex < arguments.Count; argIndex++)
+							typeEntry.FormattersToUse = new string[arguments.Count - 1];
+							for (int argIndex = 1, formatterIndex = 0; argIndex < arguments.Count; argIndex++, formatterIndex++)
 							{
 								if (arguments[argIndex].Expression is not LiteralExpressionSyntax literal)
 									throw new ArgumentException($"Formatter identifier must be LiteralExpressionSyntax.")
 										.WithLocation(arguments[argIndex].Expression);
 								
-								typeEntry.FormattersToUse.Add(literal.GetInnerText());
+								typeEntry.FormattersToUse[formatterIndex] = literal.GetInnerText();
 							}
 							
 							typeEntry.DefaultType = type.Type;
