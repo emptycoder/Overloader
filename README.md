@@ -46,14 +46,16 @@ P.S. GenericMath provided in preview versions of .NET try to resolve this proble
 ## User template
 
 ```csharp
-[Formatter(typeof(Vector2<>),
+[Formatter(
+	"Vector2",
+	typeof(Vector2<>),
 	new object[] {"T"},
 	new object[]
 	{
 		"X", "T",
 		"Y", "T"
 	})]
-[TSpecify(typeof(double))]
+[TSpecify(typeof(double), "Vector2")]
 [Overload(typeof(float), "2D", "2F")]
 public static partial class Vector2DExtension
 {
