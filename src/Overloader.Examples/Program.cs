@@ -44,7 +44,9 @@ using Overloader.Examples;
 // 		nameof(Vector3<double>.X), "T",
 // 		nameof(Vector3<double>.Y), "T"
 // 	})]
-[assembly: Formatter(typeof(Vector2<>),
+[assembly: Formatter(
+	"Vector2",
+	typeof(Vector2<>),
 	new object[] {"T"},
 	new object[]
 	{
@@ -52,7 +54,9 @@ using Overloader.Examples;
 		nameof(Vector2<double>.Y), "T"
 	})]
 
-[assembly: Formatter(typeof(Vector128<>),
+[assembly: Formatter(
+	"Vector128",
+	typeof(Vector128<>),
 	new object[] {"T"},
 	new object[]
 	{
@@ -103,7 +107,9 @@ namespace Overloader.Examples
 		public T Y;
 	}
 
-	[TSpecify(typeof(double))]
+	[TSpecify(typeof(double),
+		"Vector2",
+		"Vector128")]
 	// [Overload(typeof(float), "2D", "2F")]
 	public static partial class Vector2DExtension
 	{

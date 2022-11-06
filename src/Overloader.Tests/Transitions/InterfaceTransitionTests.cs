@@ -8,7 +8,9 @@ public class InterfaceTransitionTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
+[assembly: {Constants.FormatterAttr}(
+			""Vector3"",
+			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -30,7 +32,9 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {Constants.FormatterAttr}(typeof(TestProject.Vector2<>),
+[assembly: {Constants.FormatterAttr}(
+			""Vector2"",
+			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -45,7 +49,7 @@ internal partial class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{Constants.TSpecifyAttr}(typeof(double))]
+[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"", ""Vector2"")]
 [{Constants.OverloadAttr}(typeof(float))]
 [{Constants.RemoveBodyAttr}]
 internal partial interface ITest

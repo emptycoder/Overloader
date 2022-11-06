@@ -8,7 +8,9 @@ public class DeconstructTransitionTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
+[assembly: {Constants.FormatterAttr}(
+			""Vector3"",
+			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -25,7 +27,9 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {Constants.FormatterAttr}(typeof(TestProject.Vector2<>),
+[assembly: {Constants.FormatterAttr}(
+			""Vector2"",
+			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -35,7 +39,7 @@ using Overloader;
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
+[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"", ""Vector2"")]
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{

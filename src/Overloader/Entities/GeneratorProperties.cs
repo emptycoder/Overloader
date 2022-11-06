@@ -9,7 +9,6 @@ internal class GeneratorProperties : IGeneratorProps, IDisposable
 	public StoreDictionary Store { get; } = new();
 	public SourceBuilder Builder { get; } = SourceBuilder.GetInstance();
 	public Dictionary<ITypeSymbol, Formatter> Formatters { private get; init; } = default!;
-	public Dictionary<ITypeSymbol, Formatter> GlobalFormatters { private get; init; } = default!;
 	public GeneratorExecutionContext Context { private get; init; }
 	public TypeEntrySyntax StartEntry { get; init; }
 	public bool IsTSpecified { get; init; }
@@ -20,15 +19,9 @@ internal class GeneratorProperties : IGeneratorProps, IDisposable
 
 	public Compilation Compilation => Context.Compilation;
 
-	public bool TryGetFormatter(ITypeSymbol type, out Formatter formatter)
-	{
-		if (Formatters.TryGetValue(type, out formatter)) return true;
-		var originalType = type.OriginalDefinition;
-
-		return Formatters.TryGetValue(originalType, out formatter) ||
-		       GlobalFormatters.TryGetValue(type, out formatter) ||
-		       GlobalFormatters.TryGetValue(originalType, out formatter);
-	}
+	public bool TryGetFormatter(ITypeSymbol type, out Formatter formatter) =>
+		Formatters.TryGetValue(type, out formatter) ||
+		Formatters.TryGetValue(type.OriginalDefinition, out formatter);
 
 	public void ReleaseAsOutput()
 	{

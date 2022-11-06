@@ -4,6 +4,7 @@ public class FormatterTests
 {
 	// ReSharper disable once RedundantStringInterpolation
 	private const string DefaultVector3Formatter = @$"
+		""Vector3"",
 		typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
@@ -19,6 +20,7 @@ public class FormatterTests
 
 	// ReSharper disable once RedundantStringInterpolation
 	private const string FakeVector3Formatter = @$"
+		""Vector3"",
 		typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
@@ -30,25 +32,22 @@ public class FormatterTests
 
 	// ReSharper disable once RedundantStringInterpolation
 	private const string Vector3WithoutParams = $@"
+		""Vector3"",
 		typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[] {{ }}";
 
-	[TestCase(DefaultVector3Formatter, null, TestName = "F: Global formatter")]
-	[TestCase(null, DefaultVector3Formatter, TestName = "F: Formatter")]
-	[TestCase(FakeVector3Formatter, DefaultVector3Formatter, TestName = "F: Order of formatters")]
-	public void FormatterTest(string? globalFormatter, string? formatter)
+	[Test]
+	public void FormatterTest()
 	{
-		string programCs =
-			@$"
+		const string programCs = @$"
 using Overloader;
 
-{(globalFormatter is not null ? $"[assembly: {Constants.FormatterAttr}({globalFormatter})]" : string.Empty)}
+[assembly: {Constants.FormatterAttr}({DefaultVector3Formatter})]
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-{(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
+[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
@@ -93,21 +92,18 @@ internal struct Vector3<T>
 			Assert.That(kv.Value, Is.True);
 	}
 
-	[TestCase(Vector3WithoutParams, null, TestName = "AP: Global formatter")]
-	[TestCase(null, Vector3WithoutParams, TestName = "AP: Formatter")]
-	public void AutoParamIntegrityTest(string? globalFormatter, string? formatter)
+	[Test]
+	public void AutoParamIntegrityTest()
 	{
-		string programCs =
-			@$"
+		const string programCs = @$"
 using System;
 using Overloader;
 
-{(globalFormatter is not null ? $"[assembly: {Constants.FormatterAttr}({globalFormatter})]" : string.Empty)}
+[assembly: {Constants.FormatterAttr}({Vector3WithoutParams})]
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-{(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
+[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
@@ -135,21 +131,18 @@ internal struct Vector3<T>
 		Assert.That(countOfMethods, Is.EqualTo(1));
 	}
 
-	[TestCase(Vector3WithoutParams, null, TestName = "DF: Global formatter")]
-	[TestCase(null, Vector3WithoutParams, TestName = "DF: Formatter")]
-	public void DeepFormatterUsageTest(string? globalFormatter, string? formatter)
+	[Test]
+	public void DeepFormatterUsageTest()
 	{
-		string programCs =
-			@$"
+		const string programCs = @$"
 using System;
 using Overloader;
 
-{(globalFormatter is not null ? $"[assembly: {Constants.FormatterAttr}({globalFormatter})]" : string.Empty)}
+[assembly: {Constants.FormatterAttr}({Vector3WithoutParams})]
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-{(formatter is not null ? $"[{Constants.FormatterAttr}({formatter})]" : string.Empty)}
+[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
@@ -182,17 +175,20 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-namespace TestProject;
-
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
+[assembly: {Constants.FormatterAttr}(
+			""Vector3"",
+			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
-				nameof(Vector3<double>.X), ""T"",
-				nameof(Vector3<double>.Y), ""T"",
-				nameof(Vector3<double>.Z), ""T""
+				nameof(TestProject.Vector3<double>.X), ""T"",
+				nameof(TestProject.Vector3<double>.Y), ""T"",
+				nameof(TestProject.Vector3<double>.Z), ""T""
 			}})]
+
+namespace TestProject;
+
+[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{

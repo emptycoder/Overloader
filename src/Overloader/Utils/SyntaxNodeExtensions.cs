@@ -108,14 +108,17 @@ internal static class SyntaxNodeExtensions
 			$"Type not found or {syntaxNode.ToFullString()} isn't type.").WithLocation(syntaxNode);
 	}
 
-	public static Dictionary<ITypeSymbol, Formatter> GetFormatters(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	public static Dictionary<string, Formatter> GetFormattersByName(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
 	{
-		var dict = new Dictionary<ITypeSymbol, Formatter>(attributeSyntaxes.Count, SymbolEqualityComparer.Default);
+		var dict = new Dictionary<string, Formatter>(attributeSyntaxes.Count);
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
-			var result = Formatter.Parse(formatterSyntax, compilation);
-			foreach (var type in result.Types)
-				dict.Add(type, result.Formatter);
+			var formatter = Formatter.Parse(formatterSyntax, compilation);
+			if (dict.ContainsKey(formatter.Identifier))
+				throw new ArgumentException($"Formatter with identifier '{formatter.Identifier}' has been already exists.")
+					.WithLocation(formatterSyntax);
+			
+			dict.Add(formatter.Identifier, formatter);
 		}
 
 		return dict;

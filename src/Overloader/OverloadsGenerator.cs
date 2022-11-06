@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Overloader.ChainDeclarations;
 using Overloader.Entities;
+using Overloader.Entities.Formatters;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -53,17 +54,31 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 			var tasks = new List<Task>();
 			var taskFactory = new TaskFactory();
 #endif
-			var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormatters(context.Compilation);
+			var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormattersByName(context.Compilation);
 			foreach (var candidate in syntaxReceiver.Candidates)
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;
-				var formatters = candidate.FormatterSyntaxes.GetFormatters(context.Compilation);
+				var formatters = new Dictionary<ITypeSymbol, Formatter>(candidate.FormattersToUse.Count, SymbolEqualityComparer.Default);
+				foreach (var formatterIdentifier in candidate.FormattersToUse)
+				{
+					if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))
+						throw new ArgumentException($"Can't find formatter with identifier '{formatterIdentifier}'.")
+							.WithLocation(candidate.Syntax);
+
+					foreach (var formatterType in formatter.Types)
+					{
+						if (formatters.TryGetValue(formatterType, out var sameTypeFormatter))
+							throw new ArgumentException($"Type has been already overridden by '{sameTypeFormatter.Identifier}' formatter.")
+								.WithLocation(candidate.Syntax);
+						formatters.Add(formatterType, formatter);
+					}
+				}
+				
 				var formatterOverloadProps = new GeneratorProperties
 				{
 					Context = context,
 					StartEntry = candidate,
 					ClassName = candidateClassName,
-					GlobalFormatters = globalFormatters,
 					Formatters = formatters,
 					Template = candidate.DefaultType!.GetType(context.Compilation),
 					IsTSpecified = true
@@ -81,7 +96,6 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 						Context = context,
 						StartEntry = candidate,
 						ClassName = className,
-						GlobalFormatters = globalFormatters,
 						Formatters = formatters,
 						Template = argSyntax.GetType(context.Compilation),
 						IsTSpecified = false
@@ -178,16 +192,24 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 						case Constants.BlackListModeAttr:
 							typeEntry.IsBlackListMode = true;
 							break;
-						case Constants.FormatterAttr:
-							typeEntry.FormatterSyntaxes.Add(attribute);
-							break;
 						case Constants.TSpecifyAttr:
-							if (attribute.ArgumentList is not {Arguments.Count: 1})
-								throw new ArgumentException("Count of arguments must be equals to 1.")
+							if (attribute.ArgumentList is not {Arguments: var arguments}
+							    || arguments.Count < 1)
+								throw new ArgumentException("Count of arguments must greater or equals to 1.")
 									.WithLocation(declarationSyntax);
-							if (attribute.ArgumentList.Arguments[0].Expression is not TypeOfExpressionSyntax type)
+							if (arguments[0].Expression is not TypeOfExpressionSyntax type)
 								throw new ArgumentException($"Argument must be {nameof(TypeOfExpressionSyntax)}.")
 									.WithLocation(declarationSyntax);
+
+							for (int argIndex = 1; argIndex < arguments.Count; argIndex++)
+							{
+								if (arguments[argIndex].Expression is not LiteralExpressionSyntax literal)
+									throw new ArgumentException($"Formatter identifier must be LiteralExpressionSyntax.")
+										.WithLocation(arguments[argIndex].Expression);
+								
+								typeEntry.FormattersToUse.Add(literal.GetInnerText());
+							}
+							
 							typeEntry.DefaultType = type.Type;
 							continue;
 					}

@@ -40,15 +40,13 @@ namespace {nameof(Overloader)};
 	private const string AttributesSource = $@"
 /* Global attributes */
 
-[AttributeUsage(AttributeTargets.Assembly
-	| AttributeTargets.Struct
-	| AttributeTargets.Class
-	| AttributeTargets.Interface,
+[AttributeUsage(AttributeTargets.Assembly,
 	AllowMultiple = true,
 	Inherited = false)]
 public sealed class {FormatterAttr}Attribute : Attribute
 {{
-	public {FormatterAttr}Attribute(Type type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
+	public {FormatterAttr}Attribute(string identifier, Type type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
+	public {FormatterAttr}Attribute(string identifier, Type[] type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
 }}
 
 /* Class or struct or interface attributes */
@@ -56,7 +54,7 @@ public sealed class {FormatterAttr}Attribute : Attribute
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
 public sealed class {TSpecifyAttr}Attribute : Attribute
 {{
-	public {TSpecifyAttr}Attribute(Type templateType) {{ }}
+	public {TSpecifyAttr}Attribute(Type templateType, params string[] formatters) {{ }}
 }}
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]

@@ -9,26 +9,33 @@ using Overloader.Utils;
 namespace Overloader.Entities.Formatters;
 
 internal sealed record Formatter(
+	string Identifier,
+	ITypeSymbol[] Types,
 	IParamValue[] GenericParams,
 	(string Identifier, IParamValue Param)[] Params,
 	Memory<IntegrityTransition> IntegrityTransitions,
 	Memory<DeconstructTransition> DeconstructTransitions)
 {
-	public static (ITypeSymbol[] Types, Formatter Formatter) Parse(AttributeSyntax formatterSyntax, Compilation compilation)
+	public static Formatter Parse(AttributeSyntax formatterSyntax, Compilation compilation)
 	{
 		var args = formatterSyntax.ArgumentList?.Arguments ??
 		           throw new ArgumentException("Argument list for formatter can't be null.")
 			           .WithLocation(formatterSyntax);
-		if (args.Count < 3)
+		const int beforeTransitionParamsCount = 4;
+		if (args.Count < beforeTransitionParamsCount)
 			throw new ArgumentException("Not enough parameters for formatter.")
 				.WithLocation(formatterSyntax);
 
+		if (args[0].Expression is not LiteralExpressionSyntax identifier)
+			throw new ArgumentException("Identifier must be LiteralExpressionSyntax")
+				.WithLocation(args[0].Expression);
+
 		ITypeSymbol[] types;
-		if (args[0].Expression is ArrayCreationExpressionSyntax {Initializer.Expressions: var expressions})
+		if (args[1].Expression is ArrayCreationExpressionSyntax {Initializer.Expressions: var expressions})
 		{
 			if (expressions.Count == 0)
 				throw new ArgumentException("Count of types for formatter can't be 0")
-					.WithLocation(args[0].Expression);
+					.WithLocation(args[1].Expression);
 
 			types = new ITypeSymbol[expressions.Count];
 			for (int index = 0; index < expressions.Count; index++)
@@ -41,30 +48,30 @@ internal sealed record Formatter(
 		}
 		else
 		{
-			var type = args[0].Expression.GetType(compilation);
+			var type = args[1].Expression.GetType(compilation);
 			var namedTypeSymbol = type.GetClearType();
 			if (namedTypeSymbol.IsUnboundGenericType) type = type.OriginalDefinition;
 			types = new[] {type};
 		}
 
-		if (args[1].Expression is not ArrayCreationExpressionSyntax arg1)
+		if (args[2].Expression is not ArrayCreationExpressionSyntax arg1)
 			throw new ArgumentException(
 					$"{nameof(arg1)} of {nameof(Formatter)} must be {nameof(ArrayCreationExpressionSyntax)}.")
-				.WithLocation(args[1].Expression);
-		if (args[2].Expression is not ArrayCreationExpressionSyntax arg2)
+				.WithLocation(args[2].Expression);
+		if (args[3].Expression is not ArrayCreationExpressionSyntax arg2)
 			throw new ArgumentException(
 					$"{nameof(arg2)} of {nameof(Formatter)} must be {nameof(ArrayCreationExpressionSyntax)}.")
-				.WithLocation(args[2].Expression);
+				.WithLocation(args[3].Expression);
 
 		var genericParams = ParseParams(arg1.Initializer, compilation);
 		var @params = ParseParamsWithNames(arg2.Initializer, compilation);
 
-		int transitionsCount = args.Count - 3;
+		int transitionsCount = args.Count - beforeTransitionParamsCount;
 		int integrityTransitionIndex = 0;
 		int deconstructTransitionIndex = transitionsCount - 1;
 		var transitionMemory = new Memory<object>(new object[transitionsCount]);
 		var transitions = transitionMemory.Span;
-		for (int argIndex = 3; argIndex < args.Count; argIndex++)
+		for (int argIndex = beforeTransitionParamsCount; argIndex < args.Count; argIndex++)
 		{
 			if (args[argIndex].Expression is not ArrayCreationExpressionSyntax {Initializer.Expressions: var argExpressions})
 				throw new ArgumentException(
@@ -83,10 +90,14 @@ internal sealed record Formatter(
 		var integrityTransitions = transitionMemory.Slice(0, integrityTransitionIndex);
 		var deconstructTransitions = transitionMemory.Slice(integrityTransitionIndex);
 
-		return (types, new Formatter(genericParams, @params,
+		return new Formatter(
+			identifier.GetInnerText(),
+			types,
+			genericParams,
+			@params,
 			Unsafe.As<Memory<object>, Memory<IntegrityTransition>>(ref integrityTransitions),
 			Unsafe.As<Memory<object>, Memory<DeconstructTransition>>(ref deconstructTransitions)
-		));
+		);
 	}
 
 	private static IParamValue[] ParseParams(InitializerExpressionSyntax? initializer, Compilation compilation)

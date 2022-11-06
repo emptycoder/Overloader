@@ -10,10 +10,9 @@ public class TAttributeTests
 		const string programCs = @$"
 using Overloader;
 
-namespace TestProject;
-
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.FormatterAttr}(typeof(TestProject.Vector3<>),
+[assembly: {Constants.FormatterAttr}(
+			""Vector3"",
+			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -25,6 +24,10 @@ namespace TestProject;
 					typeof(double), typeof(long)
 				}}
 			}})]
+
+namespace TestProject;
+
+[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
