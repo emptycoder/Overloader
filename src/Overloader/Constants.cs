@@ -46,7 +46,7 @@ namespace {nameof(Overloader)};
 public sealed class {FormatterAttr}Attribute : Attribute
 {{
 	public {FormatterAttr}Attribute(string identifier, Type type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
-	public {FormatterAttr}Attribute(string identifier, Type[] type, object[] genericParams, object[] @params, params object[] transitions) {{ }}
+	public {FormatterAttr}Attribute(string identifier, Type[] types, object[] genericParams, object[] @params, params object[] transitions) {{ }}
 }}
 
 /* Class or struct or interface attributes */
