@@ -39,7 +39,7 @@ internal record GeneratorProperties
 			foreach (var deconstructTransitionLink in deconstructTransition.Links)
 			{
 				var clearType = deconstructTransitionLink.TemplateType.GetClearType();
-				if (!TryGetFormatter(clearType, out _))
+				if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
 					throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
 						.WithLocation(StartEntry.Syntax);
 			}
@@ -47,7 +47,7 @@ internal record GeneratorProperties
 			foreach (var integrityTransition in keyValuePair.Value.IntegrityTransitions.Span)
 			{
 				var clearType = integrityTransition.TemplateType.GetClearType();
-				if (!TryGetFormatter(clearType, out _))
+				if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
 					throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
 						.WithLocation(StartEntry.Syntax);
 			}
