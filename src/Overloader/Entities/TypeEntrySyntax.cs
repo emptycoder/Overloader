@@ -5,7 +5,7 @@ namespace Overloader.Entities;
 internal struct TypeEntrySyntax
 {
 	private readonly LazyList<(string ClassName, AttributeArgumentSyntax TypeSyntax)> _overloadTypes = new();
-	
+
 	public readonly TypeDeclarationSyntax Syntax;
 	public List<(string ClassName, AttributeArgumentSyntax TypeSyntax)> OverloadTypes => _overloadTypes.Value;
 	public string[]? FormattersToUse;

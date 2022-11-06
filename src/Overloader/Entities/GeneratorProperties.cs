@@ -1,30 +1,75 @@
 ﻿using Microsoft.CodeAnalysis;
 using Overloader.Entities.Builders;
 using Overloader.Entities.Formatters;
+using Overloader.Exceptions;
+using Overloader.Utils;
 
 namespace Overloader.Entities;
 
-internal class GeneratorProperties : IGeneratorProps, IDisposable
+internal record GeneratorProperties
+	: IGeneratorProps, IDisposable
 {
+	private readonly Dictionary<ITypeSymbol, Formatter>? _formatters;
+
+	public GeneratorExecutionContext Context;
+	public readonly bool IsTSpecified;
+	public TypeEntrySyntax StartEntry;
+
+	public GeneratorProperties(
+		GeneratorExecutionContext context,
+		TypeEntrySyntax startEntry,
+		bool isTSpecified,
+		string className,
+		Dictionary<ITypeSymbol, Formatter>? formatters,
+		ITypeSymbol template)
+	{
+		Context = context;
+		StartEntry = startEntry;
+		IsTSpecified = isTSpecified;
+		ClassName = className;
+		Template = template;
+		_formatters = formatters;
+
+		if (_formatters is null) return;
+
+		// Verify that all transitions have formatters
+		foreach (var keyValuePair in _formatters)
+		{
+			foreach (var deconstructTransition in keyValuePair.Value.DeconstructTransitions.Span)
+			foreach (var deconstructTransitionLink in deconstructTransition.Links)
+			{
+				var clearType = deconstructTransitionLink.TemplateType.GetClearType();
+				if (!TryGetFormatter(clearType, out _))
+					throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
+						.WithLocation(StartEntry.Syntax);
+			}
+
+			foreach (var integrityTransition in keyValuePair.Value.IntegrityTransitions.Span)
+			{
+				var clearType = integrityTransition.TemplateType.GetClearType();
+				if (!TryGetFormatter(clearType, out _))
+					throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
+						.WithLocation(StartEntry.Syntax);
+			}
+		}
+	}
+
 	public StoreDictionary Store { get; } = new();
 	public SourceBuilder Builder { get; } = SourceBuilder.GetInstance();
-	public Dictionary<ITypeSymbol, Formatter>? Formatters { private get; init; }
-	public GeneratorExecutionContext Context { private get; init; }
-	public TypeEntrySyntax StartEntry { get; init; }
-	public bool IsTSpecified { get; init; }
 
 	void IDisposable.Dispose() => Builder.Dispose();
-	public string ClassName { get; init; } = default!;
-	public ITypeSymbol Template { get; init; } = default!;
+	public string ClassName { get; }
+	public ITypeSymbol Template { get; }
 
+	// ReSharper disable once InconsistentlySynchronizedField
 	public Compilation Compilation => Context.Compilation;
 
 	public bool TryGetFormatter(ITypeSymbol type, out Formatter formatter)
 	{
-		if (Formatters is not null)
-			return Formatters.TryGetValue(type, out formatter) ||
-			       Formatters.TryGetValue(type.OriginalDefinition, out formatter);
-		
+		if (_formatters is not null)
+			return _formatters.TryGetValue(type, out formatter) ||
+			       _formatters.TryGetValue(type.OriginalDefinition, out formatter);
+
 		formatter = default!;
 		return false;
 	}

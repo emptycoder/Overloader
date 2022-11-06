@@ -117,7 +117,7 @@ internal static class SyntaxNodeExtensions
 			if (dict.ContainsKey(formatter.Identifier))
 				throw new ArgumentException($"Formatter with identifier '{formatter.Identifier}' has been already exists.")
 					.WithLocation(formatterSyntax);
-			
+
 			dict.Add(formatter.Identifier, formatter);
 		}
 

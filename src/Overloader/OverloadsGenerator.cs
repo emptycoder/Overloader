@@ -62,7 +62,7 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 				if (candidate.FormattersToUse is not null)
 				{
 					formatters = new Dictionary<ITypeSymbol, Formatter>(candidate.FormattersToUse.Length, SymbolEqualityComparer.Default);
-					foreach (var formatterIdentifier in candidate.FormattersToUse)
+					foreach (string formatterIdentifier in candidate.FormattersToUse)
 					{
 						if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))
 							throw new ArgumentException($"Can't find formatter with identifier '{formatterIdentifier}'.")
@@ -78,15 +78,13 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 					}
 				}
 
-				var formatterOverloadProps = new GeneratorProperties
-				{
-					Context = context,
-					StartEntry = candidate,
-					ClassName = candidateClassName,
-					Formatters = formatters,
-					Template = candidate.DefaultType!.GetType(context.Compilation),
-					IsTSpecified = true
-				};
+				var formatterOverloadProps = new GeneratorProperties(
+					context,
+					candidate,
+					true,
+					candidateClassName,
+					formatters,
+					candidate.DefaultType!.GetType(context.Compilation));
 #if !DEBUG || ForceTasks
 				tasks.Add(taskFactory.StartNew(OverloadCreation, formatterOverloadProps));
 #else
@@ -95,15 +93,13 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 				foreach ((string className, var argSyntax) in candidate.OverloadTypes)
 				{
-					var genericWithFormatterOverloadProps = new GeneratorProperties
-					{
-						Context = context,
-						StartEntry = candidate,
-						ClassName = className,
-						Formatters = formatters,
-						Template = argSyntax.GetType(context.Compilation),
-						IsTSpecified = false
-					};
+					var genericWithFormatterOverloadProps = new GeneratorProperties(
+						context,
+						candidate,
+						false,
+						className,
+						formatters,
+						argSyntax.GetType(context.Compilation));
 #if !DEBUG || ForceTasks
 					tasks.Add(taskFactory.StartNew(OverloadCreation, genericWithFormatterOverloadProps));
 #else
@@ -209,12 +205,12 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 							for (int argIndex = 1, formatterIndex = 0; argIndex < arguments.Count; argIndex++, formatterIndex++)
 							{
 								if (arguments[argIndex].Expression is not LiteralExpressionSyntax literal)
-									throw new ArgumentException($"Formatter identifier must be LiteralExpressionSyntax.")
+									throw new ArgumentException("Formatter identifier must be LiteralExpressionSyntax.")
 										.WithLocation(arguments[argIndex].Expression);
-								
+
 								typeEntry.FormattersToUse[formatterIndex] = literal.GetInnerText();
 							}
-							
+
 							typeEntry.DefaultType = type.Type;
 							continue;
 					}
