@@ -30,7 +30,7 @@ internal class Main : IChainMember
 			.AppendWith(entrySyntax.Keyword.ToFullString(), " ")
 			.Append(props.ClassName, 1)
 			.NestedIncrease(SyntaxKind.OpenBraceToken);
-		
+
 		foreach (var member in props.StartEntry.Syntax.Members)
 		{
 			if (member is not MethodDeclarationSyntax) continue;

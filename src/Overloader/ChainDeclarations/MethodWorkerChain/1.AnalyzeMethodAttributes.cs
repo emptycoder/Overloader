@@ -45,8 +45,9 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 							props.Store.SkipMember = false;
 							goto End;
 						}
+
 					props.Store.SkipMember = true;
-					
+
 					End:
 					break;
 				}

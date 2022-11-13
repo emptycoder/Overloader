@@ -46,6 +46,7 @@ internal sealed record Formatter(
 					if (type.GetClearType().IsUnboundGenericType) type = type.OriginalDefinition;
 					types[index] = type;
 				}
+
 				break;
 			case TypeOfExpressionSyntax:
 				type = args[1].Expression.GetType(compilation);
@@ -88,7 +89,6 @@ internal sealed record Formatter(
 				transitions[deconstructTransitionIndex--] = DeconstructTransition.Parse(argExpressions, compilation);
 			else
 				transitions[integrityTransitionIndex++] = IntegrityTransition.Parse(argExpressions, compilation);
-				
 		}
 
 		var integrityTransitions = transitionMemory.Slice(0, integrityTransitionIndex);

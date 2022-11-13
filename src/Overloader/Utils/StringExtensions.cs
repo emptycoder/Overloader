@@ -13,7 +13,7 @@ internal static class StringExtensions
 			data = data.Slice(matchIndex + 1);
 		}
 	}
-	
+
 	// ReSharper disable once InconsistentNaming
 	public static (string Key, string Value) SplitAsKV(this ReadOnlySpan<char> data, string separator)
 	{

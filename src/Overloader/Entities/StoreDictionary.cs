@@ -9,8 +9,8 @@ internal sealed class StoreDictionary
 	public sbyte FormattersWoIntegrityCount;
 	public bool IsNeedToRemoveBody;
 	public bool IsSmthChanged;
-	public bool SkipMember;
 	public string[]? Modifiers;
 	public ParameterData[]? OverloadMap;
 	public ITypeSymbol ReturnType = default!;
+	public bool SkipMember;
 }

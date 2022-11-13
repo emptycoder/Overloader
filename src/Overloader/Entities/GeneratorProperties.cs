@@ -10,9 +10,9 @@ internal record GeneratorProperties
 	: IGeneratorProps, IDisposable
 {
 	private readonly Dictionary<ITypeSymbol, Formatter>? _formatters;
+	public readonly bool IsTSpecified;
 
 	public GeneratorExecutionContext Context;
-	public readonly bool IsTSpecified;
 	public TypeEntrySyntax StartEntry;
 
 	public GeneratorProperties(
