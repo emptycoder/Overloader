@@ -5,7 +5,7 @@ public class FormatterTests
 	// ReSharper disable once RedundantStringInterpolation
 	private const string DefaultVector3Formatter = @$"
 		""Vector3"",
-		typeof(TestProject.Vector3<>),
+		new[] {{ typeof(TestProject.Vector3<>) }},
 			new object[] {{""T""}},
 			new object[]
 			{{
@@ -16,18 +16,6 @@ public class FormatterTests
 					typeof(float), typeof(double),
 					typeof(double), typeof(long)
 				}}
-			}}";
-
-	// ReSharper disable once RedundantStringInterpolation
-	private const string FakeVector3Formatter = @$"
-		""Vector3"",
-		typeof(TestProject.Vector3<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T"",
-				""Z"", ""T""
 			}}";
 
 	// ReSharper disable once RedundantStringInterpolation

@@ -2,10 +2,12 @@
 
 public class IntegrityTransitionTests
 {
-	[Test]
-	public void IntegrityTransitionBaseTest()
+	[TestCase("\"new TestProject.Vector3<${T}>() { X = ${Var}.X, Y = ${Var}.Y }\"", TestName = "String literal castInBlock")]
+	[TestCase("TestProject.Program.CastInBlock", TestName = "String const castInBlock")]
+	[TestCase("$\"{TestProject.Program.CastInBlock}\"", TestName = "String interpolation castInBlock")]
+	public void IntegrityTransitionBaseTest(string castInBlock)
 	{
-		const string programCs = @$"
+		string programCs = @$"
 using Overloader;
 
 [assembly: {Constants.FormatterAttr}(
@@ -21,7 +23,7 @@ using Overloader;
 			new object[]
 			{{
 				typeof(TestProject.Vector2<>),
-				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}""
+				{castInBlock}
 			}},
 			new object[]
 			{{
@@ -48,6 +50,8 @@ namespace TestProject;
 [{Constants.OverloadAttr}(typeof(float))]
 internal partial class Program
 {{
+	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}"";
+
 	static void Main(string[] args) {{ }}
 
 	public static void TestMethod1([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec, Vector3<double> vec1) {{ }}

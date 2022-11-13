@@ -35,17 +35,19 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 					break;
 				}
 				case Constants.AllowForAttr when attribute.ArgumentList is null or {Arguments.Count: < 1}:
-					props.Store.MemberSkip = false;
+					props.Store.SkipMember = false;
 					continue;
 				case Constants.AllowForAttr:
 				{
 					foreach (var arg in attribute.ArgumentList.Arguments)
 						if (arg.EqualsToTemplate(props))
 						{
-							props.Store.MemberSkip = false;
-							break;
+							props.Store.SkipMember = false;
+							goto End;
 						}
-
+					props.Store.SkipMember = true;
+					
+					End:
 					break;
 				}
 				case Constants.TAttr:
@@ -112,6 +114,6 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 			}
 		}
 
-		return props.Store.MemberSkip ? ChainAction.Break : ChainAction.NextMember;
+		return props.Store.SkipMember ? ChainAction.Break : ChainAction.NextMember;
 	}
 }

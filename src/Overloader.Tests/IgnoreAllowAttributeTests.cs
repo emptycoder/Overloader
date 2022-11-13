@@ -35,7 +35,7 @@ internal class Program
 
 	[TestCase(true, $"{nameof(IgnoreAllowForTest)}4", $"{nameof(IgnoreAllowForTest)}5")]
 	[TestCase(false, $"{nameof(IgnoreAllowForTest)}3", $"{nameof(IgnoreAllowForTest)}4",
-		$"{nameof(IgnoreAllowForTest)}5", $"{nameof(IgnoreAllowForTest)}6")]
+		$"{nameof(IgnoreAllowForTest)}5")]
 	public void IgnoreAllowForTest(bool isBlackList, params string[] expectedMethodNames)
 	{
 		string programCs =

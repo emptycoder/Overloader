@@ -27,31 +27,34 @@ internal sealed record Formatter(
 				.WithLocation(formatterSyntax);
 
 		if (args[0].Expression is not LiteralExpressionSyntax identifier)
-			throw new ArgumentException("Identifier must be LiteralExpressionSyntax")
+			throw new ArgumentException("Identifier must be LiteralExpressionSyntax.")
 				.WithLocation(args[0].Expression);
 
 		ITypeSymbol[] types;
-		if (args[1].Expression is ArrayCreationExpressionSyntax {Initializer.Expressions: var expressions})
+		ITypeSymbol? type;
+		switch (args[1].Expression)
 		{
-			if (expressions.Count == 0)
-				throw new ArgumentException("Count of types for formatter can't be 0")
-					.WithLocation(args[1].Expression);
+			case ImplicitArrayCreationExpressionSyntax {Initializer.Expressions: var expressions}:
+				if (expressions.Count == 0)
+					throw new ArgumentException("Count of types for formatter can't be 0.")
+						.WithLocation(args[1].Expression);
 
-			types = new ITypeSymbol[expressions.Count];
-			for (int index = 0; index < expressions.Count; index++)
-			{
-				var type = expressions[index].GetType(compilation);
-				var namedTypeSymbol = type.GetClearType();
-				if (namedTypeSymbol.IsUnboundGenericType) type = type.OriginalDefinition;
-				types[index] = type;
-			}
-		}
-		else
-		{
-			var type = args[1].Expression.GetType(compilation);
-			var namedTypeSymbol = type.GetClearType();
-			if (namedTypeSymbol.IsUnboundGenericType) type = type.OriginalDefinition;
-			types = new[] {type};
+				types = new ITypeSymbol[expressions.Count];
+				for (int index = 0; index < expressions.Count; index++)
+				{
+					type = expressions[index].GetType(compilation);
+					if (type.GetClearType().IsUnboundGenericType) type = type.OriginalDefinition;
+					types[index] = type;
+				}
+				break;
+			case TypeOfExpressionSyntax:
+				type = args[1].Expression.GetType(compilation);
+				if (type.GetClearType().IsUnboundGenericType) type = type.OriginalDefinition;
+				types = new[] {type};
+				break;
+			default:
+				throw new ArgumentException(
+					$"{args[1].Expression.ToString()} isn't allowed. Use TypeOfExpressionSyntax/ImplicitArrayCreationExpressionSyntax.");
 		}
 
 		if (args[2].Expression is not ArrayCreationExpressionSyntax arg1)
@@ -78,13 +81,14 @@ internal sealed record Formatter(
 						$"Arg of {nameof(Formatter)} must be {nameof(ArrayCreationExpressionSyntax)}.")
 					.WithLocation(args[argIndex].Expression);
 			if (argExpressions.Count < 2)
-				throw new ArgumentException("Empty transition not allowed")
+				throw new ArgumentException("Empty transition not allowed.")
 					.WithLocation(args[argIndex].Expression);
 
-			if (argExpressions[1] is LiteralExpressionSyntax)
-				transitions[integrityTransitionIndex++] = IntegrityTransition.Parse(argExpressions, compilation);
-			else
+			if (argExpressions[1] is ArrayCreationExpressionSyntax)
 				transitions[deconstructTransitionIndex--] = DeconstructTransition.Parse(argExpressions, compilation);
+			else
+				transitions[integrityTransitionIndex++] = IntegrityTransition.Parse(argExpressions, compilation);
+				
 		}
 
 		var integrityTransitions = transitionMemory.Slice(0, integrityTransitionIndex);
@@ -140,7 +144,7 @@ internal sealed record Formatter(
 			case ImplicitArrayCreationExpressionSyntax implicitArrayCreationExpressionSyntax:
 				var expressions = implicitArrayCreationExpressionSyntax.Initializer.Expressions;
 				if (expressions.Count == 0 || expressions.Count % 2 != 0)
-					throw new ArgumentException("expressions.Count == 0 || expressions.Count % 2 != 0")
+					throw new ArgumentException("expressions.Count == 0 || expressions.Count % 2 != 0.")
 						.WithLocation(implicitArrayCreationExpressionSyntax);
 
 				var switchDict = new Dictionary<ITypeSymbol, IParamValue>(expressions.Count / 2, SymbolEqualityComparer.Default);

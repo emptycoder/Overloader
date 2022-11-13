@@ -35,7 +35,7 @@ internal class Main : IChainMember
 		{
 			if (member is not MethodDeclarationSyntax) continue;
 
-			props.Store.MemberSkip = props.StartEntry.IsBlackListMode;
+			props.Store.SkipMember = props.StartEntry.IsBlackListMode;
 			foreach (var worker in Chains.MethodWorkers)
 				if (worker.Execute(props, member) == ChainAction.Break)
 					break;

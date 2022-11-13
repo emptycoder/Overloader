@@ -44,6 +44,8 @@ using Overloader.Examples;
 // 		nameof(Vector3<double>.X), "T",
 // 		nameof(Vector3<double>.Y), "T"
 // 	})]
+
+
 [assembly: Formatter(
 	"Vector2",
 	typeof(Vector2<>),
