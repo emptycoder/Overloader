@@ -52,7 +52,7 @@ public sealed class {FormatterAttr}Attribute : Attribute
 
 /* Class or struct or interface attributes */
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
 public sealed class {TSpecifyAttr}Attribute : Attribute
 {{
 	public {TSpecifyAttr}Attribute(Type templateType, params string[] formatters) {{ }}
@@ -64,13 +64,13 @@ public sealed class {OverloadAttr}Attribute : Attribute
 	public {OverloadAttr}Attribute(Type? type = null, string? nameRegex = null, string? regexReplace = null) {{ }}
 }}
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
 public sealed class {BlackListModeAttr}Attribute : Attribute {{ }}
 
-[AttributeUsage(AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
 public sealed class {RemoveBodyAttr}Attribute : Attribute {{ }}
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
 public sealed class {IgnoreTransitionsAttr}Attribute : Attribute {{ }}
 
 /* Method attribtes */
