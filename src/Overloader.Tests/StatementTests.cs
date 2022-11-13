@@ -53,8 +53,11 @@ internal class Program
 	[TestCase("//$ return \"EXPECTED\"; : float", ExpectedResult = "EXPECTED")]
 	[TestCase("//$ return \"EXPECTED\"; : double", ExpectedResult = "DEFAULT")]
 	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\";", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\"; : double, float", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\"; : float, double", ExpectedResult = "EXPECTED")]
 	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\"; : float", ExpectedResult = "EXPECTED")]
 	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\"; : double", ExpectedResult = "DEFAULT")]
+	[TestCase($"{SomeKindOfComment}//$ return \"EXPECTED\"; : double,,,", ExpectedResult = "DEFAULT")]
 	public string ChangeLineOperationTest(string comment)
 	{
 		string programCs = @$"

@@ -19,6 +19,7 @@ internal static class Constants
 	public const string OverloadAttr = "Overload";
 	public const string BlackListModeAttr = "BlackListMode";
 	public const string RemoveBodyAttr = "RemoveBody";
+	public const string IgnoreTransitionsAttr = "IgnoreTransitions";
 
 	// ReSharper disable once InconsistentNaming
 	public const string TAttr = "T";
@@ -68,6 +69,9 @@ public sealed class {BlackListModeAttr}Attribute : Attribute {{ }}
 
 [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
 public sealed class {RemoveBodyAttr}Attribute : Attribute {{ }}
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+public sealed class {IgnoreTransitionsAttr}Attribute : Attribute {{ }}
 
 /* Method attribtes */
 

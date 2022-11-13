@@ -2,6 +2,18 @@
 
 internal static class StringExtensions
 {
+	public static bool TryToFindMatch(this ReadOnlySpan<char> data, ReadOnlySpan<char> entry, string separator)
+	{
+		for (;;)
+		{
+			int matchIndex = data.IndexOf(separator.AsSpan(), StringComparison.Ordinal);
+			if (matchIndex == -1) return data.Trim().SequenceEqual(entry);
+			if (data.Slice(0, matchIndex).Trim().SequenceEqual(entry)) return true;
+			if (matchIndex + 1 >= data.Length) return false;
+			data = data.Slice(matchIndex + 1);
+		}
+	}
+	
 	// ReSharper disable once InconsistentNaming
 	public static (string Key, string Value) SplitAsKV(this ReadOnlySpan<char> data, string separator)
 	{

@@ -162,7 +162,7 @@ internal static class MethodBodyExtension
 					if (separatorIndex != -1)
 					{
 						if (templateStr is null) continue;
-						if (templateStr != strTriviaSpan.Slice(separatorIndex + 1).Trim().ToString()) continue;
+						if (!strTriviaSpan.Slice(separatorIndex + 1).TryToFindMatch(templateStr.AsSpan(), ",")) continue;
 						strTriviaSpan = strTriviaSpan.Slice(0, separatorIndex);
 					}
 
