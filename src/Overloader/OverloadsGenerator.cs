@@ -189,6 +189,9 @@ internal sealed class OverloadsGenerator : ISourceGenerator
 
 							break;
 						}
+						case Constants.IgnoreTransitionsAttr:
+							typeEntry.IgnoreTransitions = true;
+							break;
 						case Constants.BlackListModeAttr:
 							typeEntry.IsBlackListMode = true;
 							break;

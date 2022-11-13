@@ -10,6 +10,7 @@ internal struct TypeEntrySyntax
 	public List<(string ClassName, AttributeArgumentSyntax TypeSyntax)> OverloadTypes => _overloadTypes.Value;
 	public string[]? FormattersToUse;
 	public bool IsBlackListMode = false;
+	public bool IgnoreTransitions = false;
 	public TypeSyntax? DefaultType;
 
 	public TypeEntrySyntax() => throw new NotSupportedException();

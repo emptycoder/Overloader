@@ -16,6 +16,7 @@ public sealed class TransitionIntegrityOverloads : IChainMember
 		if (props.Store.OverloadMap is null
 		    || props.Store.Modifiers is null
 		    || !props.Store.IsSmthChanged
+		    || props.StartEntry.IgnoreTransitions
 		    || formattersCount == 0)
 			return ChainAction.NextMember;
 
