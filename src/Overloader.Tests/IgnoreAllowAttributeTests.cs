@@ -33,9 +33,15 @@ internal class Program
 				.Count()), Is.EqualTo(0));
 	}
 
-	[TestCase(true, $"{nameof(IgnoreAllowForTest)}4", $"{nameof(IgnoreAllowForTest)}5")]
-	[TestCase(false, $"{nameof(IgnoreAllowForTest)}3", $"{nameof(IgnoreAllowForTest)}4",
-		$"{nameof(IgnoreAllowForTest)}5")]
+	[TestCase(true, 
+		$"{nameof(IgnoreAllowForTest)}4",
+		$"{nameof(IgnoreAllowForTest)}5",
+		$"{nameof(IgnoreAllowForTest)}7")]
+	[TestCase(false,
+		$"{nameof(IgnoreAllowForTest)}3",
+		$"{nameof(IgnoreAllowForTest)}4",
+		$"{nameof(IgnoreAllowForTest)}5",
+		$"{nameof(IgnoreAllowForTest)}7")]
 	public void IgnoreAllowForTest(bool isBlackList, params string[] expectedMethodNames)
 	{
 		string programCs =
@@ -74,6 +80,12 @@ internal class Program
 	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
 	[{Constants.AllowForAttr}(typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}6() {{ }}
+
+	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{Constants.AllowForAttr}(typeof(double))]
+	[{Constants.AllowForAttr}(typeof(float))]
+	[{Constants.AllowForAttr}(typeof(uint))]
+	public static void {nameof(IgnoreAllowForTest)}7() {{ }}
 }}
 ";
 

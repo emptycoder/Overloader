@@ -19,6 +19,7 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 		for (int index = 0; index < props.Store.Modifiers.Length; index++)
 			props.Store.Modifiers[index] = entry.Modifiers[index].ToString();
 
+		bool isAllowForAttrSet = false;
 		foreach (var attrList in entry.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
@@ -42,13 +43,13 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 					foreach (var arg in attribute.ArgumentList.Arguments)
 						if (arg.EqualsToTemplate(props))
 						{
+							isAllowForAttrSet = true;
 							props.Store.SkipMember = false;
-							goto End;
+							break;
 						}
 
-					props.Store.SkipMember = true;
-
-					End:
+					if (!isAllowForAttrSet)
+						props.Store.SkipMember = true;
 					break;
 				}
 				case Constants.TAttr:
