@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
-using Overloader.Entities.Builders;
+using Overloader.Entities.ContentBuilders;
 using Overloader.Enums;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;

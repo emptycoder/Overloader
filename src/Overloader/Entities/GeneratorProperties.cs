@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
-using Overloader.Entities.Builders;
+using Overloader.Entities.ContentBuilders;
+using Overloader.Entities.DTOs;
 using Overloader.Entities.Formatters;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -9,28 +10,40 @@ namespace Overloader.Entities;
 internal record GeneratorProperties
 	: IGeneratorProps, IDisposable
 {
-	private readonly Dictionary<ITypeSymbol, Formatter>? _formatters;
+	private static readonly Dictionary<ITypeSymbol, Formatter> Empty = new(0, SymbolEqualityComparer.Default);
+
+	private readonly Dictionary<ITypeSymbol, Formatter> _formatters;
+	private readonly Dictionary<ITypeSymbol, Formatter> _overloadFormatters;
 	public readonly bool IsTSpecified;
 
 	public GeneratorExecutionContext Context;
-	public TypeEntrySyntax StartEntry;
+	public CandidateDto StartEntry;
+
+	public Store Store { get; } = new();
+	public SourceBuilder Builder { get; } = SourceBuilder.GetInstance();
+
+	public string ClassName { get; }
+	public ITypeSymbol Template { get; }
+
+	// ReSharper disable once InconsistentlySynchronizedField
+	public Compilation Compilation => Context.Compilation;
 
 	public GeneratorProperties(
 		GeneratorExecutionContext context,
-		TypeEntrySyntax startEntry,
+		CandidateDto startEntry,
+		Dictionary<ITypeSymbol, Formatter>? formatters,
 		bool isTSpecified,
 		string className,
-		Dictionary<ITypeSymbol, Formatter>? formatters,
-		ITypeSymbol template)
+		ITypeSymbol template,
+		Dictionary<ITypeSymbol, Formatter>? overloadFormatters)
 	{
 		Context = context;
 		StartEntry = startEntry;
 		IsTSpecified = isTSpecified;
 		ClassName = className;
 		Template = template;
-		_formatters = formatters;
-
-		if (_formatters is null) return;
+		_formatters = formatters ?? Empty;
+		_overloadFormatters = overloadFormatters ?? Empty;
 
 		// Verify that all transitions have formatters
 		foreach (var keyValuePair in _formatters)
@@ -54,25 +67,11 @@ internal record GeneratorProperties
 		}
 	}
 
-	public StoreDictionary Store { get; } = new();
-	public SourceBuilder Builder { get; } = SourceBuilder.GetInstance();
-
-	void IDisposable.Dispose() => Builder.Dispose();
-	public string ClassName { get; }
-	public ITypeSymbol Template { get; }
-
-	// ReSharper disable once InconsistentlySynchronizedField
-	public Compilation Compilation => Context.Compilation;
-
-	public bool TryGetFormatter(ITypeSymbol type, out Formatter formatter)
-	{
-		if (_formatters is not null)
-			return _formatters.TryGetValue(type, out formatter) ||
-			       _formatters.TryGetValue(type.OriginalDefinition, out formatter);
-
-		formatter = default!;
-		return false;
-	}
+	public bool TryGetFormatter(ITypeSymbol type, out Formatter formatter) =>
+		_overloadFormatters.TryGetValue(type, out formatter) || 
+		_overloadFormatters.TryGetValue(type.OriginalDefinition, out formatter) ||
+		_formatters.TryGetValue(type, out formatter) ||
+		_formatters.TryGetValue(type.OriginalDefinition, out formatter);
 
 	public void ReleaseAsOutput()
 	{
@@ -89,11 +88,12 @@ internal record GeneratorProperties
 			catch { goto AddLoop; }
 		}
 	}
+
+	void IDisposable.Dispose() => Builder.Dispose();
 }
 
 public interface IGeneratorProps
 {
-	public string ClassName { get; }
 	public ITypeSymbol? Template { get; }
 	public Compilation Compilation { get; }
 }

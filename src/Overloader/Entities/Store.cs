@@ -2,7 +2,7 @@
 
 namespace Overloader.Entities;
 
-internal sealed class StoreDictionary
+internal sealed class Store
 {
 	public sbyte CombineParametersCount;
 	public sbyte FormattersIntegrityCount;

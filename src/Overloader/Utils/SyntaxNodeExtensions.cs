@@ -124,6 +124,33 @@ internal static class SyntaxNodeExtensions
 		return dict;
 	}
 
+	public static Dictionary<ITypeSymbol, Formatter>? GetFormattersSample(
+		this Dictionary<string, Formatter> globalFormatters,
+		string[]? formattersToUse,
+		SyntaxNode errorSyntax)
+	{
+		if (formattersToUse is null) return null;
+		
+		var formatters = new Dictionary<ITypeSymbol, Formatter>(formattersToUse.Length, SymbolEqualityComparer.Default);
+		foreach (string formatterIdentifier in formattersToUse)
+		{
+			if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))
+				throw new ArgumentException($"Can't find formatter with identifier '{formatterIdentifier}'.")
+					.WithLocation(errorSyntax);
+
+			foreach (var formatterType in formatter.Types)
+			{
+				if (formatters.TryGetValue(formatterType, out var sameTypeFormatter))
+					throw new ArgumentException($"Type has been already overridden by '{
+						sameTypeFormatter.Identifier}' formatter.")
+						.WithLocation(errorSyntax);
+				formatters.Add(formatterType, formatter);
+			}
+		}
+
+		return formatters;
+	}
+
 	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>
 		SymbolEqualityComparer.Default.Equals(arg.GetType(props.Compilation), props.Template);
 

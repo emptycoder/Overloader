@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Entities;
+namespace Overloader.Entities.DTOs;
 
 public struct ParameterDto
 {

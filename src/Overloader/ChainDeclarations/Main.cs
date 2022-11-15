@@ -12,8 +12,12 @@ internal class Main : IChainMember
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		var sb = props.Builder;
-		if (props.IsTSpecified && !props.StartEntry.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword))
-			return ChainAction.Break;
+		switch (props.IsTSpecified)
+		{
+			case true when props.StartEntry.IgnoreTransitions:
+			case true when !props.StartEntry.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword):
+				return ChainAction.Break;
+		}
 
 		var entrySyntax = props.StartEntry.Syntax;
 		if (entrySyntax.AttributeLists.Any(attrList => attrList.Attributes.Any(attr =>

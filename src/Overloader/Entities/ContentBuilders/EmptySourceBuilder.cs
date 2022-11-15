@@ -1,4 +1,4 @@
-﻿namespace Overloader.Entities.Builders;
+﻿namespace Overloader.Entities.ContentBuilders;
 
 internal sealed class EmptySourceBuilder : SourceBuilder
 {

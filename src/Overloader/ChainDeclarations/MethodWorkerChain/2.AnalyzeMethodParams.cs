@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
+using Overloader.Entities.DTOs;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;

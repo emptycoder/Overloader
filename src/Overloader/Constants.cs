@@ -61,7 +61,7 @@ public sealed class {TSpecifyAttr}Attribute : Attribute
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
 public sealed class {OverloadAttr}Attribute : Attribute
 {{
-	public {OverloadAttr}Attribute(Type? type = null, string? nameRegex = null, string? regexReplace = null) {{ }}
+	public {OverloadAttr}Attribute(Type? type = null, string? nameRegex = null, string? regexReplace = null, params string[] formatters) {{ }}
 }}
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]

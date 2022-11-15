@@ -33,7 +33,7 @@ internal class Program
 				.Count()), Is.EqualTo(0));
 	}
 
-	[TestCase(true, 
+	[TestCase(true,
 		$"{nameof(IgnoreAllowForTest)}4",
 		$"{nameof(IgnoreAllowForTest)}5",
 		$"{nameof(IgnoreAllowForTest)}7")]

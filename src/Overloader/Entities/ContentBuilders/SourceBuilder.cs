@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Overloader.Utils;
 
-namespace Overloader.Entities.Builders;
+namespace Overloader.Entities.ContentBuilders;
 
 internal class SourceBuilder : IDisposable
 {
