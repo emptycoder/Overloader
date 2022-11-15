@@ -130,7 +130,7 @@ internal static class SyntaxNodeExtensions
 		SyntaxNode errorSyntax)
 	{
 		if (formattersToUse is null) return null;
-		
+
 		var formatters = new Dictionary<ITypeSymbol, Formatter>(formattersToUse.Length, SymbolEqualityComparer.Default);
 		foreach (string formatterIdentifier in formattersToUse)
 		{
@@ -141,8 +141,7 @@ internal static class SyntaxNodeExtensions
 			foreach (var formatterType in formatter.Types)
 			{
 				if (formatters.TryGetValue(formatterType, out var sameTypeFormatter))
-					throw new ArgumentException($"Type has been already overridden by '{
-						sameTypeFormatter.Identifier}' formatter.")
+					throw new ArgumentException($"Type has been already overridden by '{sameTypeFormatter.Identifier}' formatter.")
 						.WithLocation(errorSyntax);
 				formatters.Add(formatterType, formatter);
 			}

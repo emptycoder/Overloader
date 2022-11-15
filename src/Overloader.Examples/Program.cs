@@ -113,7 +113,7 @@ namespace Overloader.Examples
 		"Vector2",
 		"Vector128")]
 	// [Overload(typeof(float), "2D", "2F")]
-	public static partial class Vector2DExtension
+	public static class Vector2DExtension
 	{
 		// [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		// [return: T]

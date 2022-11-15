@@ -37,7 +37,7 @@ internal sealed partial class OverloadsGenerator : ISourceGenerator
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;
 				var formatters = globalFormatters.GetFormattersSample(candidate.FormattersToUse, candidate.Syntax);
-				
+
 				var formatterOverloadProps = new GeneratorProperties(
 					context,
 					candidate,
@@ -62,7 +62,7 @@ internal sealed partial class OverloadsGenerator : ISourceGenerator
 						overloadDto.ClassName,
 						overloadDto.TypeSyntax.GetType(context.Compilation),
 						globalFormatters.GetFormattersSample(overloadDto.FormattersToUse, overloadDto.TypeSyntax)
-						);
+					);
 
 #if !DEBUG || ForceTasks
 					tasks.Add(taskFactory.StartNew(OverloadCreation, genericWithFormatterOverloadProps));

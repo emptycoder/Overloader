@@ -7,13 +7,13 @@ internal class OrderedDictionary<TKey, TValue>
 	private readonly Dictionary<TKey, int> _indexes;
 	private readonly TValue[] _values;
 
-	public int Count { get; private set; }
-
 	public OrderedDictionary(int size)
 	{
 		_values = new TValue[size];
 		_indexes = new Dictionary<TKey, int>(size);
 	}
+
+	public int Count { get; private set; }
 
 	public void Add(TKey key, TValue value)
 	{

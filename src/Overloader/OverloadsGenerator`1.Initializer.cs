@@ -27,7 +27,7 @@ internal sealed partial class OverloadsGenerator
 				SourceText.From(Constants.AttributesWithHeaderSource, Encoding.UTF8));
 		});
 	}
-	
+
 	private sealed class SyntaxReceiver : ISyntaxReceiver
 	{
 		public readonly List<AttributeSyntax> GlobalFormatterSyntaxes = new(64);
@@ -72,9 +72,24 @@ internal sealed partial class OverloadsGenerator
 									throw new ArgumentException($"Need to present regex replacement parameter for {Constants.OverloadAttr}.").WithLocation(
 										attribute);
 								case >= 3:
-									className = Regex.Replace(className, args[1].Expression.GetInnerText(), args[2].Expression.GetInnerText());
+									switch (args[1].Expression)
+									{
+										case LiteralExpressionSyntax {RawKind: (int) SyntaxKind.NullLiteralExpression} when
+											args[1].Expression is LiteralExpressionSyntax {RawKind: (int) SyntaxKind.NullLiteralExpression}:
+											break;
+										case LiteralExpressionSyntax {RawKind: (int) SyntaxKind.StringLiteralExpression} when
+											args[1].Expression is LiteralExpressionSyntax {RawKind: (int) SyntaxKind.StringLiteralExpression}:
+											className = Regex.Replace(className,
+												args[1].Expression.GetInnerText(),
+												args[2].Expression.GetInnerText());
+											break;
+										default:
+											throw new ArgumentException("Argument should be null or string literal expression.").WithLocation(
+												args[1].Expression);
+									}
+
 									formattersToUse = new string[args.Count - 3];
-									for (int argIndex = 4, index = 0; argIndex <= args.Count; argIndex++, index++)
+									for (int argIndex = 3, index = 0; argIndex < args.Count; argIndex++, index++)
 										formattersToUse[index] = args[argIndex].Expression.GetInnerText();
 									break;
 								default:

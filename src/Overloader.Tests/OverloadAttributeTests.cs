@@ -47,4 +47,103 @@ internal class Program
 		for (int index = 0; index < expectedModifiers.Length; index++)
 			Assert.That(expectedModifiers[index], Is.EqualTo(@class.Modifiers[index].Text));
 	}
+
+	[Test]
+	public void OverloadFormatters()
+	{
+		const string programCs = @$"
+using Overloader;
+
+[assembly: {Constants.FormatterAttr}(
+			""Vector3"",
+			typeof(TestProject.Vector3<>),
+			new object[] {{""T""}},
+			new object[]
+			{{
+				""X"", ""T"",
+				""Y"", ""T"",
+				""Z"", ""T""
+			}},
+			new object[]
+			{{
+				typeof(TestProject.Vector2<>),
+				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}""
+			}},
+			new object[]
+			{{
+				typeof(TestProject.Vector2<>),
+				new object[]
+				{{
+					""X"", ""X"",
+					""Y"", ""Y""
+				}}
+			}})]
+[assembly: {Constants.FormatterAttr}(
+			""Vector2"",
+			typeof(TestProject.Vector2<>),
+			new object[] {{""T""}},
+			new object[]
+			{{
+				""X"", ""T"",
+				""Y"", ""T""
+			}})]
+
+namespace TestProject;
+
+[{Constants.TSpecifyAttr}(typeof(double))]
+[{Constants.OverloadAttr}(typeof(float), null, null, ""Vector3"", ""Vector2"")]
+internal partial class Program
+{{
+	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}"";
+
+	static void Main(string[] args) {{ }}
+
+	public static void TestMethod1([{Constants.TAttr}] TestProject.Vector3<double> test) {{ }}
+
+	public static void TestMethod2([{Constants.TAttr}] TestProject.Vector2<double> test) {{ }}
+}}
+
+internal struct Vector3<T>
+{{
+	public T X;
+	public T Y {{ get; set; }}
+	internal T Z {{ get; private set; }}
+}}
+
+internal record struct Vector2<T>
+{{
+	public T X;
+	public T Y;
+}}
+";
+
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+
+		var methodOverloads = new Dictionary<string, bool>(3)
+		{
+			{"float,float,float", false},
+			{"TestProject.Vector2<float>,float", false},
+			{"TestProject.Vector3<float>", false},
+			{"TestProject.Vector2<float>", false},
+			{"float,float", false}
+		};
+
+		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
+		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
+		         select generatedTree.GetRoot()
+			         .DescendantNodes()
+			         .OfType<MethodDeclarationSyntax>()
+		         into methods
+		         from method in methods
+		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
+		         into identifier
+		         where methodOverloads.ContainsKey(identifier)
+		         select identifier)
+			methodOverloads[identifier] = true;
+
+		foreach (var kv in methodOverloads)
+			Assert.That(kv.Value, Is.True);
+	}
 }

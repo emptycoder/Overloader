@@ -23,7 +23,7 @@ internal sealed record IntegrityTransition(
 		string castInBlockTemplate;
 		switch (expressions[1])
 		{
-			case LiteralExpressionSyntax literal when literal.Kind() == SyntaxKind.StringLiteralExpression:
+			case LiteralExpressionSyntax literal when literal.IsKind(SyntaxKind.StringLiteralExpression):
 				castInBlockTemplate = literal.GetVariableName();
 				break;
 			case MemberAccessExpressionSyntax:

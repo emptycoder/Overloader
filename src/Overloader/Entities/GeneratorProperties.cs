@@ -19,15 +19,6 @@ internal record GeneratorProperties
 	public GeneratorExecutionContext Context;
 	public CandidateDto StartEntry;
 
-	public Store Store { get; } = new();
-	public SourceBuilder Builder { get; } = SourceBuilder.GetInstance();
-
-	public string ClassName { get; }
-	public ITypeSymbol Template { get; }
-
-	// ReSharper disable once InconsistentlySynchronizedField
-	public Compilation Compilation => Context.Compilation;
-
 	public GeneratorProperties(
 		GeneratorExecutionContext context,
 		CandidateDto startEntry,
@@ -45,30 +36,47 @@ internal record GeneratorProperties
 		_formatters = formatters ?? Empty;
 		_overloadFormatters = overloadFormatters ?? Empty;
 
-		// Verify that all transitions have formatters
-		foreach (var keyValuePair in _formatters)
-		{
-			foreach (var deconstructTransition in keyValuePair.Value.DeconstructTransitions.Span)
-			foreach (var deconstructTransitionLink in deconstructTransition.Links)
-			{
-				var clearType = deconstructTransitionLink.TemplateType.GetClearType();
-				if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
-					throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
-						.WithLocation(StartEntry.Syntax);
-			}
+		VerifyFormatters(_formatters);
+		VerifyFormatters(_overloadFormatters);
 
-			foreach (var integrityTransition in keyValuePair.Value.IntegrityTransitions.Span)
+		void VerifyFormatters(Dictionary<ITypeSymbol, Formatter> formattersToCheck)
+		{
+			// Verify that all transitions have formatters
+			foreach (var keyValuePair in formattersToCheck)
 			{
-				var clearType = integrityTransition.TemplateType.GetClearType();
-				if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
-					throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
-						.WithLocation(StartEntry.Syntax);
+				foreach (var deconstructTransition in keyValuePair.Value.DeconstructTransitions.Span)
+				foreach (var deconstructTransitionLink in deconstructTransition.Links)
+				{
+					var clearType = deconstructTransitionLink.TemplateType.GetClearType();
+					if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
+						throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
+							.WithLocation(StartEntry.Syntax);
+				}
+
+				foreach (var integrityTransition in keyValuePair.Value.IntegrityTransitions.Span)
+				{
+					var clearType = integrityTransition.TemplateType.GetClearType();
+					if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
+						throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
+							.WithLocation(StartEntry.Syntax);
+				}
 			}
 		}
 	}
 
+	public Store Store { get; } = new();
+	public SourceBuilder Builder { get; } = SourceBuilder.GetInstance();
+
+	public string ClassName { get; }
+
+	void IDisposable.Dispose() => Builder.Dispose();
+	public ITypeSymbol Template { get; }
+
+	// ReSharper disable once InconsistentlySynchronizedField
+	public Compilation Compilation => Context.Compilation;
+
 	public bool TryGetFormatter(ITypeSymbol type, out Formatter formatter) =>
-		_overloadFormatters.TryGetValue(type, out formatter) || 
+		_overloadFormatters.TryGetValue(type, out formatter) ||
 		_overloadFormatters.TryGetValue(type.OriginalDefinition, out formatter) ||
 		_formatters.TryGetValue(type, out formatter) ||
 		_formatters.TryGetValue(type.OriginalDefinition, out formatter);
@@ -88,8 +96,6 @@ internal record GeneratorProperties
 			catch { goto AddLoop; }
 		}
 	}
-
-	void IDisposable.Dispose() => Builder.Dispose();
 }
 
 public interface IGeneratorProps
