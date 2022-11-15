@@ -20,7 +20,7 @@ internal static class MethodBodyExtension
 			props.Builder
 				.AppendWoTrim(" ")
 				.NestedIncrease()
-				.WriteChildren(method.ExpressionBody, replacements, props.Template.ToDisplayString());
+				.WriteExpressionBody(method.ExpressionBody, replacements, props.Template.ToDisplayString());
 			props.Builder
 				.NestedDecrease()
 				.Append(";", 1);
@@ -38,7 +38,41 @@ internal static class MethodBodyExtension
 		return props;
 	}
 
-	private static void WriteChildren(this SourceBuilder sb,
+	private static void WriteExpressionBody(
+		this SourceBuilder sb,
+		ArrowExpressionClauseSyntax syntaxNode,
+		Span<(string VarName, string ConcatedVars)> replacements,
+		string templateStr)
+	{
+		sb.Append(syntaxNode.ArrowToken.ToFullString());
+		var node = syntaxNode.Expression;
+		var triviaList = node.GetLeadingTrivia();
+		var buffer = ArrayPool<(string, string)>.Shared.Rent(triviaList.Count);
+		string? changeLine = triviaList.ParseTrivia(buffer, templateStr, out var localReplacements);
+		if (changeLine is not null)
+		{
+			sb.AppendWoTrim(changeLine, 1);
+		}
+		else if (localReplacements.IsEmpty)
+		{
+			sb.WriteChildren(node, replacements, templateStr);
+		}
+		else
+		{
+			using var statementSb = sb.GetDependentInstance();
+			statementSb.WriteChildren(node, replacements, templateStr);
+			string statementStr = statementSb.ToString();
+			foreach ((string key, string value) in localReplacements)
+				statementStr = statementStr.Replace(key, value);
+
+			sb.Append(statementStr, 1);
+		}
+
+		ArrayPool<(string, string)>.Shared.Return(buffer);
+	}
+
+	private static void WriteChildren(
+		this SourceBuilder sb,
 		SyntaxNodeOrToken syntaxNode,
 		Span<(string VarName, string ConcatedVars)> replacements,
 		string templateStr)
@@ -99,7 +133,6 @@ internal static class MethodBodyExtension
 					if (replacementIndex == -1) goto default;
 					sb.AppendWoTrim(replacements[replacementIndex].ConcatedVars);
 					break;
-				case {Parent: ArrowExpressionClauseSyntax}:
 				case StatementSyntax:
 				{
 					var triviaList = node.GetLeadingTrivia();
