@@ -29,9 +29,11 @@ internal static class Constants
 	public const string AllowForAttr = "AllowFor";
 	public const string ChangeModifierAttr = "ChangeModifier";
 	public const string ChangeNameAttr = "ChangeName";
-	
+	public const string ForceChangedAttr = "ForceChanged";
+
 	public const string ParamModifierAttr = "ParamModifier";
 	public const string AttributesFileNameWoExt = "Attributes";
+
 	public const string AttributesWithHeaderSource = @$"{DefaultHeader}
 using System;
 
@@ -97,6 +99,12 @@ public sealed class {ChangeModifierAttr}Attribute : Attribute
 public sealed class {ChangeNameAttr}Attribute : Attribute
 {{
 	public {ChangeNameAttr}Attribute(string newName, Type? forType = null) {{ }}
+}}
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
+public sealed class {ForceChangedAttr}Attribute : Attribute
+{{
+	public {ForceChangedAttr}Attribute() {{ }}
 }}
 
 /* Parameter attributes */

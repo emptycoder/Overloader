@@ -60,7 +60,10 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 				props,
 				parameters,
 				transitionIndexes);
-			props.Builder.Append(")");
+			props.Builder
+				.AppendWith(")", " ")
+				.Append(entry.ConstraintClauses.ToString());
+			;
 
 			if (props.Store.IsNeedToRemoveBody)
 				props.Builder.Append(";");

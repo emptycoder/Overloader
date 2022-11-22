@@ -57,7 +57,9 @@ internal sealed class IntegrityOverload : IChainMember
 		}
 
 		CloseParameterBracket:
-		props.Builder.AppendWoTrim(")");
+		props.Builder
+			.AppendWith(")", " ")
+			.Append(entry.ConstraintClauses.ToString());
 		props.WriteMethodBody(entry, Array.Empty<(string, string)>());
 
 		return ChainAction.NextMember;

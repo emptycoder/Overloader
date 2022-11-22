@@ -85,7 +85,7 @@ using Overloader.Examples;
 // var vec3 = new Vector3<float>();
 // vec3.Sum();
 var vec = Vector128.Create(123d, 123d);
-vec.Sum(vec);
+// vec.Sum(vec);
 Console.WriteLine("TEST");
 
 namespace Overloader.Examples
@@ -112,8 +112,8 @@ namespace Overloader.Examples
 	[TSpecify(typeof(double),
 		"Vector2",
 		"Vector128")]
-	// [Overload(typeof(float), "2D", "2F")]
-	public static class Vector2DExtension
+	[Overload(typeof(float), "2D", "2F")]
+	public static class Vector2DExtension<T> where T: class
 	{
 		// [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		// [return: T]
@@ -128,12 +128,15 @@ namespace Overloader.Examples
 		// 	return ref vec1;
 		// }
 		
-		[return: T]
-		public static Vector128<double> Sum(
-			[T] [Integrity] [ParamModifier("in", null, typeof(Vector2<>))]
-			this Vector128<double> curr,
-			[T] [Integrity] [CombineWith(nameof(curr))] [ParamModifier("in", null, typeof(Vector2<>))]
-			Vector128<double> vector) =>
-			Vector128.Create(curr[1] + vector[0], curr[1] + vector[1]);
+		// [return: T]
+		// public static Vector128<double> Sum(
+		// 	[T] [Integrity] [ParamModifier("in", null, typeof(Vector2<>))]
+		// 	this Vector128<double> curr,
+		// 	[T] [Integrity] [CombineWith(nameof(curr))] [ParamModifier("in", null, typeof(Vector2<>))]
+		// 	Vector128<double> vector) =>
+		// 	Vector128.Create(curr[1] + vector[0], curr[1] + vector[1]);
+		
+		[ForceChanged]
+		public static void Test() {}
 	}
 }

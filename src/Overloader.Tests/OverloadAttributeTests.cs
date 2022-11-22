@@ -170,4 +170,36 @@ internal record struct Vector2<T>
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 	}
+	
+	[Test]
+	public void GenericParameterMatchingTest()
+	{
+		const string programCs = $$"""
+			using Overloader;
+
+			namespace TestProject;
+			
+			public interface ITest
+			{
+				public void TestMethod<T>(T test) where T: class;
+			}
+			
+			[{{Constants.TSpecifyAttr}}(typeof(double))]
+			[{{Constants.OverloadAttr}}(typeof(float), "Test", "Test1")] 
+			public class Test : ITest
+			{
+				[{{Constants.ForceChangedAttr}}]
+				public void TestMethod<T>(T test) where T: class {}
+			}
+			
+			internal class Program
+			{
+				static void Main(string[] args) { }  
+			}
+		""";
+		
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+	}
 }

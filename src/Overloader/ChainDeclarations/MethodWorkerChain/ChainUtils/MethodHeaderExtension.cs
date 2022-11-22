@@ -13,7 +13,7 @@ internal static class MethodHeaderExtension
 		MethodDeclarationSyntax syntax,
 		MethodData data) =>
 		sb.AppendAttributes(syntax.AttributeLists, "\n")
-			.AppendWith(data.MethodModifiers is null? string.Empty : string.Join(" ", data.MethodModifiers), " ")
+			.AppendWith(data.MethodModifiers is null ? string.Empty : string.Join(" ", data.MethodModifiers), " ")
 			.AppendRefReturnValues(syntax.ReturnType)
 			.AppendWith(data.ReturnType?.ToDisplayString() ?? syntax.ReturnType.ToFullString(), " ")
 			.Append(data.MethodName)

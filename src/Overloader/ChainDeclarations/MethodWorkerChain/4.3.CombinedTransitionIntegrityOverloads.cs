@@ -72,7 +72,9 @@ public sealed class CombinedTransitionIntegrityOverloads : IChainMember
 				parameters,
 				transitionIndexes,
 				true);
-			props.Builder.Append(")");
+			props.Builder
+				.AppendWith(")", " ")
+				.Append(entry.ConstraintClauses.ToString());
 
 			if (props.Store.IsNeedToRemoveBody)
 				props.Builder.Append(";");

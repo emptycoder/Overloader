@@ -112,7 +112,7 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 
 					break;
 				}
-				case Constants.ChangeNameAttr:
+				case Constants.ChangeNameAttr when !props.IsTSpecified:
 					switch (attribute.ArgumentList?.Arguments.Count ?? 0)
 					{
 						case 1:
@@ -129,6 +129,10 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 							throw new ArgumentException($"Unexpected count of arguments in {Constants.ChangeNameAttr}.")
 								.WithLocation(attribute);
 					}
+
+					break;
+				case Constants.ForceChangedAttr:
+					props.Store.IsSmthChanged = true;
 					break;
 			}
 		}
