@@ -32,7 +32,8 @@ internal class Main : IChainMember
 		sb.AppendAttributes(entrySyntax.AttributeLists, "\n")
 			.AppendWith(entrySyntax.Modifiers.ToString(), " ")
 			.AppendWith(entrySyntax.Keyword.ToFullString(), " ")
-			.Append(props.ClassName, 1)
+			.Append(props.ClassName)
+			.Append(entrySyntax.BaseList?.ToFullString() ?? string.Empty, 1)
 			.NestedIncrease(SyntaxKind.OpenBraceToken);
 
 		foreach (var member in props.StartEntry.Syntax.Members)

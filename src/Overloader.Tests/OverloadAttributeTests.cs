@@ -146,4 +146,28 @@ internal record struct Vector2<T>
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
 	}
+
+	[Test]
+	public void GenericMethodOverloadTest()
+	{
+		const string programCs = $$"""
+			using Overloader;
+
+			namespace TestProject;
+
+			[{{Constants.TSpecifyAttr}}(typeof(double))]
+			[{{Constants.OverloadAttr}}(typeof(float), "Program", "Program1")] 
+			internal class Program
+			{
+				static void Main(string[] args) { } 
+				
+				[{{Constants.ChangeModifierAttr}}("public", "private", typeof(float))]
+				public static void Test<T>(T test) {}
+			}
+		""";
+		
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+	}
 }

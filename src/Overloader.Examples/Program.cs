@@ -127,7 +127,7 @@ namespace Overloader.Examples
 		//
 		// 	return ref vec1;
 		// }
-
+		
 		[return: T]
 		public static Vector128<double> Sum(
 			[T] [Integrity] [ParamModifier("in", null, typeof(Vector2<>))]

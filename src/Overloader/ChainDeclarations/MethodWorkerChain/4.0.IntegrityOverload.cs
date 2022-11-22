@@ -15,7 +15,6 @@ internal sealed class IntegrityOverload : IChainMember
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		if (props.Store.OverloadMap is null
-		    || props.Store.Modifiers is null
 		    || !props.Store.IsSmthChanged
 		    || props.IsTSpecified)
 			return ChainAction.NextMember;
@@ -25,7 +24,7 @@ internal sealed class IntegrityOverload : IChainMember
 
 		props.Builder
 			.AppendChainMemberNameComment(nameof(IntegrityOverload))
-			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 			.Append("(");
 
 		if (parameters.Count == 0) goto CloseParameterBracket;

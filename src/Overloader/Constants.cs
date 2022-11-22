@@ -28,10 +28,10 @@ internal static class Constants
 	public const string IgnoreForAttr = "IgnoreFor";
 	public const string AllowForAttr = "AllowFor";
 	public const string ChangeModifierAttr = "ChangeModifier";
+	public const string ChangeNameAttr = "ChangeName";
+	
 	public const string ParamModifierAttr = "ParamModifier";
-
 	public const string AttributesFileNameWoExt = "Attributes";
-
 	public const string AttributesWithHeaderSource = @$"{DefaultHeader}
 using System;
 
@@ -91,6 +91,12 @@ public sealed class {AllowForAttr}Attribute : Attribute
 public sealed class {ChangeModifierAttr}Attribute : Attribute
 {{
 	public {ChangeModifierAttr}Attribute(string modifier, string newModifier, Type? templateType = null) {{ }}
+}}
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
+public sealed class {ChangeNameAttr}Attribute : Attribute
+{{
+	public {ChangeNameAttr}Attribute(string newName, Type? forType = null) {{ }}
 }}
 
 /* Parameter attributes */

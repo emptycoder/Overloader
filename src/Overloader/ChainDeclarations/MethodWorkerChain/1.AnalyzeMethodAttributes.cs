@@ -13,11 +13,12 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 	{
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		props.Store.IsSmthChanged = false;
-		props.Store.ReturnType = entry.ReturnType.GetType(props.Compilation);
-		props.Store.Modifiers = new string[entry.Modifiers.Count];
+		props.Store.MethodData.ReturnType = entry.ReturnType.GetType(props.Compilation);
+		props.Store.MethodData.MethodModifiers = new string[entry.Modifiers.Count];
+		props.Store.MethodData.MethodName = entry.Identifier.ToString();
 
-		for (int index = 0; index < props.Store.Modifiers.Length; index++)
-			props.Store.Modifiers[index] = entry.Modifiers[index].ToString();
+		for (int index = 0; index < props.Store.MethodData.MethodModifiers.Length; index++)
+			props.Store.MethodData.MethodModifiers[index] = entry.Modifiers[index].ToString();
 
 		bool isAllowForAttrSet = false;
 		foreach (var attrList in entry.AttributeLists)
@@ -60,11 +61,9 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 					{
 						case 1:
 						case 2 when attribute.ArgumentList!.Arguments[1].EqualsToTemplate(props):
-						{
-							props.Store.ReturnType = attribute.ArgumentList!.Arguments[0].GetType(props.Compilation);
+							props.Store.MethodData.ReturnType = attribute.ArgumentList!.Arguments[0].GetType(props.Compilation);
 							props.Store.IsSmthChanged = true;
 							break;
-						}
 						case 2:
 							break;
 						case 0 when props.TryGetFormatter(returnTypeSymbolRoot, out var formatter):
@@ -73,7 +72,7 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 							for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 								@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(props.Template);
 
-							props.Store.ReturnType = returnTypeSymbol.ConstructWithClearType(
+							props.Store.MethodData.ReturnType = returnTypeSymbol.ConstructWithClearType(
 								returnTypeSymbolRoot
 									.OriginalDefinition
 									.Construct(@params),
@@ -81,12 +80,12 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 							props.Store.IsSmthChanged = true;
 							break;
 						case 0:
-							props.Store.ReturnType = props.Template;
+							props.Store.MethodData.ReturnType = props.Template;
 							props.Store.IsSmthChanged = true;
 							break;
 						default:
-							throw new ArgumentException(
-								$"Unexpected count of arguments in {Constants.TAttr}.").WithLocation(attribute);
+							throw new ArgumentException($"Unexpected count of arguments in {Constants.TAttr}.")
+								.WithLocation(attribute);
 					}
 
 					break;
@@ -102,17 +101,35 @@ internal sealed class AnalyzeMethodAttributes : IChainMember
 					string modifier = arguments[0].Expression.GetInnerText();
 					string newModifier = arguments[1].Expression.GetInnerText();
 
-					for (int index = 0; index < props.Store.Modifiers.Length; index++)
+					for (int index = 0; index < props.Store.MethodData.MethodModifiers.Length; index++)
 					{
-						if (!props.Store.Modifiers[index].Equals(modifier)) continue;
+						if (!props.Store.MethodData.MethodModifiers[index].Equals(modifier)) continue;
 
-						props.Store.Modifiers[index] = newModifier;
+						props.Store.MethodData.MethodModifiers[index] = newModifier;
 						props.Store.IsSmthChanged = true;
 						break;
 					}
 
 					break;
 				}
+				case Constants.ChangeNameAttr:
+					switch (attribute.ArgumentList?.Arguments.Count ?? 0)
+					{
+						case 1:
+							props.Store.MethodData.MethodName = attribute.ArgumentList!.Arguments[0].Expression.GetVariableName();
+							props.Store.IsSmthChanged = true;
+							break;
+						case 2 when attribute.ArgumentList!.Arguments[1].EqualsToTemplate(props):
+							props.Store.MethodData.MethodName = attribute.ArgumentList!.Arguments[0].Expression.GetVariableName();
+							props.Store.IsSmthChanged = true;
+							break;
+						case 2:
+							break;
+						default:
+							throw new ArgumentException($"Unexpected count of arguments in {Constants.ChangeNameAttr}.")
+								.WithLocation(attribute);
+					}
+					break;
 			}
 		}
 

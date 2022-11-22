@@ -14,7 +14,6 @@ internal sealed class CombinedDeconstructOverload : IChainMember
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		if (props.Store.OverloadMap is null
-		    || props.Store.Modifiers is null
 		    || !props.Store.IsSmthChanged
 		    || props.StartEntry.IgnoreTransitions
 		    || props.Store.FormattersWoIntegrityCount == 0
@@ -36,7 +35,7 @@ internal sealed class CombinedDeconstructOverload : IChainMember
 
 		props.Builder
 			.AppendChainMemberNameComment(nameof(CombinedDeconstructOverload))
-			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 			.Append("(");
 
 		for (int index = 0;;)

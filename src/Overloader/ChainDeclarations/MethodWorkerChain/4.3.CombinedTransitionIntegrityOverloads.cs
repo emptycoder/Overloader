@@ -14,7 +14,6 @@ public sealed class CombinedTransitionIntegrityOverloads : IChainMember
 	{
 		int formattersCount = props.Store.FormattersIntegrityCount + props.Store.FormattersWoIntegrityCount;
 		if (props.Store.OverloadMap is null
-		    || props.Store.Modifiers is null
 		    || !props.Store.IsSmthChanged
 		    || props.StartEntry.IgnoreTransitions
 		    || props.Store.FormattersWoIntegrityCount == 0)
@@ -64,7 +63,7 @@ public sealed class CombinedTransitionIntegrityOverloads : IChainMember
 				.AppendWoTrim("(");
 			props.Builder
 				.AppendChainMemberNameComment(nameof(CombinedTransitionDeconstructOverloads))
-				.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(
 				TransitionExtensions.IntegrityParamTransitionOverloadWriter,

@@ -14,7 +14,6 @@ internal sealed class CombinedIntegrityOverload : IChainMember
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
 		if (props.Store.OverloadMap is null
-		    || props.Store.Modifiers is null
 		    || !props.Store.IsSmthChanged
 		    || props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;
@@ -28,7 +27,7 @@ internal sealed class CombinedIntegrityOverload : IChainMember
 
 		props.Builder
 			.AppendChainMemberNameComment(nameof(CombinedIntegrityOverload))
-			.AppendMethodDeclarationSpecifics(entry, props.Store.Modifiers, props.Store.ReturnType)
+			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 			.AppendWoTrim("(");
 
 		if (parameters.Count == 0) goto CloseParameterBracket;

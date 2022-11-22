@@ -11,13 +11,13 @@ internal static class MethodHeaderExtension
 	public static SourceBuilder AppendMethodDeclarationSpecifics(
 		this SourceBuilder sb,
 		MethodDeclarationSyntax syntax,
-		string[] modifiers,
-		ITypeSymbol? returnType) =>
+		MethodData data) =>
 		sb.AppendAttributes(syntax.AttributeLists, "\n")
-			.AppendWith(string.Join(" ", modifiers), " ")
+			.AppendWith(data.MethodModifiers is null? string.Empty : string.Join(" ", data.MethodModifiers), " ")
 			.AppendRefReturnValues(syntax.ReturnType)
-			.AppendWith(returnType?.ToDisplayString() ?? syntax.ReturnType.ToFullString(), " ")
-			.Append(syntax.Identifier.ToFullString());
+			.AppendWith(data.ReturnType?.ToDisplayString() ?? syntax.ReturnType.ToFullString(), " ")
+			.Append(data.MethodName)
+			.Append(syntax.TypeParameterList?.ToString() ?? string.Empty);
 
 	public static SourceBuilder AppendParameter(
 		this SourceBuilder sb,
