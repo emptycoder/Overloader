@@ -144,6 +144,8 @@ public sealed class {ParamModifierAttr}Attribute : Attribute
 		ChangeModifierAttr,
 		RemoveBodyAttr,
 		ParamModifierAttr,
-		IgnoreTransitionsAttr
+		IgnoreTransitionsAttr,
+		ChangeNameAttr,
+		ForceChangedAttr
 	};
 }
