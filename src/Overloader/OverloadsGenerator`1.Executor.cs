@@ -30,7 +30,6 @@ internal sealed partial class OverloadsGenerator : ISourceGenerator
 
 #if !DEBUG || ForceTasks
 			var tasks = new List<Task>();
-			var taskFactory = new TaskFactory();
 #endif
 			var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormattersByName(context.Compilation);
 			foreach (var candidate in syntaxReceiver.Candidates)
@@ -47,7 +46,7 @@ internal sealed partial class OverloadsGenerator : ISourceGenerator
 					candidate.DefaultType!.GetType(context.Compilation),
 					null);
 #if !DEBUG || ForceTasks
-				tasks.Add(taskFactory.StartNew(OverloadCreation, formatterOverloadProps));
+				tasks.Add(Task.Factory.StartNew(OverloadCreation, formatterOverloadProps));
 #else
 				OverloadCreation(formatterOverloadProps);
 #endif
@@ -65,7 +64,7 @@ internal sealed partial class OverloadsGenerator : ISourceGenerator
 					);
 
 #if !DEBUG || ForceTasks
-					tasks.Add(taskFactory.StartNew(OverloadCreation, genericWithFormatterOverloadProps));
+					tasks.Add(Task.Factory.StartNew(OverloadCreation, genericWithFormatterOverloadProps));
 #else
 					OverloadCreation(genericWithFormatterOverloadProps);
 #endif
