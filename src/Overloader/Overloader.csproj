@@ -5,7 +5,6 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<Configurations>Release;Debug</Configurations>
 		<RootNamespace>Overloader</RootNamespace>
@@ -15,6 +14,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>Yaroslav Sanko</Authors>
 		<Description>Overloader is the open-source source generator that provide unsafe generics.</Description>
 		<PackageProjectUrl>https://github.com/emptycoder/Overloader</PackageProjectUrl>

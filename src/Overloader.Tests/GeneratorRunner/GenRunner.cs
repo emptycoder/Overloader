@@ -13,7 +13,8 @@ public static class GenRunner<T> where T : ISourceGenerator, new()
 	private static Compilation CreateCompilation(params string[] sources)
 	{
 		string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-		string netstandardLibPath = $@"{userFolder}\.nuget\packages\netstandard.library\2.0.0\build\netstandard2.0\ref\netstandard.dll";
+		string netstandardLibPath = Path.Combine(userFolder, ".nuget", "packages", "netstandard.library", "2.0.0", "build", "netstandard2.0", "ref",
+			"netstandard.dll");
 		if (!File.Exists(netstandardLibPath))
 			throw new ArgumentException($".netstandard 2.0 not found using next path: {netstandardLibPath}");
 

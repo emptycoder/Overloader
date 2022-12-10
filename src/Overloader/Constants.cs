@@ -30,10 +30,9 @@ internal static class Constants
 	public const string ChangeModifierAttr = "ChangeModifier";
 	public const string ChangeNameAttr = "ChangeName";
 	public const string ForceChangedAttr = "ForceChanged";
-
 	public const string ParamModifierAttr = "ParamModifier";
+	
 	public const string AttributesFileNameWoExt = "Attributes";
-
 	public const string AttributesWithHeaderSource = @$"{DefaultHeader}
 using System;
 
