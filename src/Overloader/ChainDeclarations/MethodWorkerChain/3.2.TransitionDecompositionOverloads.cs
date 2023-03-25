@@ -1,18 +1,15 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
-using Overloader.Entities;
-using Overloader.Entities.ContentBuilders;
+using Overloader.ContentBuilders;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-/// <summary>
-///     Generate transitions for types that don't use specific methods and can be decomposed
-/// </summary>
-internal sealed class TransitionDeconstructOverloads : IChainMember
+public sealed class TransitionDecompositionOverloads : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
@@ -34,7 +31,7 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
-			maxTransitionsCount[formatterIndex++] = formatter.DeconstructTransitions.Length;
+			maxTransitionsCount[formatterIndex++] = formatter.DecompositionTransitions.Length;
 		}
 
 		// Check that transitions exists
@@ -51,7 +48,7 @@ internal sealed class TransitionDeconstructOverloads : IChainMember
 			bodyBuilder.Append(entry.Identifier.ToString())
 				.AppendWoTrim("(");
 			props.Builder
-				.AppendChainMemberNameComment(nameof(TransitionDeconstructOverloads))
+				.AppendChainMemberNameComment(nameof(TransitionDecompositionOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(

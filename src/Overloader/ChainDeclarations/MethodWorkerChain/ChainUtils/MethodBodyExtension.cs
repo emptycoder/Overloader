@@ -2,9 +2,9 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities;
-using Overloader.Entities.ContentBuilders;
+using Overloader.ContentBuilders;
 using Overloader.Exceptions;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;

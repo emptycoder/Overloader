@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Overloader.Entities.DTOs;
+using Overloader.DTOs;
 using Overloader.Exceptions;
 using Overloader.Utils;
 #if DEBUG && !DisableDebugger
@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace Overloader;
 
-internal sealed partial class OverloadsGenerator
+public sealed partial class OverloadsGenerator
 {
 	public void Initialize(GeneratorInitializationContext context)
 	{

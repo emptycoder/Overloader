@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Overloader.Entities;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;

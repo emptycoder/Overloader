@@ -1,14 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
 using Overloader.ChainDeclarations;
-using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader;
 
 [Generator]
-internal sealed partial class OverloadsGenerator : ISourceGenerator
+public sealed partial class OverloadsGenerator : ISourceGenerator
 {
 	private static readonly Action<object> OverloadCreation = obj =>
 	{

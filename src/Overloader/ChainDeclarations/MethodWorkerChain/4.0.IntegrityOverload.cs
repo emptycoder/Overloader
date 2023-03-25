@@ -1,16 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
-using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Models;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-/// <summary>
-///     Generate main type which doesn't decompose method params using formatters
-/// </summary>
-internal sealed class IntegrityOverload : IChainMember
+public sealed class IntegrityOverload : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{

@@ -1,6 +1,6 @@
-﻿namespace Overloader.Entities.ContentBuilders;
+﻿namespace Overloader.ContentBuilders;
 
-internal sealed class EmptySourceBuilder : SourceBuilder
+public sealed class EmptySourceBuilder : SourceBuilder
 {
 	private EmptySourceBuilder() : base(null!, null!) { }
 	public static SourceBuilder Instance { get; } = new EmptySourceBuilder();

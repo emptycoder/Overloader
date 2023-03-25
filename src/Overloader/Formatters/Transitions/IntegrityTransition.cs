@@ -4,9 +4,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Entities.Formatters.Transitions;
+namespace Overloader.Formatters.Transitions;
 
-internal sealed record IntegrityTransition(
+public sealed record IntegrityTransition(
 	ITypeSymbol TemplateType,
 	string IntegrityCastCodeTemplate)
 {

@@ -1,20 +1,20 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities.Formatters.Params.Value;
-using Overloader.Entities.Formatters.Transitions;
 using Overloader.Exceptions;
+using Overloader.Formatters.Params.Value;
+using Overloader.Formatters.Transitions;
 using Overloader.Utils;
 
-namespace Overloader.Entities.Formatters;
+namespace Overloader.Formatters;
 
-internal sealed record Formatter(
+public sealed record Formatter(
 	string Identifier,
 	ITypeSymbol[] Types,
 	IParamValue[] GenericParams,
 	(string Identifier, IParamValue Param)[] Params,
 	Memory<IntegrityTransition> IntegrityTransitions,
-	Memory<DeconstructTransition> DeconstructTransitions)
+	Memory<DecompositionTransition> DecompositionTransitions)
 {
 	public static Formatter Parse(AttributeSyntax formatterSyntax, Compilation compilation)
 	{
@@ -72,7 +72,7 @@ internal sealed record Formatter(
 
 		int transitionsCount = args.Count - beforeTransitionParamsCount;
 		int integrityTransitionIndex = 0;
-		int deconstructTransitionIndex = transitionsCount - 1;
+		int decompositionTransitionIndex = transitionsCount - 1;
 		var transitionMemory = new Memory<object>(new object[transitionsCount]);
 		var transitions = transitionMemory.Span;
 		for (int argIndex = beforeTransitionParamsCount; argIndex < args.Count; argIndex++)
@@ -86,13 +86,13 @@ internal sealed record Formatter(
 					.WithLocation(args[argIndex].Expression);
 
 			if (argExpressions[1] is ArrayCreationExpressionSyntax)
-				transitions[deconstructTransitionIndex--] = DeconstructTransition.Parse(argExpressions, compilation);
+				transitions[decompositionTransitionIndex--] = DecompositionTransition.Parse(argExpressions, compilation);
 			else
 				transitions[integrityTransitionIndex++] = IntegrityTransition.Parse(argExpressions, compilation);
 		}
 
 		var integrityTransitions = transitionMemory.Slice(0, integrityTransitionIndex);
-		var deconstructTransitions = transitionMemory.Slice(integrityTransitionIndex);
+		var decompositionTransitions = transitionMemory.Slice(integrityTransitionIndex);
 
 		return new Formatter(
 			identifier.GetInnerText(),
@@ -100,7 +100,7 @@ internal sealed record Formatter(
 			genericParams,
 			@params,
 			Unsafe.As<Memory<object>, Memory<IntegrityTransition>>(ref integrityTransitions),
-			Unsafe.As<Memory<object>, Memory<DeconstructTransition>>(ref deconstructTransitions)
+			Unsafe.As<Memory<object>, Memory<DecompositionTransition>>(ref decompositionTransitions)
 		);
 	}
 

@@ -1,13 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-internal sealed class AnalyzeMethodAttributes : IChainMember
+public sealed class AnalyzeMethodAttributes : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{

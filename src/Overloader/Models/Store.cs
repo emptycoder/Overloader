@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Overloader.Entities;
+namespace Overloader.Models;
 
-internal sealed class Store
+public sealed class Store
 {
 	public sbyte CombineParametersCount;
 	public sbyte FormattersIntegrityCount;
@@ -14,7 +14,7 @@ internal sealed class Store
 	public bool SkipMember;
 }
 
-internal struct MethodData
+public struct MethodData
 {
 	public string[]? MethodModifiers;
 	public ITypeSymbol? ReturnType;

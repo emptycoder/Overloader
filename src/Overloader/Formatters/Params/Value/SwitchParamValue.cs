@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Overloader.Entities.Formatters.Params.Value;
+namespace Overloader.Formatters.Params.Value;
 
-internal sealed class SwitchParamValue : IParamValue
+public sealed class SwitchParamValue : IParamValue
 {
 	private readonly Dictionary<ITypeSymbol, IParamValue> _data;
 

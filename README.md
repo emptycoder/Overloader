@@ -1,8 +1,6 @@
 <h1 align="center">Overloader</h1>
 
-Overloader is the open-source source generator that provide unsafe generics.
-The main target of this project helps to write unsafe generics which don't have any common based interface or type.
-Also, create method parameters overloads that helps improve developer experience.
+Overloader is open-source generator for method overloads.
 
 # Installation
 
@@ -38,8 +36,6 @@ public static partial class GenericMathF
 	public static double Square(float val) => val * val;
 }
 ```
-
-P.S. GenericMath provided in preview versions of .NET try to resolve this problem, but we can't restrict needed types.
 
 # Parameter overload creation to avoid additional struct/class allocation
 
@@ -96,4 +92,4 @@ public static partial class Vector2FExtension
 
 # License
 
-Overloader is licensed under the [MIT](./LICENSE) license.
+Overloader distributed under [MIT](./LICENSE) license.

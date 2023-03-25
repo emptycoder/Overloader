@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Overloader.Entities.Formatters.Params.Value;
+namespace Overloader.Formatters.Params.Value;
 
-internal sealed class TypeParamValue : IParamValue
+public sealed class TypeParamValue : IParamValue
 {
 	private readonly ITypeSymbol _typeSymbol;
 

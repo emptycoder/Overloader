@@ -1,15 +1,15 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
-using Overloader.Entities;
-using Overloader.Entities.ContentBuilders;
+using Overloader.ContentBuilders;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-internal sealed class CombinedTransitionDeconstructOverloads : IChainMember
+public sealed class CombinedTransitionDecompositionOverloads : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
@@ -38,7 +38,7 @@ internal sealed class CombinedTransitionDeconstructOverloads : IChainMember
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
-			maxTransitionsCount[formatterIndex++] = formatter.DeconstructTransitions.Length;
+			maxTransitionsCount[formatterIndex++] = formatter.DecompositionTransitions.Length;
 		}
 
 		maxTransitionsCount = maxTransitionsCount.Slice(0, props.Store.FormattersWoIntegrityCount - countOfCombineWith);
@@ -58,7 +58,7 @@ internal sealed class CombinedTransitionDeconstructOverloads : IChainMember
 			bodyBuilder.Append(entry.Identifier.ToString())
 				.AppendWoTrim("(");
 			props.Builder
-				.AppendChainMemberNameComment(nameof(CombinedTransitionDeconstructOverloads))
+				.AppendChainMemberNameComment(nameof(CombinedTransitionDecompositionOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(

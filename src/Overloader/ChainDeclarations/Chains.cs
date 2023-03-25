@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Overloader.ChainDeclarations.MethodWorkerChain;
-using Overloader.Entities;
 using Overloader.Enums;
+using Overloader.Models;
 
 namespace Overloader.ChainDeclarations;
 
@@ -13,10 +13,10 @@ public static class Chains
 	{
 		/* 1 */ new AnalyzeMethodAttributes(),
 		/* 2 */ new AnalyzeMethodParams(),
-		/* 3 */ new DeconstructOverload(),
-		/* 3.1 */ new CombinedDeconstructOverload(),
-		/* 3.2 */ new TransitionDeconstructOverloads(),
-		/* 3.3 */ new CombinedTransitionDeconstructOverloads(),
+		/* 3 */ new DecompositionOverload(),
+		/* 3.1 */ new CombinedDecompositionOverload(),
+		/* 3.2 */ new TransitionDecompositionOverloads(),
+		/* 3.3 */ new CombinedTransitionDecompositionOverloads(),
 		/* 4 */ new IntegrityOverload(),
 		/* 4.1 */ new CombinedIntegrityOverload(),
 		/* 4.2 */ new TransitionIntegrityOverloads(),

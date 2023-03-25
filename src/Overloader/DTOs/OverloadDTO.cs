@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Overloader.Entities.DTOs;
+namespace Overloader.DTOs;
 
-internal sealed record OverloadDto(
+public sealed record OverloadDto(
 	string ClassName,
 	AttributeArgumentSyntax TypeSyntax,
 	string[] FormattersToUse

@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Entities.Formatters.Transitions;
+namespace Overloader.Formatters.Transitions;
 
-internal sealed record DeconstructTransition(DeconstructTransitionLink[] Links)
+public sealed record DecompositionTransition(DecompositionTransitionLink[] Links)
 {
 	public bool TryToFindReplacement(string paramName, out string? result, out int transitionIndex)
 	{
@@ -19,28 +19,28 @@ internal sealed record DeconstructTransition(DeconstructTransitionLink[] Links)
 		return false;
 	}
 
-	public static DeconstructTransition Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
+	public static DecompositionTransition Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
 	{
 		if (expressions.Count % 2 != 0)
 			throw new ArgumentException("Not [type]/[map params].")
 				.WithLocation(expressions[0]);
 
-		var transitionLinks = new DeconstructTransitionLink[expressions.Count / 2];
+		var transitionLinks = new DecompositionTransitionLink[expressions.Count / 2];
 		for (int index = 0; index < transitionLinks.Length; index++)
-			transitionLinks[index] = DeconstructTransitionLink.Parse(
+			transitionLinks[index] = DecompositionTransitionLink.Parse(
 				expressions[index++],
 				expressions[index],
 				compilation);
 
-		return new DeconstructTransition(transitionLinks);
+		return new DecompositionTransition(transitionLinks);
 	}
 }
 
-internal sealed record DeconstructTransitionLink(
+public sealed record DecompositionTransitionLink(
 	ITypeSymbol TemplateType,
 	Dictionary<string, string> ParamsMap)
 {
-	public static DeconstructTransitionLink Parse(
+	public static DecompositionTransitionLink Parse(
 		ExpressionSyntax type,
 		ExpressionSyntax mapParams,
 		Compilation compilation)
@@ -61,6 +61,6 @@ internal sealed record DeconstructTransitionLink(
 		for (int index = 0; index < expressions.Count; index++)
 			paramsMap.Add(expressions[index++].GetVariableName(), expressions[index].GetVariableName());
 
-		return new DeconstructTransitionLink(type.GetType(compilation), paramsMap);
+		return new DecompositionTransitionLink(type.GetType(compilation), paramsMap);
 	}
 }

@@ -2,16 +2,13 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
-using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Models;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-/// <summary>
-///     Generate main overload which decompose method on simple params using formatters
-/// </summary>
-internal sealed class DeconstructOverload : IChainMember
+public sealed class DecompositionOverload : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
@@ -29,7 +26,7 @@ internal sealed class DeconstructOverload : IChainMember
 			.Shared.Rent(props.Store.FormattersWoIntegrityCount);
 
 		props.Builder
-			.AppendChainMemberNameComment(nameof(DeconstructOverload))
+			.AppendChainMemberNameComment(nameof(DecompositionOverload))
 			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 			.Append("(");
 

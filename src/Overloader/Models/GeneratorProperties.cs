@@ -1,11 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
-using Overloader.Entities.ContentBuilders;
-using Overloader.Entities.DTOs;
-using Overloader.Entities.Formatters;
+using Overloader.ContentBuilders;
+using Overloader.DTOs;
 using Overloader.Exceptions;
+using Overloader.Formatters;
 using Overloader.Utils;
 
-namespace Overloader.Entities;
+namespace Overloader.Models;
 
 internal record GeneratorProperties
 	: IGeneratorProps, IDisposable
@@ -44,10 +44,10 @@ internal record GeneratorProperties
 			// Verify that all transitions have formatters
 			foreach (var keyValuePair in formattersToCheck)
 			{
-				foreach (var deconstructTransition in keyValuePair.Value.DeconstructTransitions.Span)
-				foreach (var deconstructTransitionLink in deconstructTransition.Links)
+				foreach (var decompositionTransition in keyValuePair.Value.DecompositionTransitions.Span)
+				foreach (var decompositionTransitionLink in decompositionTransition.Links)
 				{
-					var clearType = deconstructTransitionLink.TemplateType.GetClearType();
+					var clearType = decompositionTransitionLink.TemplateType.GetClearType();
 					if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
 						throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
 							.WithLocation(StartEntry.Syntax);

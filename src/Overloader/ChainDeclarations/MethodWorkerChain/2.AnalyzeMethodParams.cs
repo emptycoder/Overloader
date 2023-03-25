@@ -1,14 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities;
-using Overloader.Entities.DTOs;
+using Overloader.DTOs;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-internal sealed class AnalyzeMethodParams : IChainMember
+public sealed class AnalyzeMethodParams : IChainMember
 {
 	unsafe ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{

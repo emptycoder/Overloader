@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities;
-using Overloader.Entities.ContentBuilders;
+using Overloader.ContentBuilders;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
@@ -41,7 +41,7 @@ internal static partial class TransitionExtensions
 					throw new ArgumentException("Unexpected exception. Formatters changed in real time.")
 						.WithLocation(parameter);
 
-				var transition = formatter.DeconstructTransitions.Span[transitionIndexes[paramIndex++]];
+				var transition = formatter.DecompositionTransitions.Span[transitionIndexes[paramIndex++]];
 				// Build transition method header
 				for (int linkIndex = 0;;)
 				{

@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Overloader.Entities.DTOs;
+namespace Overloader.DTOs;
 
 internal struct CandidateDto
 {

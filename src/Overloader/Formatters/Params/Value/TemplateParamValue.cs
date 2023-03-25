@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Overloader.Entities.Formatters.Params.Value;
+namespace Overloader.Formatters.Params.Value;
 
-internal sealed class TemplateParamValue : IParamValue
+public sealed class TemplateParamValue : IParamValue
 {
 	private static readonly TemplateParamValue CachedTemplate = new();
 

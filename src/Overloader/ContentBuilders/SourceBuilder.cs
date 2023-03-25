@@ -2,9 +2,9 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Overloader.Utils;
 
-namespace Overloader.Entities.ContentBuilders;
+namespace Overloader.ContentBuilders;
 
-internal class SourceBuilder : IDisposable
+public class SourceBuilder : IDisposable
 {
 	private const string PaddingStr = "\t";
 

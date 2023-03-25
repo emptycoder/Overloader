@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Overloader.Entities;
+namespace Overloader.Utils;
 
 internal class OrderedDictionary<TKey, TValue>
 {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
-using Overloader.Entities;
-using Overloader.Entities.ContentBuilders;
+using Overloader.ContentBuilders;
 using Overloader.Enums;
+using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
@@ -62,7 +62,7 @@ public sealed class CombinedTransitionIntegrityOverloads : IChainMember
 			bodyBuilder.Append(entry.Identifier.ToString())
 				.AppendWoTrim("(");
 			props.Builder
-				.AppendChainMemberNameComment(nameof(CombinedTransitionDeconstructOverloads))
+				.AppendChainMemberNameComment(nameof(CombinedTransitionDecompositionOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(

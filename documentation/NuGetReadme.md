@@ -1,2 +1,1 @@
-Overloader is the open-source source generator that provide unsafe generics.<br>
-The main target is improve developer experience to help support smart and perfomance API using unsafe generics.
+Overloader is the open-source source generator which provides unsafe generics.

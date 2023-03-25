@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities;
-using Overloader.Entities.Formatters;
 using Overloader.Exceptions;
+using Overloader.Formatters;
+using Overloader.Models;
 
 namespace Overloader.Utils;
 

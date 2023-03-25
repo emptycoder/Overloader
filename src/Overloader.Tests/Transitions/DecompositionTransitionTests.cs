@@ -1,9 +1,9 @@
 ﻿namespace Overloader.Tests.Transitions;
 
-public class DeconstructTransitionTests
+public class DecompositionTransitionTests
 {
 	[Test]
-	public void DeconstructTransitionBaseTest()
+	public void DecompositionTransitionBaseTest()
 	{
 		const string programCs = @$"
 using Overloader;
