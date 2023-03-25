@@ -7,7 +7,7 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations;
 
-internal class Main : IChainMember
+internal class MainChain : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
@@ -43,7 +43,7 @@ internal class Main : IChainMember
 			if (member is not MethodDeclarationSyntax) continue;
 
 			props.Store.SkipMember = props.StartEntry.IsBlackListMode;
-			foreach (var worker in Chains.MethodWorkers)
+			foreach (var worker in ChainDeclarations.MethodWorkers)
 				if (worker.Execute(props, member) == ChainAction.Break)
 					break;
 		}

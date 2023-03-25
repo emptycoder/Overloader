@@ -50,7 +50,7 @@ internal partial class Program
 }}
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"", ""Vector2"")]
-[{Constants.OverloadAttr}(typeof(float))]
+[{Constants.TOverloadAttr}(typeof(float))]
 [{Constants.RemoveBodyAttr}]
 internal partial interface ITest
 {{
@@ -106,7 +106,6 @@ internal record struct Vector2<T>
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

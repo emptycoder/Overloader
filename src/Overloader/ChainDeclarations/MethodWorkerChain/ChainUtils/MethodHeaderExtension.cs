@@ -6,7 +6,7 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
-internal static class MethodHeaderExtension
+public static class MethodHeaderExtension
 {
 	public static SourceBuilder AppendMethodDeclarationSpecifics(
 		this SourceBuilder sb,

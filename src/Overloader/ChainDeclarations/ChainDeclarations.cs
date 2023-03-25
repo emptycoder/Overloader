@@ -5,11 +5,11 @@ using Overloader.Models;
 
 namespace Overloader.ChainDeclarations;
 
-public static class Chains
+public static class ChainDeclarations
 {
-	internal static readonly IChainMember Main = new Main();
+	public static readonly IChainMember Main = new MainChain();
 
-	internal static readonly IChainMember[] MethodWorkers =
+	public static readonly IChainMember[] MethodWorkers =
 	{
 		/* 1 */ new AnalyzeMethodAttributes(),
 		/* 2 */ new AnalyzeMethodParams(),
@@ -24,7 +24,7 @@ public static class Chains
 	};
 }
 
-internal interface IChainMember
+public interface IChainMember
 {
 	internal ChainAction Execute(GeneratorProperties props, SyntaxNode syntaxNode);
 }

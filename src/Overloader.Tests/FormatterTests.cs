@@ -36,7 +36,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.OverloadAttr}(typeof(float))]
+[{Constants.TOverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -64,7 +64,6 @@ internal struct Vector3<T>
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()
@@ -92,7 +91,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.OverloadAttr}(typeof(float))]
+[{Constants.TOverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -112,8 +111,7 @@ internal struct Vector3<T>
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
-		int countOfMethods = result.Result.GeneratedTrees.Where(generatedTree =>
-				!Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs"))
+		int countOfMethods = result.Result.GeneratedTrees
 			.SelectMany(generatedTree => generatedTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>())
 			.Sum(method => Convert.ToByte(method.Identifier.ToString().Equals(nameof(AutoParamIntegrityTest))));
 		Assert.That(countOfMethods, Is.EqualTo(1));
@@ -131,7 +129,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.OverloadAttr}(typeof(float))]
+[{Constants.TOverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -177,7 +175,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.OverloadAttr}(typeof(float))]
+[{Constants.TOverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}

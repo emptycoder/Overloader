@@ -18,7 +18,7 @@ using {nameof(Overloader)};
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -66,7 +66,7 @@ using {nameof(Overloader)};
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -111,7 +111,7 @@ using {nameof(Overloader)};
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -149,7 +149,7 @@ using {nameof(Overloader)};
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -200,14 +200,14 @@ using {nameof(Overloader)};
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 }}
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.OverloadAttr}(typeof(float), ""3D"", ""3F"")]
+[{Constants.TOverloadAttr}(typeof(float), ""3D"", ""3F"")]
 public static class Vec3DExt
 {{
 	[return: {Constants.TAttr}]
@@ -257,7 +257,7 @@ using {nameof(Overloader)};
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -292,7 +292,7 @@ using {nameof(Overloader)};
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}

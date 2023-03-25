@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Overloader.ChainDeclarations;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Models;
@@ -13,8 +12,8 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 	private static readonly Action<object> OverloadCreation = obj =>
 	{
 		using var gsb = (GeneratorProperties) obj;
-		gsb.Builder.AppendWoTrim(Constants.DefaultHeader);
-		if (Chains.Main.Execute(gsb, gsb.StartEntry.Syntax) != ChainAction.Break)
+		gsb.Builder.AppendWoTrim(Constants.GeneratedCodeHeader);
+		if (ChainDeclarations.ChainDeclarations.Main.Execute(gsb, gsb.StartEntry.Syntax) != ChainAction.Break)
 			gsb.ReleaseAsOutput();
 	};
 

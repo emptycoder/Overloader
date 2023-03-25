@@ -20,7 +20,8 @@
 
 	<!-- Analyzers -->
 	<ItemGroup>
-		<ProjectReference Include="..\Overloader\Overloader.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true"/>
+		<ProjectReference Include="..\Overloader.Abstract\Overloader.Abstract.csproj" />
+		<ProjectReference Include="..\Overloader\Overloader.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
 	</ItemGroup>
 
 </Project>

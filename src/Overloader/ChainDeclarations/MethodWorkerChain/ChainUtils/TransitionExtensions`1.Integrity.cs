@@ -7,7 +7,7 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
-internal static partial class TransitionExtensions
+public static partial class TransitionExtensions
 {
 	public static readonly TransitionWriter IntegrityParamTransitionOverloadWriter = WriteIntegrityParamTransitionOverload;
 

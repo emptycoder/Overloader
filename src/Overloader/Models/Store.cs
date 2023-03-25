@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-
-namespace Overloader.Models;
+﻿namespace Overloader.Models;
 
 public sealed class Store
 {
@@ -12,11 +10,4 @@ public sealed class Store
 	public MethodData MethodData;
 	public ParameterData[]? OverloadMap;
 	public bool SkipMember;
-}
-
-public struct MethodData
-{
-	public string[]? MethodModifiers;
-	public ITypeSymbol? ReturnType;
-	public string MethodName;
 }

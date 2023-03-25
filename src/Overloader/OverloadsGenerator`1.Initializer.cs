@@ -1,9 +1,7 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Overloader.DTOs;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -21,11 +19,6 @@ public sealed partial class OverloadsGenerator
 		if (Debugger.IsAttached) Debugger.Break();
 #endif
 		context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-		context.RegisterForPostInitialization(ctx =>
-		{
-			ctx.AddSource($"{Constants.AttributesFileNameWoExt}.g.cs",
-				SourceText.From(Constants.AttributesWithHeaderSource, Encoding.UTF8));
-		});
 	}
 
 	private sealed class SyntaxReceiver : ISyntaxReceiver
@@ -57,7 +50,7 @@ public sealed partial class OverloadsGenerator
 				{
 					switch (attribute.Name.GetName())
 					{
-						case Constants.OverloadAttr
+						case Constants.TOverloadAttr
 							when attribute.ArgumentList is not null:
 						{
 							var args = attribute.ArgumentList.Arguments;
@@ -69,7 +62,7 @@ public sealed partial class OverloadsGenerator
 								case 1:
 									break;
 								case 2:
-									throw new ArgumentException($"Need to present regex replacement parameter for {Constants.OverloadAttr}.").WithLocation(
+									throw new ArgumentException($"Need to present regex replacement parameter for {Constants.TOverloadAttr}.").WithLocation(
 										attribute);
 								case >= 3:
 									switch (args[1].Expression)
@@ -93,7 +86,7 @@ public sealed partial class OverloadsGenerator
 										formattersToUse[index] = args[argIndex].Expression.GetInnerText();
 									break;
 								default:
-									throw new ArgumentException($"Unexpected count of args for {Constants.OverloadAttr}.").WithLocation(attribute);
+									throw new ArgumentException($"Unexpected count of args for {Constants.TOverloadAttr}.").WithLocation(attribute);
 							}
 
 							typeEntry.OverloadTypes.Add(new OverloadDto(className, args[0], formattersToUse ?? Array.Empty<string>()));

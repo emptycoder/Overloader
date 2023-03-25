@@ -1,6 +1,6 @@
 ﻿namespace Overloader.Utils;
 
-internal static class StringExtensions
+public static class StringExtensions
 {
 	public static bool TryToFindMatch(this ReadOnlySpan<char> data, ReadOnlySpan<char> entry, string separator)
 	{

@@ -3,7 +3,7 @@
 namespace Overloader.Utils;
 
 // ReSharper disable once InconsistentNaming
-internal static class ITypeSymbolExtensions
+public static class ITypeSymbolExtensions
 {
 	public static ITypeSymbol ConstructWithClearType(
 		this ITypeSymbol typeSymbol,

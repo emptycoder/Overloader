@@ -47,7 +47,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"", ""Vector2"")]
-[{Constants.OverloadAttr}(typeof(float))]
+[{Constants.TOverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}"";
@@ -118,7 +118,6 @@ internal record struct Vector2<T>
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

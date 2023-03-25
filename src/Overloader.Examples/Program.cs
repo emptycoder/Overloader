@@ -112,7 +112,7 @@ namespace Overloader.Examples
 	[TSpecify(typeof(double),
 		"Vector2",
 		"Vector128")]
-	[Overload(typeof(float), "2D", "2F")]
+	[TOverload(typeof(float), "2D", "2F")]
 	public static class Vector2DExtension<T> where T: class
 	{
 		// [MethodImpl(MethodImplOptions.AggressiveInlining)]

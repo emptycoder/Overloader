@@ -7,8 +7,7 @@ using Overloader.Utils;
 
 namespace Overloader.Models;
 
-internal record GeneratorProperties
-	: IGeneratorProps, IDisposable
+public record GeneratorProperties : IGeneratorProps, IDisposable
 {
 	private static readonly Dictionary<ITypeSymbol, Formatter> Empty = new(0, SymbolEqualityComparer.Default);
 
@@ -96,10 +95,4 @@ internal record GeneratorProperties
 			catch { goto AddLoop; }
 		}
 	}
-}
-
-public interface IGeneratorProps
-{
-	public ITypeSymbol? Template { get; }
-	public Compilation Compilation { get; }
 }

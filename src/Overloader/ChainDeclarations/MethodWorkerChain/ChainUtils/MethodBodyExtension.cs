@@ -9,7 +9,7 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
-internal static class MethodBodyExtension
+public static class MethodBodyExtension
 {
 	public static GeneratorProperties WriteMethodBody(this GeneratorProperties props,
 		MethodDeclarationSyntax method,

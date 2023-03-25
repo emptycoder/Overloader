@@ -11,7 +11,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -33,7 +33,6 @@ internal class Program
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

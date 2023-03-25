@@ -4,7 +4,7 @@ using Overloader.Exceptions;
 
 namespace Overloader.Utils;
 
-internal static class SourceTextExtensions
+public static class SourceTextExtensions
 {
 	public static string GetInnerText(this ExpressionSyntax expressionSyntax)
 	{

@@ -24,14 +24,13 @@ internal class Program
 }}
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
+[{Constants.TOverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
 {accessModifier} static class {className} {{ }}
 ";
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
-		var generatedTrees = result.Result.GeneratedTrees.Where(tree =>
-			!Path.GetFileName(tree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")).ToImmutableArray();
+		var generatedTrees = result.Result.GeneratedTrees;
 		Assert.That(generatedTrees, Has.Length.EqualTo(1));
 
 		string newClassName = Regex.Replace(className, regex, regexReplacement);
@@ -91,7 +90,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), null, null, ""Vector3"", ""Vector2"")]
+[{Constants.TOverloadAttr}(typeof(float), null, null, ""Vector3"", ""Vector2"")]
 internal partial class Program
 {{
 	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}"";
@@ -131,7 +130,6 @@ internal record struct Vector2<T>
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()
@@ -156,7 +154,7 @@ internal record struct Vector2<T>
 			namespace TestProject;
 
 			[{{Constants.TSpecifyAttr}}(typeof(double))]
-			[{{Constants.OverloadAttr}}(typeof(float), "Program", "Program1")] 
+			[{{Constants.TOverloadAttr}}(typeof(float), "Program", "Program1")] 
 			internal class Program
 			{
 				static void Main(string[] args) { } 
@@ -185,7 +183,7 @@ internal record struct Vector2<T>
 			}
 			
 			[{{Constants.TSpecifyAttr}}(typeof(double))]
-			[{{Constants.OverloadAttr}}(typeof(float), "Test", "Test1")] 
+			[{{Constants.TOverloadAttr}}(typeof(float), "Test", "Test1")] 
 			public class Test : ITest
 			{
 				[{{Constants.ForceChangedAttr}}]

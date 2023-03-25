@@ -11,7 +11,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 [{Constants.BlackListModeAttr}]
 internal class Program
 {{
@@ -51,7 +51,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.OverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
 {(isBlackList ? $"[{Constants.BlackListModeAttr}]" : string.Empty)}
 internal class Program
 {{
@@ -94,7 +94,6 @@ internal class Program
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
 		var methodNames = result.Result.GeneratedTrees
-			.Where(tree => !Path.GetFileName(tree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs"))
 			.SelectMany(tree =>
 				tree.GetRoot()
 					.DescendantNodes()

@@ -10,7 +10,7 @@ public class SourceBuilder : IDisposable
 
 	// ReSharper disable once RedundantSuppressNullableWarningExpression
 	private static readonly ObjectPool<SourceBuilder> SPoolInstance = new(() =>
-		new SourceBuilder(SPoolInstance!, new StringBuilder()), 16);
+		new SourceBuilder(SPoolInstance!, new StringBuilder()));
 
 	private readonly StringBuilder _builder;
 	private readonly ObjectPool<SourceBuilder> _pool;

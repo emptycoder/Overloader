@@ -50,8 +50,8 @@ internal partial class Program
 }}
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"", ""Vector2"")]
-[{Constants.OverloadAttr}(typeof(float))]
-internal static partial class TestClass
+[{Constants.TOverloadAttr}(typeof(float))]
+public static partial class TestClass
 {{
 	public static void TestMethod1([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 	[return: {Constants.TAttr}]
@@ -61,14 +61,14 @@ internal static partial class TestClass
 	public static void TestMethod3(Vector3<double> vec, [{Constants.TAttr}] double vec1) {{ }}
 }}
 
-internal struct Vector3<T>
+public struct Vector3<T>
 {{
 	public T X;
 	public T Y {{ get; set; }}
 	internal T Z {{ get; private set; }}
 }}
 
-internal record struct Vector2<T>
+public record struct Vector2<T>
 {{
 	public T X;
 	public T Y;
@@ -107,7 +107,6 @@ internal record struct Vector2<T>
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
-		         where !Path.GetFileName(generatedTree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs")
 		         select generatedTree.GetRoot()
 			         .DescendantNodes()
 			         .OfType<MethodDeclarationSyntax>()

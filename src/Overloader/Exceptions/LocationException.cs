@@ -2,7 +2,7 @@
 
 namespace Overloader.Exceptions;
 
-internal static class ExceptionExtensions
+public static class ExceptionExtensions
 {
 	public static Exception WithLocation(this Exception ex, Location location) =>
 		new LocationException("Expected exception occured.", ex, location);

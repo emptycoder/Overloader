@@ -4,7 +4,7 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
-internal static class TypeExtensions
+public static class TypeExtensions
 {
 	public static ITypeSymbol SetDeepestType(this GeneratorProperties props,
 		ITypeSymbol argType,

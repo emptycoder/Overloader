@@ -12,7 +12,7 @@ public class ChangeNameTests
 			namespace TestProject;
 
 			[{{Constants.TSpecifyAttr}}(typeof(double))]
-			[{{Constants.OverloadAttr}}(typeof(float), "Test", "Test1")]
+			[{{Constants.TOverloadAttr}}(typeof(float), "Test", "Test1")]
 			public partial class Test
 			{
 				[{{Constants.ChangeNameAttr}}("ChangedName")]
@@ -33,7 +33,6 @@ public class ChangeNameTests
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 		
 		var methodNames = result.Result.GeneratedTrees
-			.Where(tree => !Path.GetFileName(tree.FilePath).Equals($"{Constants.AttributesFileNameWoExt}.g.cs"))
 			.SelectMany(tree =>
 				tree.GetRoot()
 					.DescendantNodes()

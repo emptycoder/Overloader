@@ -2,7 +2,7 @@
 
 namespace Overloader.DTOs;
 
-internal struct CandidateDto
+public struct CandidateDto
 {
 	private LazyList<OverloadDto> _overloadTypes = new();
 

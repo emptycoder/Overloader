@@ -93,10 +93,7 @@ internal class ObjectPool<T> where T : class?
         }
 #endif
 
-	internal ObjectPool(Factory factory)
-		: this(factory, Environment.ProcessorCount * 2) { }
-
-	internal ObjectPool(Factory factory, int size)
+	internal ObjectPool(Factory factory, int size = 16)
 	{
 		Debug.Assert(size >= 1);
 		_factory = factory;

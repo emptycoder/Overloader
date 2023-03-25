@@ -7,13 +7,13 @@ using Overloader.Models;
 
 namespace Overloader.Utils;
 
-internal static class SyntaxNodeExtensions
+public static class SyntaxNodeExtensions
 {
-	public static string GetNamespace(this SyntaxNode syntax)
+	public static string? GetNamespace(this SyntaxNode syntax)
 	{
 		// If we don't have a namespace at all we'll return an empty string
 		// This accounts for the "default namespace" case
-		string nameSpace = string.Empty;
+		string? nameSpace = null;
 
 		// Get the containing syntax node for the type declaration
 		// (could be a nested type, for example)

@@ -5,7 +5,7 @@ using Overloader.ContentBuilders;
 
 namespace Overloader.Utils;
 
-internal static class SourceBuilderExtensions
+public static class SourceBuilderExtensions
 {
 	public static SourceBuilder AppendUsings(this SourceBuilder sb, SyntaxNode syntax)
 	{
@@ -15,9 +15,12 @@ internal static class SourceBuilderExtensions
 		return sb.Append(string.Empty, 1);
 	}
 
-	public static SourceBuilder AppendNamespace(this SourceBuilder sb, string @namespace) =>
-		sb.AppendWith("namespace", " ")
-			.AppendWith(@namespace, ";");
+	public static SourceBuilder AppendNamespace(this SourceBuilder sb, string? @namespace)
+	{
+		if (string.IsNullOrWhiteSpace(@namespace)) return sb;
+		return sb.AppendWith("namespace", " ")
+			.AppendWith(@namespace!, ";");
+	}
 
 	public static SourceBuilder AppendRefReturnValues(this SourceBuilder sb, TypeSyntax typeSyntax)
 	{

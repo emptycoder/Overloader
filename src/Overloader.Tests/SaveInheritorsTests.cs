@@ -11,7 +11,7 @@ public class SaveInheritorsTests
 			namespace TestProject;
 
 			[{{Constants.TSpecifyAttr}}(typeof(double))]
-			[{{Constants.OverloadAttr}}(typeof(float), "Test", "Test1")]
+			[{{Constants.TOverloadAttr}}(typeof(float), "Test", "Test1")]
 			public class Test : ITest { } 
 			public interface ITest { }
 			

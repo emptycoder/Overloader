@@ -6,7 +6,7 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
-internal static class FormatterExtension
+public static class FormatterExtension
 {
 	public static string AppendFormatterParam(this SourceBuilder sb,
 		GeneratorProperties props,

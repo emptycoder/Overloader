@@ -26,7 +26,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.OverloadAttr}(typeof(float))]
+[{Constants.TOverloadAttr}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -67,7 +67,7 @@ using Overloader;
 namespace TestProject;
 
 [{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.OverloadAttr}(typeof(float))]
+[{Constants.TOverloadAttr}(typeof(float))]
 internal partial class TestClass{index}
 {{
 	public static void TestMethod1([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec, Vector3<double> vec1) {{ }}
