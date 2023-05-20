@@ -28,21 +28,21 @@ public struct ParameterDto
 			string attrName = attribute.Name.GetName();
 			switch (attrName)
 			{
-				case Constants.IntegrityAttr:
+				case nameof(Integrity):
 					tAttrDto.ForceOverloadIntegrity = true;
 					continue;
-				case Constants.CombineWithAttr when attribute.ArgumentList is {Arguments: var args}:
+				case nameof(Overloader.CombineWith) when attribute.ArgumentList is {Arguments: var args}:
 					if (args.Count != 1)
 						throw new ArgumentException("Not allowed with arguments count != 1.")
 							.WithLocation(syntaxNode);
 					tAttrDto.CombineWith = args[0].Expression.GetVariableName();
 					continue;
-				case Constants.TAttr:
+				case nameof(T):
 					if (attribute.ArgumentList is {Arguments.Count: > 1} &&
 					    attribute.ArgumentList.Arguments[1].EqualsToTemplate(props)) continue;
 					tAttrDto.Attribute = attribute;
 					continue;
-				case Constants.ParamModifierAttr when attribute.ArgumentList is {Arguments: var args}:
+				case nameof(ParamModifier) when attribute.ArgumentList is {Arguments: var args}:
 					int argsCount = args.Count;
 					if (args[0].Expression is not LiteralExpressionSyntax modifierExpression
 					    || !modifierExpression.IsKind(SyntaxKind.StringLiteralExpression))

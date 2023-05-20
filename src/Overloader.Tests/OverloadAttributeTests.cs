@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 
 namespace Overloader.Tests;
@@ -23,8 +22,8 @@ internal class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
 {accessModifier} static class {className} {{ }}
 ";
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
@@ -53,7 +52,7 @@ internal class Program
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}(
+[assembly: {nameof(Formatter)}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -77,7 +76,7 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {Constants.FormatterAttr}(
+[assembly: {nameof(Formatter)}(
 			""Vector2"",
 			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
@@ -89,17 +88,17 @@ using Overloader;
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), null, null, ""Vector3"", ""Vector2"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), null, null, ""Vector3"", ""Vector2"")]
 internal partial class Program
 {{
 	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}"";
 
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([{Constants.TAttr}] TestProject.Vector3<double> test) {{ }}
+	public static void TestMethod1([{nameof(T)}] TestProject.Vector3<double> test) {{ }}
 
-	public static void TestMethod2([{Constants.TAttr}] TestProject.Vector2<double> test) {{ }}
+	public static void TestMethod2([{nameof(T)}] TestProject.Vector2<double> test) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -153,13 +152,13 @@ internal record struct Vector2<T>
 
 			namespace TestProject;
 
-			[{{Constants.TSpecifyAttr}}(typeof(double))]
-			[{{Constants.TOverloadAttr}}(typeof(float), "Program", "Program1")] 
+			[{{nameof(TSpecify)}}(typeof(double))]
+			[{{nameof(TOverload)}}(typeof(float), "Program", "Program1")] 
 			internal class Program
 			{
 				static void Main(string[] args) { } 
 				
-				[{{Constants.ChangeModifierAttr}}("public", "private", typeof(float))]
+				[{{nameof(ChangeModifier)}}("public", "private", typeof(float))]
 				public static void Test<T>(T test) {}
 			}
 		""";
@@ -182,11 +181,11 @@ internal record struct Vector2<T>
 				public void TestMethod<T>(T test) where T: class;
 			}
 			
-			[{{Constants.TSpecifyAttr}}(typeof(double))]
-			[{{Constants.TOverloadAttr}}(typeof(float), "Test", "Test1")] 
+			[{{nameof(TSpecify)}}(typeof(double))]
+			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")] 
 			public class Test : ITest
 			{
-				[{{Constants.ForceChangedAttr}}]
+				[{{nameof(ForceChanged)}}]
 				public void TestMethod<T>(T test) where T: class {}
 			}
 			

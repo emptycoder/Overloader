@@ -10,7 +10,7 @@ public class CombineWithTests
 using System;
 using Overloader;
 
-[assembly:{Constants.FormatterAttr}(
+[assembly:{nameof(Formatter)}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -23,15 +23,15 @@ using Overloader;
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.TOverloadAttr}(typeof(float))]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
+[{nameof(TOverload)}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
 	public static void {nameof(CombineWithBaseTest)}(
-		[{Constants.TAttr}] ref Vector3<double> vec,
-		[{Constants.TAttr}][{Constants.CombineWithAttr}(""vec"")] Vector3<double> vec1) {{ }}
+		[{nameof(T)}] ref Vector3<double> vec,
+		[{nameof(T)}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1) {{ }}
 }}
 
 internal struct Vector3<T>

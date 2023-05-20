@@ -12,43 +12,22 @@ public static class Constants
 
 ";
 
-	public const string FormatterAttr = "Formatter";
-
-	// ReSharper disable once InconsistentNaming
-	public const string TSpecifyAttr = "TSpecify";
-
-	// ReSharper disable once InconsistentNaming
-	public const string TOverloadAttr = "TOverload";
-	public const string BlackListModeAttr = "BlackListMode";
-	public const string RemoveBodyAttr = "RemoveBody";
-	public const string IgnoreTransitionsAttr = "IgnoreTransitions";
-
-	// ReSharper disable once InconsistentNaming
-	public const string TAttr = "T";
-	public const string CombineWithAttr = "CombineWith";
-	public const string IntegrityAttr = "Integrity";
-	public const string IgnoreForAttr = "IgnoreFor";
-	public const string AllowForAttr = "AllowFor";
-	public const string ChangeModifierAttr = "ChangeModifier";
-	public const string ChangeNameAttr = "ChangeName";
-	public const string ForceChangedAttr = "ForceChanged";
-	public const string ParamModifierAttr = "ParamModifier";
-
 	public static readonly HashSet<string> AttributesToRemove = new()
 	{
-		TSpecifyAttr,
-		TOverloadAttr,
-		TAttr,
-		CombineWithAttr,
-		IntegrityAttr,
-		IgnoreForAttr,
-		BlackListModeAttr,
-		AllowForAttr,
-		ChangeModifierAttr,
-		RemoveBodyAttr,
-		ParamModifierAttr,
-		IgnoreTransitionsAttr,
-		ChangeNameAttr,
-		ForceChangedAttr
+		nameof(AllowFor),
+		nameof(BlackListMode),
+		nameof(ChangeModifier),
+		nameof(ChangeName),
+		nameof(CombineWith),
+		nameof(ForceChanged),
+		nameof(Formatter),
+		nameof(IgnoreFor),
+		nameof(IgnoreTransitions),
+		nameof(Integrity),
+		nameof(ParamModifier),
+		nameof(RemoveBody),
+		nameof(T),
+		nameof(TOverload),
+		nameof(TSpecify)
 	};
 }

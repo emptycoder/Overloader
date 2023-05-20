@@ -24,7 +24,7 @@ public static class GenRunner<T> where T : ISourceGenerator, new()
 			new[]
 			{
 				MetadataReference.CreateFromFile(typeof(OverloadsGenerator).Assembly.Location),
-				MetadataReference.CreateFromFile(typeof(TSpecifyAttribute).Assembly.Location),
+				MetadataReference.CreateFromFile(typeof(TSpecify).Assembly.Location),
 				MetadataReference.CreateFromFile(netstandardLibPath)
 			},
 			new CSharpCompilationOptions(OutputKind.ConsoleApplication)

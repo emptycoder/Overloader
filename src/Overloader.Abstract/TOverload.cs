@@ -5,7 +5,7 @@ namespace Overloader;
                 | AttributeTargets.Interface,
 	AllowMultiple = true)]
 // ReSharper disable once InconsistentNaming
-public class TOverloadAttribute : Attribute
+public class TOverload : Attribute
 {
-	public TOverloadAttribute(Type? type = null, string? nameRegex = null, string? regexReplace = null, params string[] formatters) { }
+	public TOverload(Type? type = null, string? nameRegex = null, string? regexReplace = null, params string[] formatters) { }
 }

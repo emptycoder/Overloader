@@ -17,13 +17,13 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
 	public static string {nameof(ReplaceOperationTest)}()
 	{{
 		{comment}
@@ -65,13 +65,13 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
 	public static string {nameof(ChangeLineOperationTest)}()
 	{{
 		{comment}
@@ -110,13 +110,13 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
 	public static string {nameof(ChangeLineOperationTest)}() =>
 		{comment}
 		""DEFAULT"";
@@ -148,13 +148,13 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
 	public static string {nameof(ArrowTokenSingleLineProblemTest)}() => ""DEFAULT"";
 }}
 ";
@@ -182,7 +182,7 @@ internal class Program
 		const string programCs = @$"
 using {nameof(Overloader)};
 
-[assembly: {Constants.FormatterAttr}(
+[assembly: {nameof(Formatter)}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -199,30 +199,30 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 }}
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.TOverloadAttr}(typeof(float), ""3D"", ""3F"")]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
+[{nameof(TOverload)}(typeof(float), ""3D"", ""3F"")]
 public static class Vec3DExt
 {{
-	[return: {Constants.TAttr}]
+	[return: {nameof(T)}]
 	public static double AngleCos(
-		[{Constants.IntegrityAttr}][{Constants.TAttr}] this ref Vector3<double> current,
-		[{Constants.TAttr}] in Vector3<double> vector)
+		[{nameof(Integrity)}][{nameof(T)}] this ref Vector3<double> current,
+		[{nameof(T)}] in Vector3<double> vector)
 	{{
 		// TEST
 		return 0;
 	}}
 
-	[return: {Constants.TAttr}]
+	[return: {nameof(T)}]
 	public static double Angle(
-		[{Constants.IntegrityAttr}][{Constants.TAttr}] this ref Vector3<double> current,
-		[{Constants.TAttr}] in Vector3<double> vector)
+		[{nameof(Integrity)}][{nameof(T)}] this ref Vector3<double> current,
+		[{nameof(T)}] in Vector3<double> vector)
 	{{
 		return AngleCos(ref current, in vector);
 	}}
@@ -256,14 +256,14 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[return: {Constants.TAttr}]
-	public static double {nameof(CommentAfterIfIgnoreProblemTest)}([{Constants.TAttr}] double val)
+	[return: {nameof(T)}]
+	public static double {nameof(CommentAfterIfIgnoreProblemTest)}([{nameof(T)}] double val)
 	{{
 		//# ""double"" -> ""${{T}}""
 		double test = 123;
@@ -291,18 +291,18 @@ using {nameof(Overloader)};
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[return: {Constants.TAttr}]
+	[return: {nameof(T)}]
 	private static double ComputeLowestRoot(
-		[{Constants.TAttr}] double a,
-		[{Constants.TAttr}] double b,
-		[{Constants.TAttr}] double c,
-		[{Constants.TAttr}] double maxR)
+		[{nameof(T)}] double a,
+		[{nameof(T)}] double b,
+		[{nameof(T)}] double c,
+		[{nameof(T)}] double maxR)
 	{{
 		//# ""double"" -> ""${{T}}""
 		double determinant = b * b - 4 * a * c;
@@ -336,7 +336,7 @@ internal class Program
 
 	// Plugs
 	private static double Sqrt(double val) => val;
-	[{Constants.ChangeModifierAttr}(""private"", ""private"")]
+	[{nameof(ChangeModifier)}(""private"", ""private"")]
 	private static float Sqrt(float val) => val;
 }}
 ";

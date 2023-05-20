@@ -8,7 +8,7 @@ public class InterfaceTransitionTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}(
+[assembly: {nameof(Formatter)}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -32,7 +32,7 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {Constants.FormatterAttr}(
+[assembly: {nameof(Formatter)}(
 			""Vector2"",
 			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
@@ -49,17 +49,17 @@ internal partial class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"", ""Vector2"")]
-[{Constants.TOverloadAttr}(typeof(float))]
-[{Constants.RemoveBodyAttr}]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"", ""Vector2"")]
+[{nameof(TOverload)}(typeof(float))]
+[{nameof(RemoveBody)}]
 internal partial interface ITest
 {{
-	public void TestMethod1([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec, Vector3<double> vec1);
-	[return: {Constants.TAttr}]
+	public void TestMethod1([{nameof(Integrity)}][{nameof(T)}] Vector3<double> vec, Vector3<double> vec1);
+	[return: {nameof(T)}]
 	public double TestMethod2(
-		[{Constants.TAttr}] Vector3<double> vec,
-		[{Constants.TAttr}][{Constants.CombineWithAttr}(""vec"")] Vector3<double> vec1);
-	public void TestMethod3(Vector3<double> vec, [{Constants.TAttr}] double vec1);
+		[{nameof(T)}] Vector3<double> vec,
+		[{nameof(T)}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1);
+	public void TestMethod3(Vector3<double> vec, [{nameof(T)}] double vec1);
 }}
 
 internal struct Vector3<T>

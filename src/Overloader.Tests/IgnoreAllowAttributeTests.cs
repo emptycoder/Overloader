@@ -10,15 +10,15 @@ using Overloader;
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
-[{Constants.BlackListModeAttr}]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(BlackListMode)}]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
-	[{Constants.ChangeModifierAttr}(""private"", ""protected"")]
+	[{nameof(ChangeModifier)}(""public"", ""private"", typeof(float))]
+	[{nameof(ChangeModifier)}(""private"", ""protected"")]
 	public static void {nameof(BlackListModeTest)}() {{ }}
 }}
 ";
@@ -50,41 +50,41 @@ using Overloader;
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
-{(isBlackList ? $"[{Constants.BlackListModeAttr}]" : string.Empty)}
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
+{(isBlackList ? $"[{nameof(BlackListMode)}]" : string.Empty)}
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
-	[{Constants.IgnoreForAttr}]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
+	[{nameof(IgnoreFor)}]
 	public static void {nameof(IgnoreAllowForTest)}1() {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
-	[{Constants.IgnoreForAttr}(typeof(float))]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
+	[{nameof(IgnoreFor)}(typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}2() {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
-	[{Constants.IgnoreForAttr}(typeof(double))]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
+	[{nameof(IgnoreFor)}(typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}3() {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
-	[{Constants.AllowForAttr}]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
+	[{nameof(AllowFor)}]
 	public static void {nameof(IgnoreAllowForTest)}4() {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
-	[{Constants.AllowForAttr}(typeof(float))]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
+	[{nameof(AllowFor)}(typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}5() {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
-	[{Constants.AllowForAttr}(typeof(double))]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
+	[{nameof(AllowFor)}(typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}6() {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""public"")]
-	[{Constants.AllowForAttr}(typeof(double))]
-	[{Constants.AllowForAttr}(typeof(float))]
-	[{Constants.AllowForAttr}(typeof(uint))]
+	[{nameof(ChangeModifier)}(""public"", ""public"")]
+	[{nameof(AllowFor)}(typeof(double))]
+	[{nameof(AllowFor)}(typeof(float))]
+	[{nameof(AllowFor)}(typeof(uint))]
 	public static void {nameof(IgnoreAllowForTest)}7() {{ }}
 }}
 ";

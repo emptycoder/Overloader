@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
-using Overloader.Formatters;
 using Overloader.Models;
 
 namespace Overloader.Utils;
@@ -108,12 +107,12 @@ public static class SyntaxNodeExtensions
 			$"Type not found or {syntaxNode.ToFullString()} isn't type.").WithLocation(syntaxNode);
 	}
 
-	public static Dictionary<string, Formatter> GetFormattersByName(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	public static Dictionary<string, Formatters.Formatter> GetFormattersByName(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
 	{
-		var dict = new Dictionary<string, Formatter>(attributeSyntaxes.Count);
+		var dict = new Dictionary<string, Formatters.Formatter>(attributeSyntaxes.Count);
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
-			var formatter = Formatter.Parse(formatterSyntax, compilation);
+			var formatter = Formatters.Formatter.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formatter.Identifier))
 				throw new ArgumentException($"Formatter with identifier '{formatter.Identifier}' has been already exists.")
 					.WithLocation(formatterSyntax);
@@ -124,14 +123,14 @@ public static class SyntaxNodeExtensions
 		return dict;
 	}
 
-	public static Dictionary<ITypeSymbol, Formatter>? GetFormattersSample(
-		this Dictionary<string, Formatter> globalFormatters,
+	public static Dictionary<ITypeSymbol, Formatters.Formatter>? GetFormattersSample(
+		this Dictionary<string, Formatters.Formatter> globalFormatters,
 		string[]? formattersToUse,
 		SyntaxNode errorSyntax)
 	{
 		if (formattersToUse is null) return null;
 
-		var formatters = new Dictionary<ITypeSymbol, Formatter>(formattersToUse.Length, SymbolEqualityComparer.Default);
+		var formatters = new Dictionary<ITypeSymbol, Formatters.Formatter>(formattersToUse.Length, SymbolEqualityComparer.Default);
 		foreach (string formatterIdentifier in formattersToUse)
 		{
 			if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))

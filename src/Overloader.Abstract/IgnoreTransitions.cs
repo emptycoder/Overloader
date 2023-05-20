@@ -4,4 +4,4 @@ namespace Overloader;
                 | AttributeTargets.Struct
                 | AttributeTargets.Interface,
 	AllowMultiple = true)]
-public class BlackListModeAttribute : Attribute { }
+public class IgnoreTransitions : Attribute { }

@@ -8,7 +8,7 @@ public class DecompositionTransitionTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}(
+[assembly: {nameof(Formatter)}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -27,7 +27,7 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {Constants.FormatterAttr}(
+[assembly: {nameof(Formatter)}(
 			""Vector2"",
 			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
@@ -39,18 +39,18 @@ using Overloader;
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"", ""Vector2"")]
-[{Constants.TOverloadAttr}(typeof(float))]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"", ""Vector2"")]
+[{nameof(TOverload)}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([{Constants.IntegrityAttr}][{Constants.TAttr}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{nameof(Integrity)}][{nameof(T)}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
-	[return: {Constants.TAttr}]
+	[return: {nameof(T)}]
 	public static double TestMethod2(
-		[{Constants.TAttr}] Vector3<double> vec,
-		[{Constants.TAttr}][{Constants.CombineWithAttr}(""vec"")] Vector3<double> vec1)
+		[{nameof(T)}] Vector3<double> vec,
+		[{nameof(T)}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1)
 	{{
 		Test(vec);
 		//# ""double"" -> ""${{T}}""
@@ -62,7 +62,7 @@ internal partial class Program
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void TestMethod3(Vector3<double> vec, [{Constants.TAttr}] double vec1) {{ }}
+	public static void TestMethod3(Vector3<double> vec, [{nameof(T)}] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>

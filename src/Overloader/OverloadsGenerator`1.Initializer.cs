@@ -36,7 +36,7 @@ public sealed partial class OverloadsGenerator
 					foreach (var attribute in attributeListSyntax.Attributes)
 						switch (attribute.Name.GetName())
 						{
-							case Constants.FormatterAttr:
+							case nameof(Formatter):
 								GlobalFormatterSyntaxes.Add(attribute);
 								break;
 						}
@@ -50,7 +50,7 @@ public sealed partial class OverloadsGenerator
 				{
 					switch (attribute.Name.GetName())
 					{
-						case Constants.TOverloadAttr
+						case nameof(TOverload)
 							when attribute.ArgumentList is not null:
 						{
 							var args = attribute.ArgumentList.Arguments;
@@ -62,7 +62,7 @@ public sealed partial class OverloadsGenerator
 								case 1:
 									break;
 								case 2:
-									throw new ArgumentException($"Need to present regex replacement parameter for {Constants.TOverloadAttr}.").WithLocation(
+									throw new ArgumentException($"Need to present regex replacement parameter for {nameof(TOverload)}.").WithLocation(
 										attribute);
 								case >= 3:
 									switch (args[1].Expression)
@@ -86,19 +86,19 @@ public sealed partial class OverloadsGenerator
 										formattersToUse[index] = args[argIndex].Expression.GetInnerText();
 									break;
 								default:
-									throw new ArgumentException($"Unexpected count of args for {Constants.TOverloadAttr}.").WithLocation(attribute);
+									throw new ArgumentException($"Unexpected count of args for {nameof(TOverload)}.").WithLocation(attribute);
 							}
 
 							typeEntry.OverloadTypes.Add(new OverloadDto(className, args[0], formattersToUse ?? Array.Empty<string>()));
 							break;
 						}
-						case Constants.IgnoreTransitionsAttr:
+						case nameof(IgnoreTransitions):
 							typeEntry.IgnoreTransitions = true;
 							break;
-						case Constants.BlackListModeAttr:
+						case nameof(BlackListMode):
 							typeEntry.IsBlackListMode = true;
 							break;
-						case Constants.TSpecifyAttr:
+						case nameof(TSpecify):
 							if (attribute.ArgumentList is not {Arguments: var arguments}
 							    || arguments.Count < 1)
 								throw new ArgumentException("Count of arguments must greater or equals to 1.")

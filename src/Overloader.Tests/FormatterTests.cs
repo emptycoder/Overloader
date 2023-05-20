@@ -31,17 +31,17 @@ public class FormatterTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}({DefaultVector3Formatter})]
+[assembly: {nameof(Formatter)}({DefaultVector3Formatter})]
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.TOverloadAttr}(typeof(float))]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
+[{nameof(TOverload)}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(FormatterTest)}([{Constants.TAttr}] Vector3<double> vec) {{ }}
+	public static void {nameof(FormatterTest)}([{nameof(T)}] Vector3<double> vec) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -86,17 +86,17 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}({Vector3WithoutParams})]
+[assembly: {nameof(Formatter)}({Vector3WithoutParams})]
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.TOverloadAttr}(typeof(float))]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
+[{nameof(TOverload)}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(AutoParamIntegrityTest)}([{Constants.TAttr}] Vector3<double> vec) {{ }}
+	public static void {nameof(AutoParamIntegrityTest)}([{nameof(T)}] Vector3<double> vec) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -124,17 +124,17 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}({Vector3WithoutParams})]
+[assembly: {nameof(Formatter)}({Vector3WithoutParams})]
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.TOverloadAttr}(typeof(float))]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
+[{nameof(TOverload)}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(DeepFormatterUsageTest)}([{Constants.TAttr}] Vector3<Vector3<double>> vec) {{ }}
+	public static void {nameof(DeepFormatterUsageTest)}([{nameof(T)}] Vector3<Vector3<double>> vec) {{ }}
 	// For Overload conflict
 	public static void {nameof(DeepFormatterUsageTest)}(Vector3<float> vec) {{ }}
 	public static void {nameof(DeepFormatterUsageTest)}(float vec) {{ }}
@@ -161,7 +161,7 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-[assembly: {Constants.FormatterAttr}(
+[assembly: {nameof(Formatter)}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -174,13 +174,13 @@ using Overloader;
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double), ""Vector3"")]
-[{Constants.TOverloadAttr}(typeof(float))]
+[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
+[{nameof(TOverload)}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(NameOfSupportTest)}([{Constants.TAttr}] Vector3<Vector3<double>> vec) {{ }}
+	public static void {nameof(NameOfSupportTest)}([{nameof(T)}] Vector3<Vector3<double>> vec) {{ }}
 	// For Overload conflict
 	public static void {nameof(NameOfSupportTest)}(Vector3<float> vec) {{ }}
 	public static void {nameof(NameOfSupportTest)}(float vec) {{ }}

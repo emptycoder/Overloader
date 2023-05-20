@@ -33,7 +33,7 @@ public sealed record ParameterData(
 				    && !SymbolEqualityComparer.Default.Equals(originalType, typeSymbol)) continue;
 				if (isReplaced)
 					throw new ArgumentException(
-							$"Modifier has already been replaced by another {Constants.ParamModifierAttr}.")
+							$"Modifier has already been replaced by another {nameof(ParamModifier)}.")
 						.WithLocation(parameter);
 
 				isReplaced = true;

@@ -4,4 +4,8 @@ namespace Overloader;
                 | AttributeTargets.Struct
                 | AttributeTargets.Interface,
 	AllowMultiple = true)]
-public class IgnoreTransitionsAttribute : Attribute { }
+// ReSharper disable once InconsistentNaming
+public class TSpecify : Attribute
+{
+	public TSpecify(Type templateType, params string[] formatters) { }
+}

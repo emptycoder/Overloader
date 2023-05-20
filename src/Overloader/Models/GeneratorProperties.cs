@@ -2,17 +2,16 @@
 using Overloader.ContentBuilders;
 using Overloader.DTOs;
 using Overloader.Exceptions;
-using Overloader.Formatters;
 using Overloader.Utils;
 
 namespace Overloader.Models;
 
 public record GeneratorProperties : IGeneratorProps, IDisposable
 {
-	private static readonly Dictionary<ITypeSymbol, Formatter> Empty = new(0, SymbolEqualityComparer.Default);
+	private static readonly Dictionary<ITypeSymbol, Formatters.Formatter> Empty = new(0, SymbolEqualityComparer.Default);
 
-	private readonly Dictionary<ITypeSymbol, Formatter> _formatters;
-	private readonly Dictionary<ITypeSymbol, Formatter> _overloadFormatters;
+	private readonly Dictionary<ITypeSymbol, Formatters.Formatter> _formatters;
+	private readonly Dictionary<ITypeSymbol, Formatters.Formatter> _overloadFormatters;
 	public readonly bool IsTSpecified;
 
 	public GeneratorExecutionContext Context;
@@ -21,11 +20,11 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 	public GeneratorProperties(
 		GeneratorExecutionContext context,
 		CandidateDto startEntry,
-		Dictionary<ITypeSymbol, Formatter>? formatters,
+		Dictionary<ITypeSymbol, Formatters.Formatter>? formatters,
 		bool isTSpecified,
 		string className,
 		ITypeSymbol template,
-		Dictionary<ITypeSymbol, Formatter>? overloadFormatters)
+		Dictionary<ITypeSymbol, Formatters.Formatter>? overloadFormatters)
 	{
 		Context = context;
 		StartEntry = startEntry;
@@ -38,7 +37,7 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 		VerifyFormatters(_formatters);
 		VerifyFormatters(_overloadFormatters);
 
-		void VerifyFormatters(Dictionary<ITypeSymbol, Formatter> formattersToCheck)
+		void VerifyFormatters(Dictionary<ITypeSymbol, Formatters.Formatter> formattersToCheck)
 		{
 			// Verify that all transitions have formatters
 			foreach (var keyValuePair in formattersToCheck)
@@ -74,7 +73,7 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 	// ReSharper disable once InconsistentlySynchronizedField
 	public Compilation Compilation => Context.Compilation;
 
-	public bool TryGetFormatter(ITypeSymbol type, out Formatter formatter) =>
+	public bool TryGetFormatter(ITypeSymbol type, out Formatters.Formatter formatter) =>
 		_overloadFormatters.TryGetValue(type, out formatter) ||
 		_overloadFormatters.TryGetValue(type.OriginalDefinition, out formatter) ||
 		_formatters.TryGetValue(type, out formatter) ||

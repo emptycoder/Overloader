@@ -27,19 +27,19 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 			string attrName = attribute.Name.GetName();
 			switch (attrName)
 			{
-				case Constants.IgnoreForAttr when attribute.ArgumentList is null or {Arguments.Count: < 1}:
+				case nameof(IgnoreFor) when attribute.ArgumentList is null or {Arguments.Count: < 1}:
 					return ChainAction.Break;
-				case Constants.IgnoreForAttr:
+				case nameof(IgnoreFor):
 				{
 					foreach (var arg in attribute.ArgumentList.Arguments)
 						if (arg.EqualsToTemplate(props))
 							return ChainAction.Break;
 					break;
 				}
-				case Constants.AllowForAttr when attribute.ArgumentList is null or {Arguments.Count: < 1}:
+				case nameof(AllowFor) when attribute.ArgumentList is null or {Arguments.Count: < 1}:
 					props.Store.SkipMember = false;
 					continue;
-				case Constants.AllowForAttr:
+				case nameof(AllowFor):
 				{
 					foreach (var arg in attribute.ArgumentList.Arguments)
 						if (arg.EqualsToTemplate(props))
@@ -53,7 +53,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 						props.Store.SkipMember = true;
 					break;
 				}
-				case Constants.TAttr:
+				case nameof(T):
 				{
 					var returnTypeSymbol = entry.ReturnType.GetType(props.Compilation);
 					var returnTypeSymbolRoot = returnTypeSymbol.GetClearType();
@@ -84,16 +84,16 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 							props.Store.IsSmthChanged = true;
 							break;
 						default:
-							throw new ArgumentException($"Unexpected count of arguments in {Constants.TAttr}.")
+							throw new ArgumentException($"Unexpected count of arguments in {nameof(T)}.")
 								.WithLocation(attribute);
 					}
 
 					break;
 				}
-				case Constants.ChangeModifierAttr when (attribute.ArgumentList?.Arguments.Count ?? 0) <= 1:
-					throw new ArgumentException($"Unexpected count of arguments in {Constants.ChangeModifierAttr}.")
+				case nameof(ChangeModifier) when (attribute.ArgumentList?.Arguments.Count ?? 0) <= 1:
+					throw new ArgumentException($"Unexpected count of arguments in {nameof(ChangeModifier)}.")
 						.WithLocation(attribute);
-				case Constants.ChangeModifierAttr:
+				case nameof(ChangeModifier):
 				{
 					var arguments = attribute.ArgumentList!.Arguments;
 					if (arguments.Count == 3 && !arguments[2].EqualsToTemplate(props)) continue;
@@ -112,7 +112,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 
 					break;
 				}
-				case Constants.ChangeNameAttr when !props.IsTSpecified:
+				case nameof(ChangeName) when !props.IsTSpecified:
 					switch (attribute.ArgumentList?.Arguments.Count ?? 0)
 					{
 						case 1:
@@ -126,12 +126,12 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 						case 2:
 							break;
 						default:
-							throw new ArgumentException($"Unexpected count of arguments in {Constants.ChangeNameAttr}.")
+							throw new ArgumentException($"Unexpected count of arguments in {nameof(ChangeName)}.")
 								.WithLocation(attribute);
 					}
 
 					break;
-				case Constants.ForceChangedAttr:
+				case nameof(ForceChanged):
 					props.Store.IsSmthChanged = true;
 					break;
 			}

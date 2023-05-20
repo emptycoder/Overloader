@@ -10,15 +10,15 @@ using Overloader;
 
 namespace TestProject;
 
-[{Constants.TSpecifyAttr}(typeof(double))]
-[{Constants.TOverloadAttr}(typeof(float), ""Program"", ""Program1"")]
+[{nameof(TSpecify)}(typeof(double))]
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{Constants.ChangeModifierAttr}(""public"", ""private"", typeof(float))]
-	[{Constants.ChangeModifierAttr}(""public"", ""internal"", typeof(double))]
-	[{Constants.ChangeModifierAttr}(""private"", ""protected"")]
+	[{nameof(ChangeModifier)}(""public"", ""private"", typeof(float))]
+	[{nameof(ChangeModifier)}(""public"", ""internal"", typeof(double))]
+	[{nameof(ChangeModifier)}(""private"", ""protected"")]
 	public static void {nameof(ModifierTest)}() {{ }}
 }}
 ";

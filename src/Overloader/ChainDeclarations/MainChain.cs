@@ -21,7 +21,7 @@ internal class MainChain : IChainMember
 
 		var entrySyntax = props.StartEntry.Syntax;
 		if (entrySyntax.AttributeLists.Any(attrList => attrList.Attributes.Any(attr =>
-			    attr.Name.GetName() == Constants.RemoveBodyAttr)))
+			    attr.Name.GetName() == nameof(RemoveBody))))
 			props.Store.IsNeedToRemoveBody = true;
 
 		sb.AppendUsings(entrySyntax.GetTopParent())
