@@ -30,8 +30,8 @@ internal partial class Program
 	static void Main(string[] args) {{ }}
 
 	public static void {nameof(CombineWithBaseTest)}(
-		[{nameof(T)}] ref Vector3<double> vec,
-		[{nameof(T)}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1) {{ }}
+		[{TAttribute.TagName}] ref Vector3<double> vec,
+		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1) {{ }}
 }}
 
 internal struct Vector3<T>

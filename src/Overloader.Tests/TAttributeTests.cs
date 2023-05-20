@@ -34,27 +34,27 @@ internal partial class Program
 	static void Main(string[] args) {{ }}
 
 	public static void {nameof(TAttrTest)}1(
-		[{nameof(Integrity)}][{nameof(T)}] Vector3<double> vec,
+		[{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec,
 		Vector3<double> vec1) {{ }}
 
-	[return: {nameof(T)}]
+	[return: {TAttribute.TagName}]
 	public static double {nameof(TAttrTest)}2(
-		[{nameof(T)}] Vector3<double> vec,
-		[{nameof(T)}] Vector3<double> vec1)
+		[{TAttribute.TagName}] Vector3<double> vec,
+		[{TAttribute.TagName}] Vector3<double> vec1)
 	{{
 		Test(vec);
 		//# ""double"" -> ""${{T}}""
 		return (double) (vec.X + vec1.X + vec.Y + vec1.Y + vec.Z + vec1.Z);
 	}}
 
-	[return: {nameof(T)}]
-	public static double {nameof(TAttrTest)}3([{nameof(T)}] double[] vec)
+	[return: {TAttribute.TagName}]
+	public static double {nameof(TAttrTest)}3([{TAttribute.TagName}] double[] vec)
 	{{
 		return vec[0] + vec[1] + vec[3];
 	}}
 
-	[return: {nameof(T)}]
-	public static Vector3<double>[] {nameof(TAttrTest)}3([{nameof(Integrity)}][{nameof(T)}] Vector3<double>[] vec)
+	[return: {TAttribute.TagName}]
+	public static Vector3<double>[] {nameof(TAttrTest)}3([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double>[] vec)
 	{{
 		// Check that auto integrity works
 		var test = vec[0].X + vec[1].X;
@@ -66,7 +66,7 @@ internal partial class Program
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void {nameof(TAttrTest)}4(Vector3<double> vec, [{nameof(T)}] double vec1) {{ }}
+	public static void {nameof(TAttrTest)}4(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>

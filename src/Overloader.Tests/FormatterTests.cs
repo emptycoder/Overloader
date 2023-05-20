@@ -41,7 +41,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(FormatterTest)}([{nameof(T)}] Vector3<double> vec) {{ }}
+	public static void {nameof(FormatterTest)}([{TAttribute.TagName}] Vector3<double> vec) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -96,7 +96,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(AutoParamIntegrityTest)}([{nameof(T)}] Vector3<double> vec) {{ }}
+	public static void {nameof(AutoParamIntegrityTest)}([{TAttribute.TagName}] Vector3<double> vec) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -134,7 +134,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(DeepFormatterUsageTest)}([{nameof(T)}] Vector3<Vector3<double>> vec) {{ }}
+	public static void {nameof(DeepFormatterUsageTest)}([{TAttribute.TagName}] Vector3<Vector3<double>> vec) {{ }}
 	// For Overload conflict
 	public static void {nameof(DeepFormatterUsageTest)}(Vector3<float> vec) {{ }}
 	public static void {nameof(DeepFormatterUsageTest)}(float vec) {{ }}
@@ -180,7 +180,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(NameOfSupportTest)}([{nameof(T)}] Vector3<Vector3<double>> vec) {{ }}
+	public static void {nameof(NameOfSupportTest)}([{TAttribute.TagName}] Vector3<Vector3<double>> vec) {{ }}
 	// For Overload conflict
 	public static void {nameof(NameOfSupportTest)}(Vector3<float> vec) {{ }}
 	public static void {nameof(NameOfSupportTest)}(float vec) {{ }}

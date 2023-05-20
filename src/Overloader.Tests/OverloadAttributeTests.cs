@@ -96,9 +96,9 @@ internal partial class Program
 
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([{nameof(T)}] TestProject.Vector3<double> test) {{ }}
+	public static void TestMethod1([{TAttribute.TagName}] TestProject.Vector3<double> test) {{ }}
 
-	public static void TestMethod2([{nameof(T)}] TestProject.Vector2<double> test) {{ }}
+	public static void TestMethod2([{TAttribute.TagName}] TestProject.Vector2<double> test) {{ }}
 }}
 
 internal struct Vector3<T>

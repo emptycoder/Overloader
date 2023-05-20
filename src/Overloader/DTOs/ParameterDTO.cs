@@ -37,7 +37,7 @@ public struct ParameterDto
 							.WithLocation(syntaxNode);
 					tAttrDto.CombineWith = args[0].Expression.GetVariableName();
 					continue;
-				case nameof(T):
+				case TAttribute.TagName:
 					if (attribute.ArgumentList is {Arguments.Count: > 1} &&
 					    attribute.ArgumentList.Arguments[1].EqualsToTemplate(props)) continue;
 					tAttrDto.Attribute = attribute;

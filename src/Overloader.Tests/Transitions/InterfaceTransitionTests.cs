@@ -54,12 +54,12 @@ internal partial class Program
 [{nameof(RemoveBody)}]
 internal partial interface ITest
 {{
-	public void TestMethod1([{nameof(Integrity)}][{nameof(T)}] Vector3<double> vec, Vector3<double> vec1);
-	[return: {nameof(T)}]
+	public void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1);
+	[return: {TAttribute.TagName}]
 	public double TestMethod2(
-		[{nameof(T)}] Vector3<double> vec,
-		[{nameof(T)}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1);
-	public void TestMethod3(Vector3<double> vec, [{nameof(T)}] double vec1);
+		[{TAttribute.TagName}] Vector3<double> vec,
+		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1);
+	public void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1);
 }}
 
 internal struct Vector3<T>

@@ -26,7 +26,7 @@ public static class Constants
 		nameof(Integrity),
 		nameof(ParamModifier),
 		nameof(RemoveBody),
-		nameof(T),
+		TAttribute.TagName,
 		nameof(TOverload),
 		nameof(TSpecify)
 	};

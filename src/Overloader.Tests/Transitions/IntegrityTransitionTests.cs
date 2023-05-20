@@ -54,12 +54,12 @@ internal partial class Program
 
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([{nameof(Integrity)}][{nameof(T)}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
-	[return: {nameof(T)}]
+	[return: {TAttribute.TagName}]
 	public static double TestMethod2(
-		[{nameof(T)}] Vector3<double> vec,
-		[{nameof(T)}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1)
+		[{TAttribute.TagName}] Vector3<double> vec,
+		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1)
 	{{
 		Test(vec);
 		//# ""double"" -> ""${{T}}""
@@ -71,7 +71,7 @@ internal partial class Program
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void TestMethod3(Vector3<double> vec, [{nameof(T)}] double vec1) {{ }}
+	public static void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>

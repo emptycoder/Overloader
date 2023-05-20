@@ -31,10 +31,10 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([{nameof(Integrity)}][{nameof(T)}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
-	[return: {nameof(T)}]
-	public static double TestMethod2([{nameof(T)}] Vector3<double> vec, [{nameof(T)}] Vector3<double> vec1)
+	[return: {TAttribute.TagName}]
+	public static double TestMethod2([{TAttribute.TagName}] Vector3<double> vec, [{TAttribute.TagName}] Vector3<double> vec1)
 	{{
 		Test(vec);
 		//# ""double"" -> ""${{T}}""
@@ -46,7 +46,7 @@ internal partial class Program
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void TestMethod3(Vector3<double> vec, [{nameof(T)}] double vec1) {{ }}
+	public static void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -70,16 +70,16 @@ namespace TestProject;
 [{nameof(TOverload)}(typeof(float))]
 internal partial class TestClass{index}
 {{
-	public static void TestMethod1([{nameof(Integrity)}][{nameof(T)}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
-	[return: {nameof(T)}]
-	public static double TestMethod2([{nameof(T)}] Vector3<double> vec, [{nameof(T)}] Vector3<double> vec1)
+	[return: {TAttribute.TagName}]
+	public static double TestMethod2([{TAttribute.TagName}] Vector3<double> vec, [{TAttribute.TagName}] Vector3<double> vec1)
 	{{
 		//# ""double"" -> ""${{T}}""
 		return (double) (vec.X + vec1.X + vec.Y + vec1.Y + vec.Z + vec1.Z);
 	}}
 
-	public static void TestMethod3(Vector3<double> vec, [{nameof(T)}] double vec1) {{ }}
+	public static void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
 }}
 ";
 

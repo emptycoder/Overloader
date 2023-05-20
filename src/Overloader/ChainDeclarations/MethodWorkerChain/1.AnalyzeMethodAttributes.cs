@@ -53,7 +53,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 						props.Store.SkipMember = true;
 					break;
 				}
-				case nameof(T):
+				case TAttribute.TagName:
 				{
 					var returnTypeSymbol = entry.ReturnType.GetType(props.Compilation);
 					var returnTypeSymbolRoot = returnTypeSymbol.GetClearType();
@@ -84,7 +84,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 							props.Store.IsSmthChanged = true;
 							break;
 						default:
-							throw new ArgumentException($"Unexpected count of arguments in {nameof(T)}.")
+							throw new ArgumentException($"Unexpected count of arguments in {TAttribute.TagName}.")
 								.WithLocation(attribute);
 					}
 

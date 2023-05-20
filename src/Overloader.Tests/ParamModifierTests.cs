@@ -53,12 +53,12 @@ internal partial class Program
 [{nameof(TOverload)}(typeof(float))]
 public static partial class TestClass
 {{
-	public static void TestMethod1([{nameof(Integrity)}][{nameof(T)}] Vector3<double> vec, Vector3<double> vec1) {{ }}
-	[return: {nameof(T)}]
+	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	[return: {TAttribute.TagName}]
 	public static double TestMethod2(
-		[{nameof(T)}] [{nameof(ParamModifier)}(""ref"", ""in"", typeof(Vector2<>))] this in Vector3<double> vec,
-		[{nameof(T)}] [{nameof(CombineWith)}(""vec"")] [{nameof(ParamModifier)}(""in"", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
-	public static void TestMethod3(Vector3<double> vec, [{nameof(T)}] double vec1) {{ }}
+		[{TAttribute.TagName}] [{nameof(ParamModifier)}(""ref"", ""in"", typeof(Vector2<>))] this in Vector3<double> vec,
+		[{TAttribute.TagName}] [{nameof(CombineWith)}(""vec"")] [{nameof(ParamModifier)}(""in"", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
+	public static void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
 }}
 
 public struct Vector3<T>

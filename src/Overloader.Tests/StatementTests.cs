@@ -210,19 +210,19 @@ internal class Program
 [{nameof(TOverload)}(typeof(float), ""3D"", ""3F"")]
 public static class Vec3DExt
 {{
-	[return: {nameof(T)}]
+	[return: {TAttribute.TagName}]
 	public static double AngleCos(
-		[{nameof(Integrity)}][{nameof(T)}] this ref Vector3<double> current,
-		[{nameof(T)}] in Vector3<double> vector)
+		[{nameof(Integrity)}][{TAttribute.TagName}] this ref Vector3<double> current,
+		[{TAttribute.TagName}] in Vector3<double> vector)
 	{{
 		// TEST
 		return 0;
 	}}
 
-	[return: {nameof(T)}]
+	[return: {TAttribute.TagName}]
 	public static double Angle(
-		[{nameof(Integrity)}][{nameof(T)}] this ref Vector3<double> current,
-		[{nameof(T)}] in Vector3<double> vector)
+		[{nameof(Integrity)}][{TAttribute.TagName}] this ref Vector3<double> current,
+		[{TAttribute.TagName}] in Vector3<double> vector)
 	{{
 		return AngleCos(ref current, in vector);
 	}}
@@ -262,8 +262,8 @@ internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[return: {nameof(T)}]
-	public static double {nameof(CommentAfterIfIgnoreProblemTest)}([{nameof(T)}] double val)
+	[return: {TAttribute.TagName}]
+	public static double {nameof(CommentAfterIfIgnoreProblemTest)}([{TAttribute.TagName}] double val)
 	{{
 		//# ""double"" -> ""${{T}}""
 		double test = 123;
@@ -297,12 +297,12 @@ internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[return: {nameof(T)}]
+	[return: {TAttribute.TagName}]
 	private static double ComputeLowestRoot(
-		[{nameof(T)}] double a,
-		[{nameof(T)}] double b,
-		[{nameof(T)}] double c,
-		[{nameof(T)}] double maxR)
+		[{TAttribute.TagName}] double a,
+		[{TAttribute.TagName}] double b,
+		[{TAttribute.TagName}] double c,
+		[{TAttribute.TagName}] double maxR)
 	{{
 		//# ""double"" -> ""${{T}}""
 		double determinant = b * b - 4 * a * c;
