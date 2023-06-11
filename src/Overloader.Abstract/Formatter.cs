@@ -1,3 +1,4 @@
+// ReSharper disable UnusedParameter.Local
 namespace Overloader;
 
 [AttributeUsage(AttributeTargets.Assembly,

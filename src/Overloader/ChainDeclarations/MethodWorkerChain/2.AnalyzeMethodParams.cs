@@ -31,7 +31,7 @@ public sealed class AnalyzeMethodParams : IChainMember
 			var parameterAction = shouldBeReplaced switch
 			{
 				true when props.TryGetFormatter(parameterType.GetClearType(), out var formatter) =>
-					paramDto.ForceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
+					paramDto.HasForceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
 						? ParameterAction.FormatterIntegrityReplacement
 						: ParameterAction.FormatterReplacement,
 				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,

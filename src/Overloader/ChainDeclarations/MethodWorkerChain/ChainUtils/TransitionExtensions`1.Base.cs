@@ -47,8 +47,7 @@ public static partial class TransitionExtensions
 				for (int combinedIndex = 0; combinedIndex < mappedParam.CombineIndex; combinedIndex++)
 				{
 					var param = props.Store.OverloadMap[combinedIndex];
-					if (param.ParameterAction == ParameterAction.FormatterReplacement
-					    && !param.IsCombineNotExists) tempParamIndex++;
+					if (param is {ParameterAction: ParameterAction.FormatterReplacement, IsCombineNotExists: false}) tempParamIndex++;
 				}
 
 				transitionWriter(EmptySourceBuilder.Instance,
@@ -80,6 +79,10 @@ public static partial class TransitionExtensions
 						parameter.Identifier.ValueText));
 				break;
 			}
+			case ParameterAction.Nothing:
+			case ParameterAction.SimpleReplacement:
+			case ParameterAction.CustomReplacement:
+			case ParameterAction.FormatterIntegrityReplacement:
 			default:
 				bodyBuilder.AppendCombinedSimple(mappedParam, parameter);
 				break;

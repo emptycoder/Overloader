@@ -12,12 +12,12 @@ public sealed record IntegrityTransition(
 {
 	public static IntegrityTransition Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
 	{
-		if (expressions.Count != 2)
+		if (expressions.Count is not 2)
 			throw new ArgumentException("Not [type]/[cast code template].")
 				.WithLocation(expressions[0]);
 
 		if (expressions[0] is not TypeOfExpressionSyntax)
-			throw new ArgumentException($"Type must be {nameof(TypeOfExpressionSyntax)}.")
+			throw new ArgumentException($"{nameof(TemplateType)} type must be {nameof(TypeOfExpressionSyntax)}.")
 				.WithLocation(expressions[0]);
 
 		string castInBlockTemplate;
@@ -33,10 +33,10 @@ public sealed record IntegrityTransition(
 				castInBlockTemplate = (string) value.Value!;
 				break;
 			default:
-				throw new ArgumentException("Cast code template isn't StringLiteral/InterpolationString/MemberAccess.")
+				throw new ArgumentException($"{nameof(IntegrityCastCodeTemplate)} isn't StringLiteral/InterpolationString/MemberAccess.")
 					.WithLocation(expressions[1]);
 		}
-
+		
 		return new IntegrityTransition(
 			expressions[0].GetType(compilation),
 			castInBlockTemplate);

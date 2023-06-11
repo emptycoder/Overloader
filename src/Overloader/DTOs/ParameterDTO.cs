@@ -10,7 +10,7 @@ namespace Overloader.DTOs;
 public struct ParameterDto
 {
 	public AttributeSyntax Attribute;
-	public bool ForceOverloadIntegrity;
+	public bool HasForceOverloadIntegrity;
 	public string? CombineWith;
 	public List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)> ModifierChangers;
 
@@ -29,7 +29,7 @@ public struct ParameterDto
 			switch (attrName)
 			{
 				case nameof(Integrity):
-					tAttrDto.ForceOverloadIntegrity = true;
+					tAttrDto.HasForceOverloadIntegrity = true;
 					continue;
 				case nameof(Overloader.CombineWith) when attribute.ArgumentList is {Arguments: var args}:
 					if (args.Count != 1)

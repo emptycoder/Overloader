@@ -71,7 +71,6 @@ public sealed class CombinedTransitionDecompositionOverloads : IChainMember
 			props.Builder
 				.AppendWith(")", " ")
 				.Append(entry.ConstraintClauses.ToString());
-			;
 
 			if (props.Store.IsNeedToRemoveBody)
 				props.Builder.Append(";");

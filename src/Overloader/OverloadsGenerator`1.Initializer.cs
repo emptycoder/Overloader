@@ -77,7 +77,7 @@ public sealed partial class OverloadsGenerator
 												args[2].Expression.GetInnerText());
 											break;
 										default:
-											throw new ArgumentException("Argument should be null or string literal expression.").WithLocation(
+											throw new ArgumentException($"Argument should be null or {nameof(SyntaxKind.StringLiteralExpression)}.").WithLocation(
 												args[1].Expression);
 									}
 
@@ -111,7 +111,7 @@ public sealed partial class OverloadsGenerator
 							for (int argIndex = 1, formatterIndex = 0; argIndex < arguments.Count; argIndex++, formatterIndex++)
 							{
 								if (arguments[argIndex].Expression is not LiteralExpressionSyntax literal)
-									throw new ArgumentException("Formatter identifier must be LiteralExpressionSyntax.")
+									throw new ArgumentException($"Formatter identifier must be {nameof(LiteralExpressionSyntax)}.")
 										.WithLocation(arguments[argIndex].Expression);
 
 								typeEntry.FormattersToUse[formatterIndex] = literal.GetInnerText();

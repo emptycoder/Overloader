@@ -114,7 +114,7 @@ public static class SyntaxNodeExtensions
 		{
 			var formatter = Formatters.Formatter.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formatter.Identifier))
-				throw new ArgumentException($"Formatter with identifier '{formatter.Identifier}' has been already exists.")
+				throw new ArgumentException($"Formatter with identifier '{formatter.Identifier}' has been already exist.")
 					.WithLocation(formatterSyntax);
 
 			dict.Add(formatter.Identifier, formatter);

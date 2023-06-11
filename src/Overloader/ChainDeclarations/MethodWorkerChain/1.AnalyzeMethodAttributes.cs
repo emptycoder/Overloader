@@ -87,7 +87,6 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 							throw new ArgumentException($"Unexpected count of arguments in {TAttribute.TagName}.")
 								.WithLocation(attribute);
 					}
-
 					break;
 				}
 				case nameof(ChangeModifier) when (attribute.ArgumentList?.Arguments.Count ?? 0) <= 1:

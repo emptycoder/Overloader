@@ -77,7 +77,6 @@ public sealed class CombinedIntegrityOverload : IChainMember
 		props.Builder
 			.AppendWith(")", " ")
 			.Append(entry.ConstraintClauses.ToString());
-		;
 
 		if (props.Store.IsNeedToRemoveBody)
 			props.Builder.Append(";");

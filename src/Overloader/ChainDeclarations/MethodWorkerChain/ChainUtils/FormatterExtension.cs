@@ -34,7 +34,7 @@ public static class FormatterExtension
 			var templateType = formatterParam.Param.GetType(props.Template);
 			var paramType = props.SetDeepestTypeWithTemplateFilling(templateType, props.Template);
 
-			if (paramType.IsValueType && paramType.SpecialType == SpecialType.System_ValueType)
+			if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
 				sb.AppendWith("in", " ");
 
 			sb.AppendWith(paramType.ToDisplayString(), " ")

@@ -67,7 +67,6 @@ public sealed class DecompositionOverload : IChainMember
 		props.Builder
 			.AppendWith(")", " ")
 			.Append(entry.ConstraintClauses.ToString());
-		;
 		props.WriteMethodBody(entry, replacementVariableNames.AsSpan(0, replacementVariableIndex));
 		ArrayPool<(string, string)>.Shared.Return(replacementVariableNames);
 

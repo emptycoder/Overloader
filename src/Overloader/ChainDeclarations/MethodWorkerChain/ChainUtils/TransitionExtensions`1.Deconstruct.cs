@@ -51,7 +51,7 @@ public static partial class TransitionExtensions
 						props.Template,
 						transitionLink.TemplateType);
 
-					if (paramType.IsValueType && paramType.SpecialType == SpecialType.System_ValueType)
+					if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
 						headerBuilder.AppendWith("in", " ");
 
 					headerBuilder

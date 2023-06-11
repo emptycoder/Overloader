@@ -1,4 +1,5 @@
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedParameter.Local
 namespace Overloader;
 
 [AttributeUsage(AttributeTargets.Class

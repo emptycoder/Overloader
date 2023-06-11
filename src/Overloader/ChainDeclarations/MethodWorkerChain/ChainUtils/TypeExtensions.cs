@@ -6,7 +6,8 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 public static class TypeExtensions
 {
-	public static ITypeSymbol SetDeepestType(this GeneratorProperties props,
+	public static ITypeSymbol SetDeepestType(
+		this GeneratorProperties props,
 		ITypeSymbol argType,
 		ITypeSymbol templateType,
 		ITypeSymbol exceptionType)
@@ -28,7 +29,8 @@ public static class TypeExtensions
 		return argType.ConstructWithClearType(clearType.OriginalDefinition.Construct(@params), props.Compilation);
 	}
 
-	public static ITypeSymbol SetDeepestTypeWithTemplateFilling(this GeneratorProperties props,
+	public static ITypeSymbol SetDeepestTypeWithTemplateFilling(
+		this GeneratorProperties props,
 		ITypeSymbol argType,
 		ITypeSymbol templateType)
 	{

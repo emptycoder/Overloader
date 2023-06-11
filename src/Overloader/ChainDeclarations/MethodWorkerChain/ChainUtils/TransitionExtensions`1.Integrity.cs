@@ -35,7 +35,7 @@ public static partial class TransitionExtensions
 			case ParameterAction.FormatterReplacement:
 			case ParameterAction.FormatterIntegrityReplacement:
 				if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
-					throw new ArgumentException("Unexpected exception. Formatters changed in real time.")
+					throw new ArgumentException("Unexpected exception. Formatters have been changed in real time.")
 						.WithLocation(parameter);
 
 				int transitionIndex = transitionIndexes[paramIndex++];
@@ -51,7 +51,7 @@ public static partial class TransitionExtensions
 					transition.TemplateType,
 					props.Template,
 					transition.TemplateType);
-
+				
 				headerBuilder
 					.AppendWoTrim(mappedParam.BuildModifiersWithWhitespace(parameter, paramType))
 					.AppendWith(paramType.ToDisplayString(), " ")

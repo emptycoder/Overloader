@@ -1,7 +1,4 @@
 namespace Overloader;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-public class ForceChanged : Attribute
-{
-	public ForceChanged() { }
-}
+public class ForceChanged : Attribute { }
