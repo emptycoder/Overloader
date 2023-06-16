@@ -34,7 +34,6 @@ public static class MethodBodyExtension
 		{
 			props.Builder.AppendWoTrim(";", 1);
 		}
-
 		return props;
 	}
 
@@ -67,7 +66,6 @@ public static class MethodBodyExtension
 
 			sb.Append(statementStr, 1);
 		}
-
 		ArrayPool<(string, string)>.Shared.Return(buffer);
 	}
 
@@ -174,7 +172,6 @@ public static class MethodBodyExtension
 			if (!replacements[index].VarName.Equals(value)) continue;
 			return index;
 		}
-
 		return -1;
 	}
 
@@ -185,6 +182,7 @@ public static class MethodBodyExtension
 		string? changeLine = default;
 		foreach (var syntaxTrivia in triviaList)
 		{
+			// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
 			switch (syntaxTrivia.Kind())
 			{
 				case SyntaxKind.SingleLineCommentTrivia:
@@ -204,19 +202,22 @@ public static class MethodBodyExtension
 						// Replace operator
 						case '#':
 							var kv = strTriviaSpan.SplitAsKV("->");
-							if (kv.Value.IndexOf("${T}", StringComparison.Ordinal) != -1 && templateStr is null) break;
-							kv.Value = kv.Value.Replace("${T}", templateStr);
+							if (templateStr is null) break;
+							if (kv.Key.IndexOf("${T}", StringComparison.Ordinal) != -1)
+								kv.Key = kv.Key.Replace("${T}", templateStr);
+							if (kv.Value.IndexOf("${T}", StringComparison.Ordinal) != -1)
+								kv.Value = kv.Value.Replace("${T}", templateStr);
 							buffer[size++] = kv;
 							break;
 						// Change line operator
 						case '$':
 							var newStatement = strTriviaSpan.Slice(3).Trim();
 							if (newStatement.IndexOf("${T}".AsSpan()) != -1 && templateStr is null) break;
-							if (changeLine is not null) throw new ArgumentException("Can't be two replace line on one syntax node");
+							if (changeLine is not null)
+								throw new ArgumentException("Cannot use two 'replace line' ('//$') on one syntax node.");
 							changeLine = newStatement.ToString().Replace("${T}", templateStr);
 							break;
 					}
-
 					break;
 			}
 		}
