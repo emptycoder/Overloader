@@ -18,10 +18,14 @@ public static class StringExtensions
 	public static (string Key, string Value) SplitAsKV(this ReadOnlySpan<char> data, string separator)
 	{
 		int separatorIndex = data.IndexOf(separator.AsSpan(), StringComparison.Ordinal);
-		if (separatorIndex == -1) throw new ArgumentException($"Separator '{separator}' not found for {data.ToString()}.");
+		if (separatorIndex == -1)
+			throw new ArgumentException($"Separator '{separator}' not found for {data.ToString()}.");
 
 		var key = data.Slice(0, separatorIndex).ChangeBoundsByChar();
 		var value = data.Slice(separatorIndex + separator.Length).ChangeBoundsByChar();
+		
+		if (key.Length == 0)
+			throw new ArgumentException($"Key can't be empty for {data.ToString()}.");
 
 		return (key.ToString(), value.ToString());
 	}
