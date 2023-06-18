@@ -88,7 +88,8 @@ public sealed class TransitionDecompositionOverloads : IChainMember
 			 */
 			for (int index = 0;;)
 			{
-				if (++transitionIndexes[index] != maxTransitionsCount[index]) break;
+				if (transitionIndexes[index] != maxTransitionsCount[index]
+				    && ++transitionIndexes[index] != maxTransitionsCount[index]) break;
 				transitionIndexes[index] = 0;
 
 				if (++index == transitionIndexes.Length)

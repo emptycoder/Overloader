@@ -11,9 +11,9 @@ public sealed record ParameterData(
 	ParameterAction ParameterAction,
 	ITypeSymbol Type,
 	List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)> ModifierChangers,
-	sbyte CombineIndex)
+	byte CombineIndex)
 {
-	public bool IsCombineNotExists => CombineIndex == sbyte.MaxValue;
+	public bool IsCombineNotExists => CombineIndex == byte.MaxValue;
 
 	public string BuildModifiersWithWhitespace(ParameterSyntax parameter, ITypeSymbol newParamType)
 	{

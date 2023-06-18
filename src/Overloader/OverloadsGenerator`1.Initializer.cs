@@ -16,7 +16,7 @@ public sealed partial class OverloadsGenerator
 	public void Initialize(GeneratorInitializationContext context)
 	{
 #if DEBUG && !DisableDebugger
-		if (Debugger.IsAttached) Debugger.Break();
+		// if (Debugger.IsAttached) Debugger.Break();
 #endif
 		context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
 	}

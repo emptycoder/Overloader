@@ -50,6 +50,7 @@ internal class Program
 	}
 
 	[TestCase("//# \"${T}\" -> \"EXPECTED\"", ExpectedResult = "EXPECTED")]
+	[TestCase("//# \"${T}\" -> \"\"", ExpectedResult = "")]
 	public string ReplaceTemplateOnKeyOperationTest(string comment)
 	{
 		string programCs = @$"

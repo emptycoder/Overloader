@@ -54,15 +54,15 @@ public sealed class AnalyzeMethodParams : IChainMember
 				newParameterType,
 				paramDto.ModifierChangers,
 				isCombineWith
-					? (sbyte) parameters.IndexOf(param => param.Identifier.ValueText == paramDto.CombineWith)
-					: SByte.MaxValue);
+					? (byte) parameters.IndexOf(param => param.Identifier.ValueText == paramDto.CombineWith)
+					: Byte.MaxValue);
 
 			bool isFormatterWoIntegrity = parameterAction is ParameterAction.FormatterReplacement;
 			bool isFormatterIntegrity = parameterAction is ParameterAction.FormatterIntegrityReplacement;
 
-			props.Store.FormattersWoIntegrityCount += *(sbyte*) &isFormatterWoIntegrity;
-			props.Store.FormattersIntegrityCount += *(sbyte*) &isFormatterIntegrity;
-			props.Store.CombineParametersCount += *(sbyte*) &isCombineWith;
+			props.Store.FormattersWoIntegrityCount += *(byte*) &isFormatterWoIntegrity;
+			props.Store.FormattersIntegrityCount += *(byte*) &isFormatterIntegrity;
+			props.Store.CombineParametersCount += *(byte*) &isCombineWith;
 			props.Store.IsSmthChanged |= shouldBeReplaced;
 		}
 

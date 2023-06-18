@@ -115,4 +115,104 @@ internal record struct Vector2<T>
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
 	}
+	
+	[Test]
+	public void DecompositionTransitionTest()
+	{
+		const string programCs = @$"
+using Overloader;
+
+[assembly: {nameof(Formatter)}(
+			""Vector3"",
+			typeof(TestProject.Vector3<>),
+			new object[] {{""T""}},
+			new object[]
+			{{
+				""X"", ""T"",
+				""Y"", ""T"",
+				""Z"", ""T""
+			}})]
+[assembly: {nameof(Formatter)}(
+			""Vector2"",
+			typeof(TestProject.Vector2<>),
+			new object[] {{""T""}},
+			new object[]
+			{{
+				""X"", ""T"",
+				""Y"", ""T""
+			}},
+			new object[]
+			{{
+				typeof(TestProject.Vector3<>),
+				new object[]
+				{{
+					""X"", ""X"",
+					""Y"", ""Y""
+				}}
+			}})]
+
+namespace TestProject;
+
+[{nameof(TSpecify)}(typeof(double), ""Vector3"", ""Vector2"")]
+[{nameof(TOverload)}(typeof(float))]
+internal partial class Program
+{{
+	static void Main(string[] args) {{ }}
+
+	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+
+	[return: {TAttribute.TagName}]
+	public static double TestMethod2(
+		[{TAttribute.TagName}] Vector2<double> vec,
+		[{TAttribute.TagName}] in Vector3<double> vec1,
+		[{TAttribute.TagName}] in Vector2<double> vec2)
+	{{
+		//# ""double"" -> ""${{T}}""
+		return (double) (vec.X + vec1.X + vec.Y + vec1.Y );
+	}}
+}}
+
+internal struct Vector3<T>
+{{
+	public T X;
+	public T Y {{ get; set; }}
+	internal T Z {{ get; private set; }}
+}}
+
+internal record struct Vector2<T>
+{{
+	public T X;
+	public T Y;
+}}
+";
+
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+
+		var methodOverloads = new Dictionary<string, bool>(3)
+		{
+			{"double,double,double,double,double,double,double", false},
+			{"TestProject.Vector3<double>,TestProject.Vector3<double>,double,double,double,TestProject.Vector3<double>", false},
+			{"TestProject.Vector3<float>,Vector3<double>", false},
+			{"float,float,float,float,float,float,float", false},
+			{"TestProject.Vector3<float>,TestProject.Vector3<float>,float,float,float,TestProject.Vector3<float>", false},
+			{"TestProject.Vector2<float>,TestProject.Vector3<float>,TestProject.Vector2<float>", false}
+		};
+		
+		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
+		         select generatedTree.GetRoot()
+			         .DescendantNodes()
+			         .OfType<MethodDeclarationSyntax>()
+		         into methods
+		         from method in methods
+		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
+		         into identifier
+		         where methodOverloads.ContainsKey(identifier)
+		         select identifier)
+			methodOverloads[identifier] = true;
+		
+		foreach (var kv in methodOverloads)
+			Assert.That(kv.Value, Is.True);
+	}
 }

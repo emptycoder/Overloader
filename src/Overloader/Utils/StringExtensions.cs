@@ -32,7 +32,7 @@ public static class StringExtensions
 		if (start == -1) throw new ArgumentException($"First '\"' not found for {value.ToString()}.");
 
 		int end = value.LastIndexOf(boundChar);
-		if (end <= start + 1) throw new ArgumentException($"Last '\"' not found for {value.ToString()}.");
+		if (end == start) throw new ArgumentException($"Last '\"' not found for {value.ToString()}.");
 
 		return value.Slice(start + 1, end - start - 1);
 	}

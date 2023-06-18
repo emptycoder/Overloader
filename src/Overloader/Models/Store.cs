@@ -2,9 +2,9 @@
 
 public sealed class Store
 {
-	public sbyte CombineParametersCount;
-	public sbyte FormattersIntegrityCount;
-	public sbyte FormattersWoIntegrityCount;
+	public byte CombineParametersCount;
+	public byte FormattersIntegrityCount;
+	public byte FormattersWoIntegrityCount;
 	public bool IsNeedToRemoveBody;
 	public bool IsSmthChanged;
 	public MethodData MethodData;
