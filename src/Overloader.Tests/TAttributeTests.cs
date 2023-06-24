@@ -104,4 +104,72 @@ internal struct Vector3<T>
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
 	}
+	
+	[Test]
+	// ReSharper disable once InconsistentNaming
+	public void TParamAttrTest()
+	{
+		const string programCs = @$"
+using Overloader;
+
+[assembly: {nameof(Formatter)}(
+			""Vector3"",
+			typeof(TestProject.Vector3<>),
+			new object[] {{""T""}},
+			new object[]
+			{{
+				""X"", ""T"",
+				""Y"", typeof(double),
+				""Z"", new[]
+				{{
+					typeof(float), typeof(double),
+					typeof(double), typeof(long)
+				}}
+			}})]
+
+namespace TestProject;
+
+[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
+[{nameof(TOverload)}(typeof(float))]
+internal partial class Program
+{{
+	static void Main(string[] args) {{ }}
+
+	public static void {nameof(TAttrTest)}1(
+		[{nameof(Integrity)}][{TAttribute.TagName}(typeof(int), typeof(float))] Vector3<double> vec,
+		Vector3<double> vec1) {{ }}
+}}
+
+internal struct Vector3<T>
+{{
+	public double X;
+	public T Y {{ get; set; }}
+	internal T Z {{ get; private set; }}
+}}
+";
+
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
+		
+		var methodOverloads = new Dictionary<string, bool>(4)
+		{
+			{"int,Vector3<double>", false}
+		};
+
+		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
+		         select generatedTree.GetRoot()
+			         .DescendantNodes()
+			         .OfType<MethodDeclarationSyntax>()
+		         into methods
+		         from method in methods
+		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
+		         into identifier
+		         where methodOverloads.ContainsKey(identifier)
+		         select identifier)
+			methodOverloads[identifier] = true;
+
+		foreach (var kv in methodOverloads)
+			Assert.That(kv.Value, Is.True);
+	}
 }

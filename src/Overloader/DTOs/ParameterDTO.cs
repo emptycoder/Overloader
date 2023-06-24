@@ -39,7 +39,7 @@ public struct ParameterDto
 					continue;
 				case TAttribute.TagName:
 					if (attribute.ArgumentList is {Arguments.Count: > 1} &&
-					    attribute.ArgumentList.Arguments[1].EqualsToTemplate(props)) continue;
+					    !attribute.ArgumentList.Arguments[1].EqualsToTemplate(props)) continue;
 					tAttrDto.Attribute = attribute;
 					continue;
 				case nameof(ParamModifier) when attribute.ArgumentList is {Arguments: var args}:

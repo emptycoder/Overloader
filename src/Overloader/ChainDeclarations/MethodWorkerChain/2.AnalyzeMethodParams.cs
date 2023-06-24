@@ -30,11 +30,11 @@ public sealed class AnalyzeMethodParams : IChainMember
 			bool shouldBeReplaced = ParameterDto.TryGetParameterDtoByTemplate(parameters[index], props, out var paramDto);
 			var parameterAction = shouldBeReplaced switch
 			{
+				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
 				true when props.TryGetFormatter(parameterType.GetClearType(), out var formatter) =>
 					paramDto.HasForceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
 						? ParameterAction.FormatterIntegrityReplacement
 						: ParameterAction.FormatterReplacement,
-				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
 				true => ParameterAction.SimpleReplacement,
 				false => ParameterAction.Nothing
 			};
