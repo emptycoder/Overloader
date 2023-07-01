@@ -33,7 +33,7 @@ public static partial class TransitionExtensions
 				break;
 			case ParameterAction.FormatterReplacement:
 			case ParameterAction.FormatterIntegrityReplacement:
-				if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
+				if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
 					throw new ArgumentException("Unexpected exception. Formatters have been changed in real time.")
 						.WithLocation(parameter);
 

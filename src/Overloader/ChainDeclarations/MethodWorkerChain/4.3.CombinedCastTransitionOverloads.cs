@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 using Overloader.ContentBuilders;
 using Overloader.Enums;
+using Overloader.Exceptions;
 using Overloader.Models;
 using Overloader.Utils;
 
@@ -35,8 +36,11 @@ public sealed class CombinedCastTransitionOverloads : IChainMember
 				countOfCombineWith++;
 				continue;
 			}
-			if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
-				continue;
+			
+			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
+				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
+					.WithLocation(parameter.GetLocation());
+			
 			if (parameter.Modifiers.Any(modifier => modifier.Text == "ref"))
 			{
 				maxTransitionsCount[formatterIndex++] = 0;

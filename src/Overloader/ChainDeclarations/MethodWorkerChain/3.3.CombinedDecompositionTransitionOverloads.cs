@@ -35,7 +35,7 @@ public sealed class CombinedDecompositionTransitionOverloads : IChainMember
 				continue;
 			}
 
-			if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
+			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
 			maxTransitionsCount[formatterIndex++] = formatter.DecompositionTransitions.Length;

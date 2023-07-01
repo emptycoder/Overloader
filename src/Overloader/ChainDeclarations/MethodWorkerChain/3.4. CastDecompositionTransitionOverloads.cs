@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 using Overloader.ContentBuilders;
@@ -9,28 +9,27 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class CastTransitionOverloads : IChainMember
+public sealed class CastDecompositionTransitionOverloads : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
-		int formattersCount = props.Store.FormattersIntegrityCount + props.Store.FormattersWoIntegrityCount;
+		return ChainAction.NextMember;
 		if (props.Store.OverloadMap is null
 		    || !props.Store.IsSmthChanged
 		    || props.StartEntry.IgnoreTransitions
-		    || formattersCount == 0)
+		    || props.Store.FormattersWoIntegrityCount == 0)
 			return ChainAction.NextMember;
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
 
-		Span<int> maxTransitionsCount = stackalloc int[formattersCount];
-		Span<int> transitionIndexes = stackalloc int[formattersCount];
+		Span<int> maxTransitionsCount = stackalloc int[props.Store.FormattersWoIntegrityCount];
+		Span<int> transitionIndexes = stackalloc int[props.Store.FormattersWoIntegrityCount];
 		for (int index = 0, formatterIndex = 0; index < parameters.Count; index++)
 		{
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
-			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement
-			    and not ParameterAction.FormatterIntegrityReplacement)
+			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement)
 				continue;
 			
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
