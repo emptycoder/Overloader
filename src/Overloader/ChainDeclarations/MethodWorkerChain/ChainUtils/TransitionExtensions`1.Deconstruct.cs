@@ -11,9 +11,7 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 public static partial class TransitionExtensions
 {
-	public static readonly TransitionWriter ParamTransitionOverloadWriter = WriteParamTransitionOverload;
-
-	private static void WriteParamTransitionOverload(
+	public static void WriteParamTransitionOverload(
 		SourceBuilder headerBuilder,
 		SourceBuilder bodyBuilder,
 		GeneratorProperties props,

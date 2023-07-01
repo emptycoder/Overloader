@@ -1,5 +1,6 @@
 ﻿namespace Overloader.Tests;
 
+[TestFixture]
 public class FormatterTests
 {
 	// ReSharper disable once RedundantStringInterpolation
@@ -71,9 +72,11 @@ internal struct Vector3<T>
 		         from method in methods
 		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
 		         into identifier
-		         where methodOverloads.ContainsKey(identifier)
 		         select identifier)
+		{
+			Assert.That(methodOverloads.ContainsKey(identifier));
 			methodOverloads[identifier] = true;
+		}
 
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);

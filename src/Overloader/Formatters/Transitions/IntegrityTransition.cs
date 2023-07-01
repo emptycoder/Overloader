@@ -7,6 +7,7 @@ using Overloader.Utils;
 namespace Overloader.Formatters.Transitions;
 
 public sealed record IntegrityTransition(
+	bool IsUnboundTemplateGenericType,
 	ITypeSymbol TemplateType,
 	string IntegrityCastCodeTemplate)
 {
@@ -36,9 +37,11 @@ public sealed record IntegrityTransition(
 				throw new ArgumentException($"{nameof(IntegrityCastCodeTemplate)} isn't StringLiteral/InterpolationString/MemberAccess.")
 					.WithLocation(expressions[1]);
 		}
-		
+
+		var type = expressions[0].GetType(compilation);
 		return new IntegrityTransition(
-			expressions[0].GetType(compilation),
+			type.GetClearType().IsUnboundGenericType,
+			type,
 			castInBlockTemplate);
 	}
 }

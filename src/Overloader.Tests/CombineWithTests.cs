@@ -1,5 +1,6 @@
 ﻿namespace Overloader.Tests;
 
+[TestFixture]
 public class CombineWithTests
 {
 	[Test]
@@ -48,12 +49,13 @@ internal struct Vector3<T>
 
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
-			{"double,double,double,double,double,double", false},
-			{"double,double,double", false},
 			{"float,float,float,float,float,float", false},
 			{"float,float,float", false},
 			{"TestProject.Vector3<float>,TestProject.Vector3<float>", false},
-			{"TestProject.Vector3<float>", false}
+			{"TestProject.Vector3<float>", false},
+			{"double,double,double,double,double,double", false},
+			{"double,double,double", false},
+			{"TestProject.Vector3<double>", false}
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
@@ -64,9 +66,11 @@ internal struct Vector3<T>
 		         from method in methods
 		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
 		         into identifier
-		         where methodOverloads.ContainsKey(identifier)
 		         select identifier)
+		{
+			Assert.That(methodOverloads.ContainsKey(identifier));
 			methodOverloads[identifier] = true;
+		}
 
 
 		foreach (var kv in methodOverloads)

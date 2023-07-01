@@ -62,7 +62,7 @@ public sealed class CombinedTransitionDecompositionOverloads : IChainMember
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(
-				TransitionExtensions.ParamTransitionOverloadWriter,
+				TransitionExtensions.WriteParamTransitionOverload,
 				bodyBuilder,
 				props,
 				parameters,
@@ -99,7 +99,8 @@ public sealed class CombinedTransitionDecompositionOverloads : IChainMember
 			 */
 			for (int index = 0;;)
 			{
-				if (++transitionIndexes[index] != maxTransitionsCount[index]) break;
+				if (transitionIndexes[index] != maxTransitionsCount[index]
+					&& ++transitionIndexes[index] != maxTransitionsCount[index]) break;
 				transitionIndexes[index] = 0;
 
 				if (++index == transitionIndexes.Length)

@@ -1,5 +1,6 @@
 ﻿namespace Overloader.Tests;
 
+[TestFixture]
 public class SaveInheritorsTests
 {
 	[Test]

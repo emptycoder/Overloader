@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Enums;
 using Overloader.Exceptions;
@@ -9,9 +10,7 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 public static partial class TransitionExtensions
 {
-	public static readonly TransitionWriter IntegrityParamTransitionOverloadWriter = WriteIntegrityParamTransitionOverload;
-
-	private static void WriteIntegrityParamTransitionOverload(
+	public static void WriteIntegrityParamTransitionOverload(
 		SourceBuilder headerBuilder,
 		SourceBuilder bodyBuilder,
 		GeneratorProperties props,
@@ -47,11 +46,15 @@ public static partial class TransitionExtensions
 				}
 
 				var transition = formatter.IntegrityTransitions.Span[transitionIndex];
-				var paramType = props.SetDeepestType(
-					transition.TemplateType,
-					props.Template,
-					transition.TemplateType);
-				
+				ITypeSymbol paramType;
+				if (transition.IsUnboundTemplateGenericType)
+					paramType = props.SetDeepestType(
+						transition.TemplateType,
+						props.Template,
+						transition.TemplateType);
+				else
+					paramType = transition.TemplateType;
+
 				headerBuilder
 					.AppendWoTrim(mappedParam.BuildModifiersWithWhitespace(parameter, paramType))
 					.AppendWith(paramType.ToDisplayString(), " ")

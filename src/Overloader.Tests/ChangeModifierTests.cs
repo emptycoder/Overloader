@@ -1,5 +1,6 @@
 ﻿namespace Overloader.Tests;
 
+[TestFixture]
 public class ChangeModifierTests
 {
 	[Test]
@@ -40,9 +41,11 @@ internal class Program
 		         from method in methods
 		         select string.Join(',', method.Modifiers.Select(modifier => modifier.ToString()))
 		         into identifier
-		         where modifierOverloads.ContainsKey(identifier)
 		         select identifier)
+		{
+			Assert.That(modifierOverloads.ContainsKey(identifier));
 			modifierOverloads[identifier] = true;
+		}
 
 		foreach (var kv in modifierOverloads)
 			Assert.That(kv.Value, Is.True);

@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Overloader.Tests;
 
+[TestFixture]
 public class OverloadAttributeTests
 {
 	[TestCase("public", "public", "static")]
@@ -136,9 +137,11 @@ internal record struct Vector2<T>
 		         from method in methods
 		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
 		         into identifier
-		         where methodOverloads.ContainsKey(identifier)
 		         select identifier)
+		{
+			Assert.That(methodOverloads.ContainsKey(identifier));
 			methodOverloads[identifier] = true;
+		}
 
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);

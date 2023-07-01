@@ -1,5 +1,6 @@
 ﻿namespace Overloader.Tests;
 
+[TestFixture]
 public class StatementTests
 {
 	private const string SomeKindOfComment = "// SOME KIND OF USER COMMENT\n";

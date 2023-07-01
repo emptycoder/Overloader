@@ -1,5 +1,6 @@
 ﻿namespace Overloader.Tests.Transitions;
 
+[TestFixture]
 public class InterfaceTransitionTests
 {
 	[Test]
@@ -82,6 +83,7 @@ internal record struct Vector2<T>
 
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
+			{"TestProject.Vector2<double>,Vector3<double>", false},
 			{"double,double,double,double,double,double", false},
 			{"double,double,double", false},
 			{"TestProject.Vector2<double>,double,TestProject.Vector2<double>,double", false},
@@ -92,6 +94,7 @@ internal record struct Vector2<T>
 			{"TestProject.Vector2<double>,TestProject.Vector2<double>", false},
 			{"TestProject.Vector2<double>", false},
 			{"TestProject.Vector3<float>,Vector3<double>", false},
+			{"TestProject.Vector2<float>,Vector3<double>", false},
 			{"float,float,float,float,float,float", false},
 			{"float,float,float", false},
 			{"TestProject.Vector2<float>,float,TestProject.Vector2<float>,float", false},
@@ -113,9 +116,11 @@ internal record struct Vector2<T>
 		         from method in methods
 		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
 		         into identifier
-		         where methodOverloads.ContainsKey(identifier)
 		         select identifier)
+		{
+			Assert.That(methodOverloads.ContainsKey(identifier));
 			methodOverloads[identifier] = true;
+		}
 
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);

@@ -16,7 +16,7 @@ public sealed partial class OverloadsGenerator
 	public void Initialize(GeneratorInitializationContext context)
 	{
 #if DEBUG && !DisableDebugger
-		if (Debugger.IsAttached) Debugger.Break();
+		// if (Debugger.IsAttached) Debugger.Break();
 #endif
 		context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
 	}
@@ -60,6 +60,11 @@ public sealed partial class OverloadsGenerator
 							switch (args.Count)
 							{
 								case 1:
+									break;
+								case 2 when args[1].NameColon is { Name.Identifier.ValueText: "formatters" }:
+									formattersToUse = new string[args.Count - 1];
+									for (int argIndex = 1, index = 0; argIndex < args.Count; argIndex++, index++)
+										formattersToUse[index] = args[argIndex].Expression.GetInnerText();
 									break;
 								case 2:
 									throw new ArgumentException($"Need to present regex replacement parameter for {nameof(TOverload)}.").WithLocation(

@@ -1,5 +1,6 @@
 ﻿namespace Overloader.Tests;
 
+[TestFixture]
 // ReSharper disable once InconsistentNaming
 public class TAttributeTests
 {
@@ -83,9 +84,12 @@ internal struct Vector3<T>
 
 		var methodOverloads = new Dictionary<string, bool>(4)
 		{
-			{"float,double,double,float,double,double", false},
+			{"double,double,long,double,double,long", false},
 			{"TestProject.Vector3<float>,Vector3<double>", false},
+			{"float,double,double,float,double,double", false},
 			{"TestProject.Vector3<float>,TestProject.Vector3<float>", false},
+			{"float[]", false},
+			{"TestProject.Vector3<float>[]", false},
 			{"Vector3<double>,float", false}
 		};
 
@@ -97,9 +101,11 @@ internal struct Vector3<T>
 		         from method in methods
 		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
 		         into identifier
-		         where methodOverloads.ContainsKey(identifier)
 		         select identifier)
+		{
+			Assert.That(methodOverloads.ContainsKey(identifier));
 			methodOverloads[identifier] = true;
+		}
 
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
@@ -165,9 +171,11 @@ internal struct Vector3<T>
 		         from method in methods
 		         select string.Join(',', method.ParameterList.Parameters.Select(parameter => parameter.Type!.ToString()))
 		         into identifier
-		         where methodOverloads.ContainsKey(identifier)
 		         select identifier)
+		{
+			Assert.That(methodOverloads.ContainsKey(identifier));
 			methodOverloads[identifier] = true;
+		}
 
 		foreach (var kv in methodOverloads)
 			Assert.That(kv.Value, Is.True);
