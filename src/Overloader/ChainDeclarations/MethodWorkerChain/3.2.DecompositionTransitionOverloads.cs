@@ -9,7 +9,7 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class CombinedTransitionDecompositionOverloads : IChainMember
+public sealed class DecompositionTransitionOverloads : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
@@ -23,27 +23,17 @@ public sealed class CombinedTransitionDecompositionOverloads : IChainMember
 		var parameters = entry.ParameterList.Parameters;
 
 		Span<int> maxTransitionsCount = stackalloc int[props.Store.FormattersWoIntegrityCount];
-		ushort countOfCombineWith = 0;
 		for (int index = 0, formatterIndex = 0; index < parameters.Count; index++)
 		{
 			var parameter = parameters[index];
-			var mappedParam = props.Store.OverloadMap![index];
+			var mappedParam = props.Store.OverloadMap[index];
 			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement) continue;
-			if (!mappedParam.IsCombineNotExists)
-			{
-				countOfCombineWith++;
-				continue;
-			}
-
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
 			maxTransitionsCount[formatterIndex++] = formatter.DecompositionTransitions.Length;
 		}
 
-		maxTransitionsCount = maxTransitionsCount.Slice(0, props.Store.FormattersWoIntegrityCount - countOfCombineWith);
-
-		if (maxTransitionsCount.Length == 0 || countOfCombineWith == 0) return ChainAction.NextMember;
 		// Check that transitions exists
 		for (int index = 0;;)
 		{
@@ -51,14 +41,14 @@ public sealed class CombinedTransitionDecompositionOverloads : IChainMember
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
 
-		Span<int> transitionIndexes = stackalloc int[maxTransitionsCount.Length];
+		Span<int> transitionIndexes = stackalloc int[props.Store.FormattersWoIntegrityCount];
 		using var bodyBuilder = SourceBuilder.GetInstance();
 		for (;;)
 		{
 			bodyBuilder.Append(entry.Identifier.ToString())
 				.AppendWoTrim("(");
 			props.Builder
-				.AppendChainMemberNameComment(nameof(CombinedTransitionDecompositionOverloads))
+				.AppendChainMemberNameComment(nameof(DecompositionTransitionOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(
@@ -66,8 +56,7 @@ public sealed class CombinedTransitionDecompositionOverloads : IChainMember
 				bodyBuilder,
 				props,
 				parameters,
-				transitionIndexes,
-				true);
+				transitionIndexes);
 			props.Builder
 				.AppendWith(")", " ")
 				.Append(entry.ConstraintClauses.ToString());
@@ -100,7 +89,7 @@ public sealed class CombinedTransitionDecompositionOverloads : IChainMember
 			for (int index = 0;;)
 			{
 				if (transitionIndexes[index] != maxTransitionsCount[index]
-					&& ++transitionIndexes[index] != maxTransitionsCount[index]) break;
+				    && ++transitionIndexes[index] != maxTransitionsCount[index]) break;
 				transitionIndexes[index] = 0;
 
 				if (++index == transitionIndexes.Length)

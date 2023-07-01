@@ -6,12 +6,12 @@ using Overloader.Utils;
 
 namespace Overloader.Formatters.Transitions;
 
-public sealed record IntegrityTransition(
+public sealed record CastTransition(
 	bool IsUnboundTemplateGenericType,
 	ITypeSymbol TemplateType,
 	string IntegrityCastCodeTemplate)
 {
-	public static IntegrityTransition Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
+	public static CastTransition Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
 	{
 		if (expressions.Count is not 2)
 			throw new ArgumentException("Not [type]/[cast code template].")
@@ -39,7 +39,7 @@ public sealed record IntegrityTransition(
 		}
 
 		var type = expressions[0].GetType(compilation);
-		return new IntegrityTransition(
+		return new CastTransition(
 			type.GetClearType().IsUnboundGenericType,
 			type,
 			castInBlockTemplate);

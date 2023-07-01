@@ -5,7 +5,7 @@ public class ChangeNameTests
 {
 	[TestCase("ChangedName",
 		"ChangedNameForType")]
-	public void ChangeNameBaseTest(params string[] expectedMethodNames)
+	public void BaseTest(params string[] expectedMethodNames)
 	{
 		const string programCs = $$"""
 			using Overloader;

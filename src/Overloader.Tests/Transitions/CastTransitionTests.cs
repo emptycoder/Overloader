@@ -1,12 +1,12 @@
 ﻿namespace Overloader.Tests.Transitions;
 
 [TestFixture]
-public class IntegrityTransitionTests
+public class CastTransitionTests
 {
 	[TestCase("\"new TestProject.Vector3<${T}>() { X = ${Var}.X, Y = ${Var}.Y }\"", TestName = "String literal castInBlock")]
 	[TestCase("TestProject.Program.CastInBlock", TestName = "String const castInBlock")]
 	[TestCase("$\"{TestProject.Program.CastInBlock}\"", TestName = "String interpolation castInBlock")]
-	public void IntegrityTransitionBaseTest(string castInBlock)
+	public void BaseTest(string castInBlock)
 	{
 		string programCs = @$"
 using Overloader;
@@ -139,7 +139,7 @@ internal record struct Vector2<T>
 	}
 
 	[Test]
-	public void IntegrityTransitionRefIgnoringTest()
+	public void RefIgnoringTest()
 	{
 		const string programCs = @$"
 using Overloader;

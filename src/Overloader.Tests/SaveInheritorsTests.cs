@@ -4,7 +4,7 @@
 public class SaveInheritorsTests
 {
 	[Test]
-	public void SaveInheritorsBaseTest()
+	public void BaseTest()
 	{
 		const string programCs = $$"""
 			using Overloader;

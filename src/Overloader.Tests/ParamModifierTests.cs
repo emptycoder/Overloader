@@ -4,7 +4,7 @@
 public class ParamModifierTests
 {
 	[Test]
-	public void ParamModifierBaseTest()
+	public void BaseTest()
 	{
 		const string programCs = @$"
 using Overloader;

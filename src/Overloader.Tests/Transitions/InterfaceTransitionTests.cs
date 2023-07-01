@@ -4,7 +4,7 @@
 public class InterfaceTransitionTests
 {
 	[Test]
-	public void InterfaceTransitionBaseTest()
+	public void BaseTest()
 	{
 		const string programCs = @$"
 using Overloader;

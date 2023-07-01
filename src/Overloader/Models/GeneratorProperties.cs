@@ -51,7 +51,7 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 							.WithLocation(StartEntry.Syntax);
 				}
 
-				foreach (var integrityTransition in keyValuePair.Value.IntegrityTransitions.Span)
+				foreach (var integrityTransition in keyValuePair.Value.CastTransitions.Span)
 				{
 					var clearType = integrityTransition.TemplateType.GetClearType();
 					if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))

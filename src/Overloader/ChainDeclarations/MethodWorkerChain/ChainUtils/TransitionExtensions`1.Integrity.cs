@@ -45,7 +45,7 @@ public static partial class TransitionExtensions
 					break;
 				}
 
-				var transition = formatter.IntegrityTransitions.Span[transitionIndex];
+				var transition = formatter.CastTransitions.Span[transitionIndex];
 				ITypeSymbol paramType;
 				if (transition.IsUnboundTemplateGenericType)
 					paramType = props.SetDeepestType(

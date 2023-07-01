@@ -4,7 +4,7 @@
 public class CombineWithTests
 {
 	[Test]
-	public void CombineWithBaseTest()
+	public void BaseTest()
 	{
 		const string programCs =
 			@$"
@@ -30,7 +30,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(CombineWithBaseTest)}(
+	public static void {nameof(BaseTest)}(
 		[{TAttribute.TagName}] ref Vector3<double> vec,
 		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1) {{ }}
 }}

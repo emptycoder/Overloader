@@ -15,12 +15,12 @@ public static class ChainDeclarations
 		/* 2 */ new AnalyzeMethodParams(),
 		/* 3 */ new DecompositionOverload(),
 		/* 3.1 */ new CombinedDecompositionOverload(),
-		/* 3.2 */ new TransitionDecompositionOverloads(),
-		/* 3.3 */ new CombinedTransitionDecompositionOverloads(),
+		/* 3.2 */ new DecompositionTransitionOverloads(),
+		/* 3.3 */ new CombinedDecompositionTransitionOverloads(),
 		/* 4 */ new IntegrityOverload(),
 		/* 4.1 */ new CombinedIntegrityOverload(),
-		/* 4.2 */ new TransitionIntegrityOverloads(),
-		/* 4.3 */ new CombinedTransitionIntegrityOverloads()
+		/* 4.2 */ new CastTransitionOverloads(),
+		/* 4.3 */ new CombinedCastTransitionOverloads()
 	};
 }
 

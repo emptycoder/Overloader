@@ -4,7 +4,7 @@
 public class ChangeModifierTests
 {
 	[Test]
-	public void ModifierTest()
+	public void BaseTest()
 	{
 		const string programCs = @$"
 using Overloader;
@@ -20,7 +20,7 @@ internal class Program
 	[{nameof(ChangeModifier)}(""public"", ""private"", typeof(float))]
 	[{nameof(ChangeModifier)}(""public"", ""internal"", typeof(double))]
 	[{nameof(ChangeModifier)}(""private"", ""protected"")]
-	public static void {nameof(ModifierTest)}() {{ }}
+	public static void {nameof(BaseTest)}() {{ }}
 }}
 ";
 

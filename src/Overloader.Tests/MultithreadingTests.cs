@@ -4,7 +4,7 @@
 public class MultithreadingTests
 {
 	[Test]
-	public void ManyCodeGeneration()
+	public void BaseTest()
 	{
 		const string programCs = @$"
 using Overloader;

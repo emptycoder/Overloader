@@ -6,7 +6,7 @@ public class TAttributeTests
 {
 	[Test]
 	// ReSharper disable once InconsistentNaming
-	public void TAttrTest()
+	public void TSpecifyTOverloadTest()
 	{
 		const string programCs = @$"
 using Overloader;
@@ -34,12 +34,12 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(TAttrTest)}1(
+	public static void {nameof(TSpecifyTOverloadTest)}1(
 		[{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec,
 		Vector3<double> vec1) {{ }}
 
 	[return: {TAttribute.TagName}]
-	public static double {nameof(TAttrTest)}2(
+	public static double {nameof(TSpecifyTOverloadTest)}2(
 		[{TAttribute.TagName}] Vector3<double> vec,
 		[{TAttribute.TagName}] Vector3<double> vec1)
 	{{
@@ -49,13 +49,13 @@ internal partial class Program
 	}}
 
 	[return: {TAttribute.TagName}]
-	public static double {nameof(TAttrTest)}3([{TAttribute.TagName}] double[] vec)
+	public static double {nameof(TSpecifyTOverloadTest)}3([{TAttribute.TagName}] double[] vec)
 	{{
 		return vec[0] + vec[1] + vec[3];
 	}}
 
 	[return: {TAttribute.TagName}]
-	public static Vector3<double>[] {nameof(TAttrTest)}3([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double>[] vec)
+	public static Vector3<double>[] {nameof(TSpecifyTOverloadTest)}3([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double>[] vec)
 	{{
 		// Check that auto integrity works
 		var test = vec[0].X + vec[1].X;
@@ -67,7 +67,7 @@ internal partial class Program
 	private static void Test(double x, double y, double z) {{}}
 	private static void Test(float x, float y, float z) {{}}
 
-	public static void {nameof(TAttrTest)}4(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
+	public static void {nameof(TSpecifyTOverloadTest)}4(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
 }}
 
 internal struct Vector3<T>
@@ -113,7 +113,7 @@ internal struct Vector3<T>
 	
 	[Test]
 	// ReSharper disable once InconsistentNaming
-	public void TParamAttrTest()
+	public void TParamTest()
 	{
 		const string programCs = @$"
 using Overloader;
@@ -141,7 +141,7 @@ internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void {nameof(TAttrTest)}1(
+	public static void {nameof(TSpecifyTOverloadTest)}1(
 		[{nameof(Integrity)}][{TAttribute.TagName}(typeof(int), typeof(float))] Vector3<double> vec,
 		Vector3<double> vec1) {{ }}
 }}

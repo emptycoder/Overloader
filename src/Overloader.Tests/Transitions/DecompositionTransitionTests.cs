@@ -4,7 +4,7 @@
 public class DecompositionTransitionTests
 {
 	[Test]
-	public void DecompositionTransitionBaseTest()
+	public void BaseTest()
 	{
 		const string programCs = @$"
 using Overloader;
@@ -120,7 +120,7 @@ internal record struct Vector2<T>
 	}
 	
 	[Test]
-	public void DecompositionTransitionTest()
+	public void DecompositionTest()
 	{
 		const string programCs = @$"
 using Overloader;

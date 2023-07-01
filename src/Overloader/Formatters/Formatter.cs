@@ -13,7 +13,7 @@ public sealed record Formatter(
 	ITypeSymbol[] Types,
 	IParamValue[] GenericParams,
 	(string Identifier, IParamValue Param)[] Params,
-	Memory<IntegrityTransition> IntegrityTransitions,
+	Memory<CastTransition> CastTransitions,
 	Memory<DecompositionTransition> DecompositionTransitions)
 {
 	public static Formatter Parse(AttributeSyntax formatterSyntax, Compilation compilation)
@@ -88,7 +88,7 @@ public sealed record Formatter(
 			if (argExpressions[1] is ArrayCreationExpressionSyntax)
 				transitions[decompositionTransitionIndex--] = DecompositionTransition.Parse(argExpressions, compilation);
 			else
-				transitions[integrityTransitionIndex++] = IntegrityTransition.Parse(argExpressions, compilation);
+				transitions[integrityTransitionIndex++] = CastTransition.Parse(argExpressions, compilation);
 		}
 
 		var integrityTransitions = transitionMemory.Slice(0, integrityTransitionIndex);
@@ -99,7 +99,7 @@ public sealed record Formatter(
 			types,
 			genericParams,
 			@params,
-			Unsafe.As<Memory<object>, Memory<IntegrityTransition>>(ref integrityTransitions),
+			Unsafe.As<Memory<object>, Memory<CastTransition>>(ref integrityTransitions),
 			Unsafe.As<Memory<object>, Memory<DecompositionTransition>>(ref decompositionTransitions)
 		);
 	}

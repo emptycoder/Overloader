@@ -8,7 +8,7 @@ using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.MethodWorkerChain;
 
-public sealed class TransitionIntegrityOverloads : IChainMember
+public sealed class CastTransitionOverloads : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props, SyntaxNode syntaxNode)
 	{
@@ -39,7 +39,7 @@ public sealed class TransitionIntegrityOverloads : IChainMember
 				maxTransitionsCount[formatterIndex++] = 0;
 				continue;
 			}
-			maxTransitionsCount[formatterIndex++] = formatter.IntegrityTransitions.Length;
+			maxTransitionsCount[formatterIndex++] = formatter.CastTransitions.Length;
 		}
 
 		// Check that transitions exists
@@ -60,7 +60,7 @@ public sealed class TransitionIntegrityOverloads : IChainMember
 			bodyBuilder.Append(entry.Identifier.ToString())
 				.AppendWoTrim("(");
 			props.Builder
-				.AppendChainMemberNameComment(nameof(TransitionIntegrityOverloads))
+				.AppendChainMemberNameComment(nameof(CastTransitionOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(
