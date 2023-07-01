@@ -44,26 +44,35 @@ public static partial class TransitionExtensions
 					bodyBuilder.AppendVariableToBody(parameter, paramName);
 					break;
 				}
-
+				
 				var transition = formatter.CastTransitions.Span[transitionIndex];
-				ITypeSymbol paramType;
-				if (transition.IsUnboundTemplateGenericType)
-					paramType = props.SetDeepestType(
-						transition.TemplateType,
-						props.Template,
-						transition.TemplateType);
-				else
-					paramType = transition.TemplateType;
+				string cast = transition.IntegrityCastCodeTemplate;
+				for (int index = 0;;)
+				{
+					var template = transition.Templates[index];
+					ITypeSymbol paramType;
+					if (template.IsUnboundTemplateGenericType)
+						paramType = props.SetDeepestType(
+							template.Type,
+							props.Template,
+							template.Type);
+					else
+						paramType = template.Type;
 
-				headerBuilder
-					.AppendWoTrim(mappedParam.BuildModifiersWithWhitespace(parameter, paramType))
-					.AppendWith(paramType.ToDisplayString(), " ")
-					.Append(paramName);
-
-				string cast = transition.IntegrityCastCodeTemplate
-					.Replace("${Var}", paramName)
-					.Replace("${T}", props.Template.ToDisplayString());
-				bodyBuilder.Append(cast);
+					string strIndex = index.ToString();
+					string indexedParamName = $"{paramName}Cast{strIndex}";
+					headerBuilder
+						.AppendWoTrim(mappedParam.BuildModifiersWithWhitespace(parameter, paramType))
+						.AppendWith(paramType.ToDisplayString(), " ")
+						.Append(indexedParamName);
+					cast = cast.Replace($"${{Var{strIndex}}}", indexedParamName);
+					
+					if (++index == transition.Templates.Length)
+						break;
+					headerBuilder.AppendWoTrim(", ");
+				}
+				
+				bodyBuilder.Append(cast.Replace("${T}", props.Template.ToDisplayString()));
 
 				break;
 			default:

@@ -43,11 +43,10 @@ internal class Program
 		         into identifier
 		         select identifier)
 		{
-			Assert.That(modifierOverloads.ContainsKey(identifier));
+			Assert.That(modifierOverloads, Does.ContainKey(identifier));
 			modifierOverloads[identifier] = true;
 		}
 
-		foreach (var kv in modifierOverloads)
-			Assert.That(kv.Value, Is.True);
+		Assert.That(modifierOverloads, Does.Not.ContainValue(false));
 	}
 }

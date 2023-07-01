@@ -3,7 +3,7 @@
 [TestFixture]
 public class CastTransitionTests
 {
-	[TestCase("\"new TestProject.Vector3<${T}>() { X = ${Var}.X, Y = ${Var}.Y }\"", TestName = "String literal castInBlock")]
+	[TestCase("\"new TestProject.Vector3<${T}>() { X = ${Var0}.X, Y = ${Var0}.Y }\"", TestName = "String literal castInBlock")]
 	[TestCase("TestProject.Program.CastInBlock", TestName = "String const castInBlock")]
 	[TestCase("$\"{TestProject.Program.CastInBlock}\"", TestName = "String interpolation castInBlock")]
 	public void BaseTest(string castInBlock)
@@ -51,7 +51,7 @@ namespace TestProject;
 [{nameof(TOverload)}(typeof(float))]
 internal partial class Program
 {{
-	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}"";
+	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var0}}.X, Y = ${{Var0}}.Y }}"";
 
 	static void Main(string[] args) {{ }}
 
@@ -130,12 +130,11 @@ internal record struct Vector2<T>
 		         into identifier
 		         select identifier)
 		{
-			Assert.That(methodOverloads.ContainsKey(identifier));
+			Assert.That(methodOverloads, Does.ContainKey(identifier));
 			methodOverloads[identifier] = true;
 		}
 
-		foreach (var kv in methodOverloads)
-			Assert.That(kv.Value, Is.True);
+		Assert.That(methodOverloads, Does.Not.ContainValue(false));
 	}
 
 	[Test]
@@ -157,12 +156,18 @@ using Overloader;
 			new object[]
 			{{
 				typeof(TestProject.Vector2<float>),
-				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var}}.X, Y = (${{T}}) ${{Var}}.Y }}""
+				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
 			}},
 			new object[]
 			{{
 				typeof(TestProject.Vector3<long>),
-				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var}}.X, Y = (${{T}}) ${{Var}}.Y }}""
+				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
+			}},
+			new object[]
+			{{
+				typeof(long),
+				typeof(long),
+				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}, Y = (${{T}}) ${{Var1}} }}""
 			}},
 			new object[]
 			{{
@@ -186,7 +191,7 @@ using Overloader;
 			new object[]
 			{{
 				typeof(TestProject.Vector2<double>),
-				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var}}.X, Y = (${{T}}) ${{Var}}.Y }}""
+				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
 			}},
 			new object[]
 			{{
@@ -250,11 +255,13 @@ internal record struct Vector2<T>
 		{
 			{"TestProject.Vector2<float>,Vector3<double>", false},
 			{"TestProject.Vector3<long>,Vector3<double>", false},
+			{"long,long,Vector3<double>", false},
 			{"TestProject.Vector3<double>,double,double,double", false},
 			{"TestProject.Vector3<double>,TestProject.Vector2<double>,double", false},
 			{"TestProject.Vector3<double>", false},
 			{"TestProject.Vector3<double>,TestProject.Vector2<float>", false},
 			{"TestProject.Vector3<double>,TestProject.Vector3<long>", false},
+			{"TestProject.Vector3<double>,long,long", false},
 			{"TestProject.Vector3<float>,Vector3<double>", false},
 			{"TestProject.Vector2<double>,Vector3<double>", false},
 			{"TestProject.Vector3<float>,float,float,float", false},
@@ -275,12 +282,10 @@ internal record struct Vector2<T>
 		         into identifier
 		         select identifier)
 		{
-			Assert.That(methodOverloads.ContainsKey(identifier));
+			Assert.That(methodOverloads, Does.ContainKey(identifier));
 			methodOverloads[identifier] = true;
-			Console.WriteLine(identifier);
 		}
 
-		foreach (var kv in methodOverloads)
-			Assert.That(kv.Value, Is.True);
+		Assert.That(methodOverloads, Does.Not.ContainValue(false));
 	}
 }

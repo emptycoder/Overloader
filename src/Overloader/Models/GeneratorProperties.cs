@@ -51,9 +51,13 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 							.WithLocation(StartEntry.Syntax);
 				}
 
-				foreach (var integrityTransition in keyValuePair.Value.CastTransitions.Span)
+				foreach (var castTransition in keyValuePair.Value.CastTransitions.Span)
+				foreach (var castTemplate in castTransition.Templates)
 				{
-					var clearType = integrityTransition.TemplateType.GetClearType();
+					var clearType = castTemplate.IsUnboundTemplateGenericType
+						? (INamedTypeSymbol) castTemplate.Type
+						: castTemplate.Type.GetClearType();
+					
 					if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
 						throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
 							.WithLocation(StartEntry.Syntax);

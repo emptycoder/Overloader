@@ -7,22 +7,28 @@ using Overloader.Utils;
 namespace Overloader.Formatters.Transitions;
 
 public sealed record CastTransition(
-	bool IsUnboundTemplateGenericType,
-	ITypeSymbol TemplateType,
+	(ITypeSymbol Type, bool IsUnboundTemplateGenericType)[] Templates,
 	string IntegrityCastCodeTemplate)
 {
 	public static CastTransition Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
 	{
-		if (expressions.Count is not 2)
-			throw new ArgumentException("Not [type]/[cast code template].")
+		if (expressions.Count < 2)
+			throw new ArgumentException("Not Array<[type]>/[cast code template].")
 				.WithLocation(expressions[0]);
-
-		if (expressions[0] is not TypeOfExpressionSyntax)
-			throw new ArgumentException($"{nameof(TemplateType)} type must be {nameof(TypeOfExpressionSyntax)}.")
-				.WithLocation(expressions[0]);
+		
+		var templates = new (ITypeSymbol, bool)[expressions.Count - 1];
+		for (int index = 0; index < expressions.Count - 1; index++)
+		{
+			if (expressions[index] is not TypeOfExpressionSyntax)
+				throw new ArgumentException($"{nameof(Templates)} type '{index}' must be {nameof(TypeOfExpressionSyntax)}.")
+					.WithLocation(expressions[index]);
+			
+			var type = expressions[index].GetType(compilation);
+			templates[index] = (type, type.GetClearType().IsUnboundGenericType);
+		}
 
 		string castInBlockTemplate;
-		switch (expressions[1])
+		switch (expressions[templates.Length])
 		{
 			case LiteralExpressionSyntax literal when literal.IsKind(SyntaxKind.StringLiteralExpression):
 				castInBlockTemplate = literal.GetVariableName();
@@ -38,10 +44,9 @@ public sealed record CastTransition(
 					.WithLocation(expressions[1]);
 		}
 
-		var type = expressions[0].GetType(compilation);
+		
 		return new CastTransition(
-			type.GetClearType().IsUnboundGenericType,
-			type,
+			templates,
 			castInBlockTemplate);
 	}
 }

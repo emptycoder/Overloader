@@ -66,7 +66,7 @@ using Overloader;
 			new object[]
 			{{
 				typeof(TestProject.Vector2<>),
-				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}""
+				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var0}}.X, Y = ${{Var0}}.Y }}""
 			}},
 			new object[]
 			{{
@@ -93,8 +93,6 @@ namespace TestProject;
 [{nameof(TOverload)}(typeof(float), null, null, ""Vector3"", ""Vector2"")]
 internal partial class Program
 {{
-	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var}}.X, Y = ${{Var}}.Y }}"";
-
 	static void Main(string[] args) {{ }}
 
 	public static void TestMethod1([{TAttribute.TagName}] TestProject.Vector3<double> test) {{ }}
@@ -139,12 +137,11 @@ internal record struct Vector2<T>
 		         into identifier
 		         select identifier)
 		{
-			Assert.That(methodOverloads.ContainsKey(identifier));
+			Assert.That(methodOverloads, Does.ContainKey(identifier));
 			methodOverloads[identifier] = true;
 		}
 
-		foreach (var kv in methodOverloads)
-			Assert.That(kv.Value, Is.True);
+		Assert.That(methodOverloads, Does.Not.ContainValue(false));
 	}
 
 	[Test]

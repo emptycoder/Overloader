@@ -111,12 +111,11 @@ internal record struct Vector2<T>
 		         into identifier
 		         select identifier)
 		{
-			Assert.That(methodOverloads.ContainsKey(identifier));
+			Assert.That(methodOverloads, Does.ContainKey(identifier));
 			methodOverloads[identifier] = true;
 		}
 
-		foreach (var kv in methodOverloads)
-			Assert.That(kv.Value, Is.True);
+		Assert.That(methodOverloads, Does.Not.ContainValue(false));
 	}
 	
 	[Test]
@@ -213,11 +212,10 @@ internal record struct Vector2<T>
 		         into identifier
 		         select identifier)
 		{
-			Assert.That(methodOverloads.ContainsKey(identifier));
+			Assert.That(methodOverloads, Does.ContainKey(identifier));
 			methodOverloads[identifier] = true;
 		}
 
-		foreach (var kv in methodOverloads)
-			Assert.That(kv.Value, Is.True);
+		Assert.That(methodOverloads, Does.Not.ContainValue(false));
 	}
 }
