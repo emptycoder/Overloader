@@ -17,7 +17,6 @@ public static class ChainDeclarations
 		/* 3.1 */ new CombinedDecompositionOverload(),
 		/* 3.2 */ new DecompositionTransitionOverloads(),
 		/* 3.3 */ new CombinedDecompositionTransitionOverloads(),
-		/* 3.4 */ new CastDecompositionTransitionOverloads(),
 		/* 4 */ new IntegrityOverload(),
 		/* 4.1 */ new CombinedIntegrityOverload(),
 		/* 4.2 */ new CastTransitionOverloads(),

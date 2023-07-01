@@ -41,12 +41,9 @@ public sealed class CombinedCastTransitionOverloads : IChainMember
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
 			
-			if (parameter.Modifiers.Any(modifier => modifier.Text == "ref"))
-			{
-				maxTransitionsCount[formatterIndex++] = 0;
-				continue;
-			}
-			maxTransitionsCount[formatterIndex++] = formatter.CastTransitions.Length;
+			maxTransitionsCount[formatterIndex++] = parameter.Modifiers.Any(modifier => modifier.Text == "ref")
+				? 0
+				: formatter.CastTransitions.Length;
 		}
 
 		maxTransitionsCount = maxTransitionsCount.Slice(0, formattersCount - countOfCombineWith);
@@ -78,7 +75,7 @@ public sealed class CombinedCastTransitionOverloads : IChainMember
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(
-				TransitionExtensions.WriteIntegrityParamTransitionOverload,
+				TransitionExtensions.WriteCastTransitionOverload,
 				bodyBuilder,
 				props,
 				parameters,

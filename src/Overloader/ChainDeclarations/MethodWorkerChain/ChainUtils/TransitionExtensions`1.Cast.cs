@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Enums;
 using Overloader.Exceptions;
@@ -10,7 +9,7 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 public static partial class TransitionExtensions
 {
-	public static void WriteIntegrityParamTransitionOverload(
+	public static void WriteCastTransitionOverload(
 		SourceBuilder headerBuilder,
 		SourceBuilder bodyBuilder,
 		GeneratorProperties props,
@@ -50,14 +49,12 @@ public static partial class TransitionExtensions
 				for (int index = 0;;)
 				{
 					var template = transition.Templates[index];
-					ITypeSymbol paramType;
-					if (template.IsUnboundTemplateGenericType)
-						paramType = props.SetDeepestType(
+					var paramType = template.IsUnboundTemplateGenericType
+						? props.SetDeepestType(
 							template.Type,
 							props.Template,
-							template.Type);
-					else
-						paramType = template.Type;
+							template.Type)
+						: template.Type;
 
 					string strIndex = index.ToString();
 					string indexedParamName = $"{paramName}Cast{strIndex}";
@@ -71,9 +68,8 @@ public static partial class TransitionExtensions
 						break;
 					headerBuilder.AppendWoTrim(", ");
 				}
-				
-				bodyBuilder.Append(cast.Replace("${T}", props.Template.ToDisplayString()));
 
+				bodyBuilder.Append(cast.Replace("${T}", props.Template.ToDisplayString()));
 				break;
 			default:
 				throw new ArgumentException($"Can't find case for {mappedParam.ParameterAction} parameterAction.")

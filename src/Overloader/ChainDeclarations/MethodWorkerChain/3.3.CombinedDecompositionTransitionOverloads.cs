@@ -62,7 +62,7 @@ public sealed class CombinedDecompositionTransitionOverloads : IChainMember
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(
-				TransitionExtensions.WriteParamTransitionOverload,
+				TransitionExtensions.WriteDecompositionTransitionOverload,
 				bodyBuilder,
 				props,
 				parameters,

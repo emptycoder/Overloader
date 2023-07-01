@@ -38,12 +38,9 @@ public sealed class CastTransitionOverloads : IChainMember
 					.WithLocation(parameter.GetLocation());
 			
 			transitionIndexes[formatterIndex] = -1;
-			if (parameter.Modifiers.Any(modifier => modifier.Text == "ref"))
-			{
-				maxTransitionsCount[formatterIndex++] = 0;
-				continue;
-			}
-			maxTransitionsCount[formatterIndex++] = formatter.CastTransitions.Length;
+			maxTransitionsCount[formatterIndex++] = parameter.Modifiers.Any(modifier => modifier.Text == "ref")
+				? 0
+				: formatter.CastTransitions.Length;
 		}
 
 		// Check that transitions exists
@@ -68,7 +65,7 @@ public sealed class CastTransitionOverloads : IChainMember
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
 				.Append("(");
 			props.Builder.WriteTransitionOverload(
-				TransitionExtensions.WriteIntegrityParamTransitionOverload,
+				TransitionExtensions.WriteCastTransitionOverload,
 				bodyBuilder,
 				props,
 				parameters,
