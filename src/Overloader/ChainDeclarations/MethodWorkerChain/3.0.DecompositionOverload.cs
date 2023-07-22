@@ -49,10 +49,12 @@ public sealed class DecompositionOverload : IChainMember
 					break;
 				case ParameterAction.FormatterReplacement:
 					string paramName = parameter.Identifier.ToString();
-					string concatedParams = props.Builder.AppendFormatterParam(
-						props,
-						mappedParam.Type,
-						paramName);
+					string concatedParams = props.Builder
+						.AppendFormatterParam(
+							props,
+							mappedParam.Type,
+							paramName)
+						.PickResult(parameter);
 					replacementVariableNames[replacementVariableIndex++] = (paramName, concatedParams);
 					break;
 				default:

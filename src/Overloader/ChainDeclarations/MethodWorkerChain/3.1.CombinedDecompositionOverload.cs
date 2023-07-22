@@ -61,11 +61,12 @@ public sealed class CombinedDecompositionOverload : IChainMember
 						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterReplacement:
-						string concatedParams = props.Builder.AppendFormatterParam(
-							props,
-							mappedParam.Type,
-							paramName);
-						bodyBuilder.AppendWoTrim(concatedParams);
+						bodyBuilder.AppendWoTrim(props.Builder
+							.AppendFormatterParam(
+								props,
+								mappedParam.Type,
+								paramName)
+							.PickResult(parameter));
 						break;
 					default:
 						throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")

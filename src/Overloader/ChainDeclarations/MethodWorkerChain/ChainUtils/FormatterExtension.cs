@@ -8,23 +8,23 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 public static class FormatterExtension
 {
-	public static string AppendFormatterParam(this SourceBuilder sb,
+	public static ResultOrException<string> AppendFormatterParam(this SourceBuilder sb,
 		GeneratorProperties props,
 		ITypeSymbol type,
 		string paramName)
 	{
 		var rootType = type.GetClearType();
 		if (!props.TryGetFormatter(rootType, out var formatter))
-			throw new ArgumentException(
+			return new ArgumentException(
 				$"Can't get formatter for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}.");
 
 		if (!formatter.Params.Any())
-			throw new ArgumentException(
+			return new ArgumentException(
 				$"Params count equals to 0 for {nameof(type)}: {type.ToDisplayString()}, {nameof(paramName)}: {paramName}");
 
 		var @params = rootType.TypeArguments.ToArray();
 		if (@params.Length != formatter.GenericParams.Length)
-			throw new ArgumentException(
+			return new ArgumentException(
 				$"Different generic params in formatter ({formatter.GenericParams.Length}) and type ({@params.Length})");
 
 		using var bodyBuilder = SourceBuilder.GetInstance();
@@ -32,8 +32,10 @@ public static class FormatterExtension
 		{
 			var formatterParam = formatter.Params[paramIndex];
 			var templateType = formatterParam.Param.GetType(props.Template);
-			var paramType = props.SetDeepestTypeWithTemplateFilling(templateType, props.Template);
-
+			props.SetDeepestTypeWithTemplateFilling(templateType, props.Template)
+				.Deconstruct(out var paramType, out var exception);
+			
+			if (exception is not null) return exception;
 			if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
 				sb.AppendWith("in", " ");
 
@@ -56,8 +58,7 @@ public static class FormatterExtension
 		ParameterData mappedParam,
 		ParameterSyntax parameter)
 	{
-		var newType = props.SetDeepestType(mappedParam.Type, props.Template, props.Template);
-
+		var newType = props.SetDeepestType(mappedParam.Type, props.Template, props.Template).PickResult(parameter);
 		return sb.AppendAttributes(parameter.AttributeLists, " ")
 			.AppendWoTrim(mappedParam.BuildModifiersWithWhitespace(parameter, newType))
 			.AppendWith(newType.ToDisplayString(), " ")

@@ -6,11 +6,14 @@
 // #define TRACE_LEAKS
 
 // define DETECT_LEAKS to detect possible leaks
-// #if DEBUG
-// #define DETECT_LEAKS  //for now always enable DETECT_LEAKS in debug.
-// #endif
+#if DEBUG
+#define DETECT_LEAKS //for now always enable DETECT_LEAKS in debug.
+#endif
 
 using System.Diagnostics;
+#if DETECT_LEAKS
+using System.Runtime.CompilerServices;
+#endif
 
 namespace Overloader.Utils;
 
@@ -53,44 +56,39 @@ internal class ObjectPool<T> where T : class?
 	private readonly Factory _factory;
 
 #if DETECT_LEAKS
-        private static readonly ConditionalWeakTable<T, LeakTracker> leakTrackers = new ConditionalWeakTable<T, LeakTracker>();
+	private static readonly ConditionalWeakTable<T, LeakTracker> LeakTrackers = new ConditionalWeakTable<T, LeakTracker>();
 
-        private class LeakTracker : IDisposable
-        {
-            private volatile bool disposed;
+	private class LeakTracker : IDisposable
+	{
+		private volatile bool _disposed;
 
 #if TRACE_LEAKS
             internal volatile object Trace = null;
 #endif
 
-            public void Dispose()
-            {
-                disposed = true;
-                GC.SuppressFinalize(this);
-            }
+		public void Dispose()
+		{
+			_disposed = true;
+			GC.SuppressFinalize(this);
+		}
 
-            private string GetTrace()
-            {
 #if TRACE_LEAKS
-                return Trace == null ? "" : Trace.ToString();
+		private string GetTrace() => Trace == null ? "" : Trace.ToString();
 #else
-                return "Leak tracing information is disabled. Define TRACE_LEAKS on ObjectPool`1.cs to get more info \n";
+		// ReSharper disable once MemberCanBeMadeStatic.Local
+		private string GetTrace() => "Leak tracing information is disabled. Define TRACE_LEAKS on ObjectPool`1.cs to get more info \n";
 #endif
-            }
 
-            ~LeakTracker()
-            {
-                if (!this.disposed && !Environment.HasShutdownStarted)
-                {
-                    var trace = GetTrace();
-
-                    // If you are seeing this message it means that object has been allocated from the pool
-                    // and has not been returned back. This is not critical, but turns pool into rather
-                    // inefficient kind of "new".
-                    Debug.WriteLine($"TRACEOBJECTPOOLLEAKS_BEGIN\nPool detected potential leaking of {typeof(T)}. \n Location of the leak: \n {GetTrace()} TRACEOBJECTPOOLLEAKS_END");
-                }
-            }
-        }
+		~LeakTracker()
+		{
+			if (_disposed) return;
+			// If you are seeing this message it means that object has been allocated from the pool
+			// and has not been returned back. This is not critical, but turns pool into rather
+			// inefficient kind of "new".
+			Debug.WriteLine(
+				$"TRACEOBJECTPOOLLEAKS_BEGIN\nPool detected potential leaking of {typeof(T)}. \n Location of the leak: \n {GetTrace()} TRACEOBJECTPOOLLEAKS_END");
+		}
+	}
 #endif
 
 	internal ObjectPool(Factory factory, int size = 16)
@@ -114,7 +112,7 @@ internal class ObjectPool<T> where T : class?
 	///     Note that Free will try to store recycled objects close to the start thus statistically
 	///     reducing how far we will typically search.
 	/// </remarks>
-	internal T? Allocate()
+	internal T Allocate()
 	{
 		// PERF: Examine the first element. If that fails, AllocateSlow will look at the remaining elements.
 		// Note that the initial read is optimistically not synchronized. That is intentional.
@@ -127,15 +125,15 @@ internal class ObjectPool<T> where T : class?
 		}
 
 #if DETECT_LEAKS
-            var tracker = new LeakTracker();
-            leakTrackers.Add(inst, tracker);
+		var tracker = new LeakTracker();
+		LeakTrackers.Add(inst!, tracker);
 
 #if TRACE_LEAKS
             var frame = CaptureStackTrace();
             tracker.Trace = frame;
 #endif
 #endif
-		return inst;
+		return inst!;
 	}
 
 	private T? AllocateSlow()
@@ -148,13 +146,9 @@ internal class ObjectPool<T> where T : class?
 			// We will interlock only when we have a candidate. in a worst case we may miss some
 			// recently returned objects. Not a big deal.
 			var inst = items[i].Value;
-			if (inst != null)
-			{
-				if (inst == Interlocked.CompareExchange(ref items[i].Value, null, inst))
-				{
-					return inst;
-				}
-			}
+			if (inst == null) continue;
+			if (inst == Interlocked.CompareExchange(ref items[i].Value, null, inst))
+				return inst;
 		}
 
 		return CreateInstance();
@@ -168,7 +162,7 @@ internal class ObjectPool<T> where T : class?
 	///     Note that Free will try to store recycled objects close to the start thus statistically
 	///     reducing how far we will typically search in Allocate.
 	/// </remarks>
-	internal void Free(T? obj)
+	internal void Free(T obj)
 	{
 		Validate(obj);
 		ForgetTrackedObject(obj);
@@ -191,14 +185,12 @@ internal class ObjectPool<T> where T : class?
 		var items = _items;
 		for (int i = 0; i < items.Length; i++)
 		{
-			if (items[i].Value == null)
-			{
-				// Intentionally not using interlocked here.
-				// In a worst case scenario two objects may be stored into same slot.
-				// It is very unlikely to happen and will only mean that one of the objects will get collected.
-				items[i].Value = obj;
-				break;
-			}
+			if (items[i].Value is not null) continue;
+			// Intentionally not using interlocked here.
+			// In a worst case scenario two objects may be stored into same slot.
+			// It is very unlikely to happen and will only mean that one of the objects will get collected.
+			items[i].Value = obj;
+			break;
 		}
 	}
 
@@ -210,43 +202,38 @@ internal class ObjectPool<T> where T : class?
 	///     return a larger array to the pool than was originally allocated.
 	/// </summary>
 	[Conditional("DEBUG")]
-	internal void ForgetTrackedObject(T? old, T? replacement = null)
+	internal void ForgetTrackedObject(T old, T? replacement = null)
 	{
 #if DETECT_LEAKS
-            LeakTracker tracker;
-            if (leakTrackers.TryGetValue(old, out tracker))
-            {
-                tracker.Dispose();
-                leakTrackers.Remove(old);
-            }
-            else
-            {
-                var trace = CaptureStackTrace();
-                Debug.WriteLine($"TRACEOBJECTPOOLLEAKS_BEGIN\nObject of type {typeof(T)} was freed, but was not from pool. \n Callstack: \n {trace} TRACEOBJECTPOOLLEAKS_END");
-            }
+		if (LeakTrackers.TryGetValue(old, out var tracker))
+		{
+			tracker.Dispose();
+			LeakTrackers.Remove(old);
+		}
+		else
+		{
+			var trace = CaptureStackTrace();
+			Debug.WriteLine(
+				$"TRACEOBJECTPOOLLEAKS_BEGIN\nObject of type {typeof(T)} was freed, but was not from pool. \n Callstack: \n {trace} TRACEOBJECTPOOLLEAKS_END");
+		}
 
-            if (replacement != null)
-            {
-                tracker = new LeakTracker();
-                leakTrackers.Add(replacement, tracker);
-            }
+		if (replacement == null) return;
+		
+		tracker = new LeakTracker();
+		LeakTrackers.Add(replacement, tracker);
 #endif
 	}
 
 #if DETECT_LEAKS
-        private static Lazy<Type> _stackTraceType = new Lazy<Type>(() => Type.GetType("System.Diagnostics.StackTrace"));
-
-        private static object CaptureStackTrace()
-        {
-            return Activator.CreateInstance(_stackTraceType.Value);
-        }
+	// ReSharper disable once StaticMemberInGenericType
+	private static readonly Lazy<Type> StackTraceType = new(() => Type.GetType("System.Diagnostics.StackTrace"));
+	private static object CaptureStackTrace() => Activator.CreateInstance(StackTraceType.Value);
 #endif
 
 	[Conditional("DEBUG")]
 	private void Validate(object? obj)
 	{
 		Debug.Assert(obj != null, "freeing null?");
-
 		Debug.Assert(_firstItem != obj, "freeing twice?");
 
 		var items = _items;

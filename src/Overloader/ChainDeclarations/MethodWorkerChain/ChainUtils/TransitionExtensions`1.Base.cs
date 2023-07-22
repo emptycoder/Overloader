@@ -76,7 +76,8 @@ public static partial class TransitionExtensions
 				bodyBuilder.AppendWoTrim(EmptySourceBuilder.Instance
 					.AppendFormatterParam(props,
 						props.Store.OverloadMap![mappedParam.CombineIndex].Type,
-						parameter.Identifier.ValueText));
+						parameter.Identifier.ValueText)
+					.PickResult(parameter));
 				break;
 			}
 			case ParameterAction.Nothing:

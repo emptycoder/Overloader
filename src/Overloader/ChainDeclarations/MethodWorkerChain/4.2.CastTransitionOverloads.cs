@@ -32,7 +32,7 @@ public sealed class CastTransitionOverloads : IChainMember
 			if (mappedParam.ParameterAction is not ParameterAction.FormatterReplacement
 			    and not ParameterAction.FormatterIntegrityReplacement)
 				continue;
-			
+
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());

@@ -56,7 +56,7 @@ public static partial class TransitionExtensions
 						var paramType = props.SetDeepestType(
 							transitionLink.TemplateType,
 							props.Template,
-							transitionLink.TemplateType);
+							transitionLink.TemplateType).PickResult(parameter);
 
 						if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
 							headerBuilder.AppendWith("in", " ");
@@ -85,9 +85,11 @@ public static partial class TransitionExtensions
 					else
 					{
 						var templateType = formatterParam.Param.GetType(props.Template);
+						var paramType = props.SetDeepestTypeWithTemplateFilling(templateType, props.Template).PickResult(parameter);
+
 						headerBuilder
 							.AppendWoTrim(", ")
-							.AppendWith(props.SetDeepestTypeWithTemplateFilling(templateType, props.Template).ToDisplayString(), " ")
+							.AppendWith(paramType.ToDisplayString(), " ")
 							.Append(paramName)
 							.Append(formatterParam.Identifier);
 

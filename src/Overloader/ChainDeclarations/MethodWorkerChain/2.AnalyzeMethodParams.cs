@@ -31,6 +31,13 @@ public sealed class AnalyzeMethodParams : IChainMember
 			var parameterAction = shouldBeReplaced switch
 			{
 				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => ParameterAction.CustomReplacement,
+				true when parameterType is INamedTypeSymbol { IsGenericType: true } =>
+					props.TryGetFormatter(parameterType.GetClearType(), out var formatter)
+						? paramDto.HasForceOverloadIntegrity || !formatter.Params.Any()
+							? ParameterAction.FormatterIntegrityReplacement
+							: ParameterAction.FormatterReplacement
+						: throw new ArgumentException($"Not found formatter for {parameterType}")
+							.WithLocation(parameters[index]),
 				true when props.TryGetFormatter(parameterType.GetClearType(), out var formatter) =>
 					paramDto.HasForceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
 						? ParameterAction.FormatterIntegrityReplacement

@@ -6,44 +6,55 @@ namespace Overloader.ChainDeclarations.MethodWorkerChain.ChainUtils;
 
 public static class TypeExtensions
 {
-	public static ITypeSymbol SetDeepestType(
+	public static ResultOrException<ITypeSymbol> SetDeepestType(
 		this GeneratorProperties props,
 		ITypeSymbol argType,
 		ITypeSymbol templateType,
 		ITypeSymbol exceptionType)
 	{
 		var clearType = argType.GetClearType();
-		if (!clearType.IsGenericType || !props.TryGetFormatter(clearType, out var formatter)) return exceptionType;
+		if (!clearType.IsGenericType) return ResultOrException<ITypeSymbol>.Result(exceptionType);
+		if (!props.TryGetFormatter(clearType, out var formatter))
+			return new ArgumentException($"Not found formatter for {argType}.");
 
 		var @params = clearType.TypeArguments.ToArray();
 		if (@params.Length != formatter.GenericParams.Length)
-			throw new ArgumentException(
+			return new ArgumentException(
 				$"Different generic params in formatter ({formatter.GenericParams.Length}) and type ({@params.Length})");
 
 		for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 		{
 			var genericType = formatter.GenericParams[paramIndex].GetType(templateType);
-			@params[paramIndex] = props.SetDeepestType(@params[paramIndex], templateType, genericType);
+			props.SetDeepestType(@params[paramIndex], templateType, genericType)
+				.Deconstruct(out var value, out var exception);
+			if (exception is not null) return exception;
+			
+			@params[paramIndex] = value;
 		}
 
-		return argType.ConstructWithClearType(clearType.OriginalDefinition.Construct(@params), props.Compilation);
+		return ResultOrException<ITypeSymbol>.Result(argType.ConstructWithClearType(clearType.OriginalDefinition.Construct(@params), props.Compilation));
 	}
 
-	public static ITypeSymbol SetDeepestTypeWithTemplateFilling(
+	public static ResultOrException<ITypeSymbol> SetDeepestTypeWithTemplateFilling(
 		this GeneratorProperties props,
 		ITypeSymbol argType,
-		ITypeSymbol templateType)
+		ITypeSymbol? templateType)
 	{
-		var paramType = props.SetDeepestType(argType, templateType, argType);
+		if (templateType is null)
+			return new ArgumentException("Unexpected declaration of unbound generic in method.");
+
+		props.SetDeepestType(argType, templateType, argType)
+			.Deconstruct(out var paramType, out var exception);
+		if (exception is not null) return exception;
+		
 		var paramClearType = paramType.GetClearType();
-		if (!paramClearType.IsUnboundGenericType) return paramType;
+		if (!paramClearType.IsUnboundGenericType) return ResultOrException<ITypeSymbol>.Result(paramType);
 
 		// Auto fill unbound generic by template
 		var typeParameters = new ITypeSymbol[paramClearType.TypeParameters.Length];
 		for (int typeParamIndex = 0; typeParamIndex < typeParameters.Length; typeParamIndex++)
-			typeParameters[typeParamIndex] = templateType ?? throw new Exception(
-				"Unexpected declaration of unbound generic in method.");
+			typeParameters[typeParamIndex] = templateType;
 
-		return paramType.ConstructWithClearType(paramClearType.OriginalDefinition.Construct(typeParameters), props.Compilation);
+		return ResultOrException<ITypeSymbol>.Result(paramType.ConstructWithClearType(paramClearType.OriginalDefinition.Construct(typeParameters), props.Compilation));
 	}
 }

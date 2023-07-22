@@ -90,8 +90,8 @@ using Overloader;
 namespace TestProject;
 
 [{nameof(TSpecify)}(typeof(double))]
-[{nameof(TOverload)}(typeof(float), null, null, ""Vector3"", ""Vector2"")]
-internal partial class Program
+[{nameof(TOverload)}(typeof(float), ""Program"", ""Test"", ""Vector3"", ""Vector2"")]
+internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
@@ -198,5 +198,33 @@ internal record struct Vector2<T>
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
+	}
+	
+	[Test]
+	public void DetectUnknownTypeTest()
+	{
+		const string programCs = $$"""
+			using Overloader;
+
+			namespace TestProject;
+			
+			[{{nameof(TSpecify)}}(typeof(double))]
+			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")] 
+			public partial class Test
+			{
+				public void TestMethod([T] Vector2<double> test) {}
+			}
+
+			public struct Vector2<T> { }
+			
+			internal class Program
+			{
+				static void Main(string[] args) { }  
+			}
+		""";
+		
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Not.Empty);
 	}
 }

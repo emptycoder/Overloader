@@ -43,17 +43,19 @@ public static partial class TransitionExtensions
 					bodyBuilder.AppendVariableToBody(parameter, paramName);
 					break;
 				}
-				
+
 				var transition = formatter.CastTransitions.Span[transitionIndex];
 				string cast = transition.IntegrityCastCodeTemplate;
 				for (int index = 0;;)
 				{
 					var template = transition.Templates[index];
 					var paramType = template.IsUnboundTemplateGenericType
-						? props.SetDeepestType(
-							template.Type,
-							props.Template,
-							template.Type)
+						? props
+							.SetDeepestType(
+								template.Type,
+								props.Template,
+								template.Type)
+							.PickResult(parameter)
 						: template.Type;
 
 					string strIndex = index.ToString();
@@ -63,7 +65,7 @@ public static partial class TransitionExtensions
 						.AppendWith(paramType.ToDisplayString(), " ")
 						.Append(indexedParamName);
 					cast = cast.Replace($"${{Var{strIndex}}}", indexedParamName);
-					
+
 					if (++index == transition.Templates.Length)
 						break;
 					headerBuilder.AppendWoTrim(", ");
