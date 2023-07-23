@@ -10,7 +10,7 @@ public class SourceBuilder : IDisposable
 
 	// ReSharper disable once RedundantSuppressNullableWarningExpression
 	private static readonly ObjectPool<SourceBuilder> SPoolInstance = new(() =>
-		new SourceBuilder(SPoolInstance!, new StringBuilder()));
+		new SourceBuilder(SPoolInstance!, new StringBuilder()), 40);
 
 	private readonly StringBuilder _builder;
 	private readonly ObjectPool<SourceBuilder> _pool;
@@ -23,7 +23,7 @@ public class SourceBuilder : IDisposable
 	public virtual void Dispose()
 	{
 		Clear();
-		_pool.Free(this);
+		_pool.Return(this);
 	}
 
 	public SourceBuilder AppendChainMemberNameComment(string callerMemberName) =>
@@ -128,6 +128,6 @@ public class SourceBuilder : IDisposable
 		return newInstance;
 	}
 
-	public static SourceBuilder GetInstance() => SPoolInstance.Allocate() ?? throw new ArgumentException(
+	public static SourceBuilder GetInstance() => SPoolInstance.Get() ?? throw new ArgumentException(
 		"Can't allocate source builder instance.");
 }

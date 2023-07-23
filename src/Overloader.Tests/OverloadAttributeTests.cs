@@ -225,6 +225,41 @@ internal record struct Vector2<T>
 		
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
-		Assert.That(result.GenerationDiagnostics, Is.Not.Empty);
+		Assert.That(result.GenerationErrors, Is.Not.Empty);
+	}
+	
+	[Test]
+	public void DetectUnknownInKnownTypeTest()
+	{
+		const string programCs = $$"""
+			using Overloader;
+
+			[assembly: {{nameof(Formatter)}}(
+				"Vector3",
+				typeof(TestProject.Vector3<>),
+				new object[] { "T" },
+				new object[] { })]
+
+			namespace TestProject;
+			
+			[{{nameof(TSpecify)}}(typeof(double), "Vector3")]
+			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")] 
+			public partial class Test
+			{
+				public void TestMethod([T] Vector3<Vector2<double>> test) {}
+			}
+
+			public struct Vector3<T> { }
+			public struct Vector2<T> { }
+			
+			internal class Program
+			{
+				static void Main(string[] args) { }  
+			}
+		""";
+		
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationErrors, Is.Not.Empty);
 	}
 }
