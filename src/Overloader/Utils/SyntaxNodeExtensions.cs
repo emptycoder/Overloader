@@ -107,7 +107,7 @@ public static class SyntaxNodeExtensions
 			$"Type not found or {syntaxNode.ToFullString()} isn't type.").WithLocation(syntaxNode);
 	}
 
-	public static Dictionary<string, Formatters.Formatter> GetFormattersByName(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	public static Dictionary<string, Formatters.Formatter> GetFormatters(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
 	{
 		var dict = new Dictionary<string, Formatters.Formatter>(attributeSyntaxes.Count);
 		foreach (var formatterSyntax in attributeSyntaxes)

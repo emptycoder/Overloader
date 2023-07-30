@@ -14,19 +14,24 @@ public static class Constants
 
 	public static readonly HashSet<string> AttributesToRemove = new()
 	{
+		/* Assembly */
+		nameof(Formatter),
+		/* Method */
 		nameof(AllowFor),
-		nameof(BlackListMode),
 		nameof(ChangeModifier),
 		nameof(ChangeName),
-		nameof(CombineWith),
 		nameof(ForceChanged),
-		nameof(Formatter),
 		nameof(IgnoreFor),
-		nameof(IgnoreTransitions),
+		/* Parameter */
+		nameof(CombineWith),
 		nameof(Integrity),
 		nameof(ParamModifier),
-		nameof(RemoveBody),
+		nameof(Ref),
 		TAttribute.TagName,
+		/* Type */
+		nameof(BlackListMode),
+		nameof(IgnoreTransitions),
+		nameof(RemoveBody),
 		nameof(TOverload),
 		nameof(TSpecify)
 	};

@@ -20,7 +20,9 @@ public static class ChainDeclarations
 		/* 4 */ new IntegrityOverload(),
 		/* 4.1 */ new CombinedIntegrityOverload(),
 		/* 4.2 */ new CastTransitionOverloads(),
-		/* 4.3 */ new CombinedCastTransitionOverloads()
+		/* 4.3 */ new CombinedCastTransitionOverloads(),
+		/* 5.0 */ new RefIntegrityOverloads(),
+		/* 5.1 */ new CombinedRefIntegrityOverloads()
 	};
 }
 

@@ -1,4 +1,4 @@
-﻿namespace Overloader.Tests;
+﻿namespace Overloader.Tests.Parameter;
 
 [TestFixture]
 public class ParamModifierTests

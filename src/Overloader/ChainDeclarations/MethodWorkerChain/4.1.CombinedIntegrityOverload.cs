@@ -69,6 +69,8 @@ public sealed class CombinedIntegrityOverload : IChainMember
 			{
 				bodyBuilder.AppendCombinedSimple(mappedParam, parameters[mappedParam.CombineIndex]);
 				if (++index == parameters.Count) break;
+				if (props.Store.OverloadMap[index].IsCombineNotExists)
+					props.Builder.AppendWoTrim(", ");
 				bodyBuilder.AppendWoTrim(", ");
 			}
 		}

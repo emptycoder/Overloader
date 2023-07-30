@@ -57,7 +57,7 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 #if !DEBUG || ForceTasks
 			var tasks = new List<Task>();
 #endif
-			var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormattersByName(context.Compilation);
+			var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormatters(context.Compilation);
 			foreach (var candidate in syntaxReceiver.Candidates)
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;

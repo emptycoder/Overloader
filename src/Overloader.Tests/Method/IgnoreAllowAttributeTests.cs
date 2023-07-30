@@ -1,4 +1,4 @@
-﻿namespace Overloader.Tests;
+﻿namespace Overloader.Tests.Method;
 
 [TestFixture]
 public class IgnoreAllowAttributeTests
