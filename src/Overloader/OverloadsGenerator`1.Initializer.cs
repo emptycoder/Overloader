@@ -23,7 +23,8 @@ public sealed partial class OverloadsGenerator
 
 	private sealed class SyntaxReceiver : ISyntaxReceiver
 	{
-		public readonly List<AttributeSyntax> GlobalFormatterSyntaxes = new(64);
+		public readonly List<AttributeSyntax> FormatterSyntaxes = new(64);
+		public readonly List<AttributeSyntax> BundleSyntaxes = new(16);
 		public Exception? Exception;
 		public List<CandidateDto> Candidates { get; } = new(128);
 
@@ -37,7 +38,10 @@ public sealed partial class OverloadsGenerator
 						switch (attribute.Name.GetName())
 						{
 							case nameof(Formatter):
-								GlobalFormatterSyntaxes.Add(attribute);
+								FormatterSyntaxes.Add(attribute);
+								break;
+							case nameof(FormattersBundle):
+								BundleSyntaxes.Add(attribute);
 								break;
 						}
 				}

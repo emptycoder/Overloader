@@ -16,6 +16,7 @@ public static class Constants
 	{
 		/* Assembly */
 		nameof(Formatter),
+		nameof(FormattersBundle),
 		/* Method */
 		nameof(AllowFor),
 		nameof(ChangeModifier),

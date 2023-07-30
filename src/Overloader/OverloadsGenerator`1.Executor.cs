@@ -57,16 +57,17 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 #if !DEBUG || ForceTasks
 			var tasks = new List<Task>();
 #endif
-			var globalFormatters = syntaxReceiver.GlobalFormatterSyntaxes.GetFormatters(context.Compilation);
+			var formatters = syntaxReceiver.FormatterSyntaxes.GetFormatters(context.Compilation);
+			var formattersBundles = syntaxReceiver.BundleSyntaxes.GetBundles(context.Compilation);
 			foreach (var candidate in syntaxReceiver.Candidates)
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;
-				var formatters = globalFormatters.GetFormattersSample(candidate.FormattersToUse, candidate.Syntax);
+				var formattersSample = formatters.GetFormattersSample(formattersBundles, candidate.FormattersToUse, candidate.Syntax);
 
 				var formatterOverloadProps = new GeneratorProperties(
 					context,
 					candidate,
-					formatters,
+					formattersSample,
 					true,
 					candidateClassName,
 					candidate.DefaultType!.GetType(context.Compilation),
@@ -82,11 +83,11 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 					var genericWithFormatterOverloadProps = new GeneratorProperties(
 						context,
 						candidate,
-						formatters,
+						formattersSample,
 						false,
 						overloadDto.ClassName,
 						overloadDto.TypeSyntax.GetType(context.Compilation),
-						globalFormatters.GetFormattersSample(overloadDto.FormattersToUse, overloadDto.TypeSyntax)
+						formatters.GetFormattersSample(formattersBundles, overloadDto.FormattersToUse, overloadDto.TypeSyntax)
 					);
 
 #if !DEBUG || ForceTasks

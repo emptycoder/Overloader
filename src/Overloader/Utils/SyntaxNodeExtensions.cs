@@ -114,7 +114,7 @@ public static class SyntaxNodeExtensions
 		{
 			var formatter = Formatters.Formatter.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formatter.Identifier))
-				throw new ArgumentException($"Formatter with identifier '{formatter.Identifier}' has been already exist.")
+				throw new ArgumentException($"{nameof(Formatter)} with identifier '{formatter.Identifier}' has been already exist.")
 					.WithLocation(formatterSyntax);
 
 			dict.Add(formatter.Identifier, formatter);
@@ -122,16 +122,43 @@ public static class SyntaxNodeExtensions
 
 		return dict;
 	}
+	
+	public static Dictionary<string, Formatters.FormattersBundle> GetBundles(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	{
+		var dict = new Dictionary<string, Formatters.FormattersBundle>(attributeSyntaxes.Count);
+		foreach (var formatterSyntax in attributeSyntaxes)
+		{
+			var formattersBundle = Formatters.FormattersBundle.Parse(formatterSyntax, compilation);
+			if (dict.ContainsKey(formattersBundle.Identifier))
+				throw new ArgumentException($"{nameof(FormattersBundle)} with identifier '{formattersBundle.Identifier}' has been already exist.")
+					.WithLocation(formatterSyntax);
+
+			dict.Add(formattersBundle.Identifier, formattersBundle);
+		}
+
+		return dict;
+	}
 
 	public static Dictionary<ITypeSymbol, Formatters.Formatter>? GetFormattersSample(
 		this Dictionary<string, Formatters.Formatter> globalFormatters,
+		Dictionary<string, Formatters.FormattersBundle> formattersBundles,
 		string[]? formattersToUse,
 		SyntaxNode errorSyntax)
 	{
 		if (formattersToUse is null) return null;
 
 		var formatters = new Dictionary<ITypeSymbol, Formatters.Formatter>(formattersToUse.Length, SymbolEqualityComparer.Default);
-		foreach (string formatterIdentifier in formattersToUse)
+		foreach (string identifier in formattersToUse)
+		{
+			if (formattersBundles.TryGetValue(identifier, out var bundle))
+				foreach (string formatterName in bundle.FormatterNames)
+					AddFormatterToSample(formatterName);
+			else
+				AddFormatterToSample(identifier);
+		}
+		return formatters;
+
+		void AddFormatterToSample(string formatterIdentifier)
 		{
 			if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))
 				throw new ArgumentException($"Can't find formatter with identifier '{formatterIdentifier}'.")
@@ -145,8 +172,6 @@ public static class SyntaxNodeExtensions
 				formatters.Add(formatterType, formatter);
 			}
 		}
-
-		return formatters;
 	}
 
 	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>
