@@ -68,6 +68,7 @@ using Overloader.Examples;
 	// ReSharper disable once RedundantExplicitParamsArrayCreation
 	new object[]
 	{
+		TransitionType.Cast,
 		typeof(Vector2<>),
 		"System.Runtime.CompilerServices.Unsafe.As<${T}, Vector128<${T}>>(ref System.Runtime.CompilerServices.Unsafe.AsRef(${Var}.X))"
 	}

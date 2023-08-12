@@ -2,16 +2,17 @@
 using Overloader.ContentBuilders;
 using Overloader.DTOs;
 using Overloader.Exceptions;
+using Overloader.Models.Formatters;
 using Overloader.Utils;
 
 namespace Overloader.Models;
 
 public record GeneratorProperties : IGeneratorProps, IDisposable
 {
-	private static readonly Dictionary<ITypeSymbol, Formatters.Formatter> Empty = new(0, SymbolEqualityComparer.Default);
+	private static readonly Dictionary<ITypeSymbol, FormatterModel> Empty = new(0, SymbolEqualityComparer.Default);
 
-	private readonly Dictionary<ITypeSymbol, Formatters.Formatter> _formatters;
-	private readonly Dictionary<ITypeSymbol, Formatters.Formatter> _overloadFormatters;
+	private readonly Dictionary<ITypeSymbol, FormatterModel> _formatters;
+	private readonly Dictionary<ITypeSymbol, FormatterModel> _overloadFormatters;
 	public readonly bool IsTSpecified;
 
 	public GeneratorExecutionContext Context;
@@ -20,11 +21,11 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 	public GeneratorProperties(
 		GeneratorExecutionContext context,
 		CandidateDto startEntry,
-		Dictionary<ITypeSymbol, Formatters.Formatter>? formatters,
+		Dictionary<ITypeSymbol, FormatterModel>? formatters,
 		bool isTSpecified,
 		string className,
 		ITypeSymbol template,
-		Dictionary<ITypeSymbol, Formatters.Formatter>? overloadFormatters)
+		Dictionary<ITypeSymbol, FormatterModel>? overloadFormatters)
 	{
 		Context = context;
 		StartEntry = startEntry;
@@ -37,12 +38,13 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 		VerifyFormatters(_formatters);
 		VerifyFormatters(_overloadFormatters);
 
-		void VerifyFormatters(Dictionary<ITypeSymbol, Formatters.Formatter> formattersToCheck)
+		void VerifyFormatters(Dictionary<ITypeSymbol, FormatterModel> formattersToCheck)
 		{
 			// Verify that all transitions have formatters
 			foreach (var keyValuePair in formattersToCheck)
 			{
-				foreach (var decompositionTransition in keyValuePair.Value.DecompositionTransitions.Span)
+				var formatter = keyValuePair.Value;
+				foreach (var decompositionTransition in formatter.Decompositions)
 				foreach (var decompositionTransitionLink in decompositionTransition.Links)
 				{
 					var clearType = decompositionTransitionLink.TemplateType.GetClearType();
@@ -51,12 +53,13 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 							.WithLocation(StartEntry.Syntax);
 				}
 
-				foreach (var castTransition in keyValuePair.Value.CastTransitions.Span)
-				foreach (var castTemplate in castTransition.Templates)
+				foreach (var castTransition in formatter.Casts)
+				foreach (var castTemplate in castTransition.Types)
 				{
-					var clearType = castTemplate.IsUnboundTemplateGenericType
+					var clearType = castTemplate.IsUnboundType
 						? (INamedTypeSymbol) castTemplate.Type
 						: castTemplate.Type.GetClearType();
+					
 					
 					if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
 						throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
@@ -77,7 +80,7 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 	// ReSharper disable once InconsistentlySynchronizedField
 	public Compilation Compilation => Context.Compilation;
 
-	public bool TryGetFormatter(ITypeSymbol type, out Formatters.Formatter formatter) =>
+	public bool TryGetFormatter(ITypeSymbol type, out FormatterModel formatter) =>
 		_overloadFormatters.TryGetValue(type, out formatter) ||
 		_overloadFormatters.TryGetValue(type.OriginalDefinition, out formatter) ||
 		_formatters.TryGetValue(type, out formatter) ||

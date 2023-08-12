@@ -26,7 +26,7 @@ public static class Constants
 		/* Parameter */
 		nameof(CombineWith),
 		nameof(Integrity),
-		nameof(ParamModifier),
+		nameof(Modifier),
 		nameof(Ref),
 		TAttribute.TagName,
 		/* Type */

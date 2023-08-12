@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Overloader.ChainDeclarations.MethodWorkerChain;
+using Overloader.ChainDeclarations.Overloads;
 using Overloader.Enums;
 using Overloader.Models;
 
@@ -8,21 +8,27 @@ namespace Overloader.ChainDeclarations;
 public static class ChainDeclarations
 {
 	public static readonly IChainMember Main = new MainChain();
-
 	public static readonly IChainMember[] MethodWorkers =
 	{
-		/* 1 */ new AnalyzeMethodAttributes(),
-		/* 2 */ new AnalyzeMethodParams(),
-		/* 3 */ new DecompositionOverload(),
-		/* 3.1 */ new CombinedDecompositionOverload(),
-		/* 3.2 */ new DecompositionTransitionOverloads(),
-		/* 3.3 */ new CombinedDecompositionTransitionOverloads(),
-		/* 4 */ new IntegrityOverload(),
-		/* 4.1 */ new CombinedIntegrityOverload(),
-		/* 4.2 */ new CastTransitionOverloads(),
-		/* 4.3 */ new CombinedCastTransitionOverloads(),
-		/* 5.0 */ new RefIntegrityOverloads(),
-		/* 5.1 */ new CombinedRefIntegrityOverloads()
+		/* 1. Analyze stage */
+		/* 1.0 */ new AnalyzeMethodAttributes(),
+		/* 1.1 */ new AnalyzeMethodParams(),
+		/* 2. Decomposition stage */
+		/* 2.0 */ new DecompositionOverload(),
+		/* 2.1 */ new CombinedDecompositionOverload(),
+		/* 3. Integrity stage */
+		/* 3.0 */ new IntegrityOverload(),
+		/* 3.1 */ new CombinedIntegrityOverload(),
+		/* 3.2 */ new RefIntegrityOverloads(),
+		/* 3.3 */ new CombinedRefIntegrityOverloads(),
+		/* 4. Decomposition transition stage */
+		/* 4.0 */ new DecompositionTransitionOverloads(),
+		/* 4.1 */ new CombinedDecompositionTransitionOverloads(),
+		/* 5. Cast transition stage */
+		/* 5.0 */ new CastTransitionOverloads(),
+		/* 5.1 */ new CombinedCastTransitionOverloads()
+		/* 6. Cast for decomposition transition stage */
+		/* 7. Cast for integrity transition stage */
 	};
 }
 

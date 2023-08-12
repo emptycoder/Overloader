@@ -113,14 +113,14 @@ public sealed partial class OverloadsGenerator
 								throw new ArgumentException("Count of arguments must greater or equals to 1.")
 									.WithLocation(declarationSyntax);
 							if (arguments[0].Expression is not TypeOfExpressionSyntax type)
-								throw new ArgumentException($"Argument must be {nameof(TypeOfExpressionSyntax)}.")
+								throw new ArgumentException($"Argument should be {nameof(TypeOfExpressionSyntax)}.")
 									.WithLocation(declarationSyntax);
 
 							typeEntry.FormattersToUse = new string[arguments.Count - 1];
 							for (int argIndex = 1, formatterIndex = 0; argIndex < arguments.Count; argIndex++, formatterIndex++)
 							{
 								if (arguments[argIndex].Expression is not LiteralExpressionSyntax literal)
-									throw new ArgumentException($"Formatter identifier must be {nameof(LiteralExpressionSyntax)}.")
+									throw new ArgumentException($"Formatter identifier should be {nameof(LiteralExpressionSyntax)}.")
 										.WithLocation(arguments[argIndex].Expression);
 
 								typeEntry.FormattersToUse[formatterIndex] = literal.GetInnerText();

@@ -57,8 +57,8 @@ public static partial class TestClass
 	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 	[return: {TAttribute.TagName}]
 	public static double TestMethod2(
-		[{TAttribute.TagName}] [{nameof(ParamModifier)}(""ref"", ""in"", typeof(Vector2<>))] this in Vector3<double> vec,
-		[{TAttribute.TagName}] [{nameof(CombineWith)}(""vec"")] [{nameof(ParamModifier)}(""in"", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
+		[{TAttribute.TagName}] [{nameof(Modifier)}(""ref"", ""in"", typeof(Vector2<>))] this in Vector3<double> vec,
+		[{TAttribute.TagName}] [{nameof(CombineWith)}(""vec"")] [{nameof(Modifier)}(""in"", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
 	public static void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
 }}
 
@@ -82,28 +82,28 @@ public record struct Vector2<T>
 
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
-			{"TestProject.Vector2<double> vecCast0,Vector3<double> vec1", false},
+			{"TestProject.Vector2<double> vec0,Vector3<double> vec1", false},
 			{"double vecX,double vecY,double vecZ,double vec1X,double vec1Y,double vec1Z", false},
 			{"double vecX,double vecY,double vecZ", false},
 			{"TestProject.Vector2<double> vec0,double vecZ,TestProject.Vector2<double> vec10,double vec1Z", false},
 			{"TestProject.Vector2<double> vec0,double vecZ", false},
 			{"this in TestProject.Vector3<double> vec", false},
-			{"this ref TestProject.Vector2<double> vecCast0,TestProject.Vector3<double> vec1", false},
-			{"this in TestProject.Vector3<double> vec,in TestProject.Vector2<double> vec1Cast0", false},
-			{"this ref TestProject.Vector2<double> vecCast0,in TestProject.Vector2<double> vec1Cast0", false},
-			{"this ref TestProject.Vector2<double> vecCast0", false},
+			{"this ref TestProject.Vector2<double> vec0,TestProject.Vector3<double> vec1", false},
+			{"this in TestProject.Vector3<double> vec,in TestProject.Vector2<double> vec10", false},
+			{"this ref TestProject.Vector2<double> vec0,in TestProject.Vector2<double> vec10", false},
+			{"this ref TestProject.Vector2<double> vec0", false},
 			{"TestProject.Vector3<float> vec,Vector3<double> vec1", false},
-			{"TestProject.Vector2<float> vecCast0,Vector3<double> vec1", false},
+			{"TestProject.Vector2<float> vec0,Vector3<double> vec1", false},
 			{"float vecX,float vecY,float vecZ,float vec1X,float vec1Y,float vec1Z", false},
 			{"float vecX,float vecY,float vecZ", false},
 			{"TestProject.Vector2<float> vec0,float vecZ,TestProject.Vector2<float> vec10,float vec1Z", false},
 			{"TestProject.Vector2<float> vec0,float vecZ", false},
 			{"this in TestProject.Vector3<float> vec,TestProject.Vector3<float> vec1", false},
 			{"this in TestProject.Vector3<float> vec", false},
-			{"this ref TestProject.Vector2<float> vecCast0,TestProject.Vector3<float> vec1", false},
-			{"this in TestProject.Vector3<float> vec,in TestProject.Vector2<float> vec1Cast0", false},
-			{"this ref TestProject.Vector2<float> vecCast0,in TestProject.Vector2<float> vec1Cast0", false},
-			{"this ref TestProject.Vector2<float> vecCast0", false},
+			{"this ref TestProject.Vector2<float> vec0,TestProject.Vector3<float> vec1", false},
+			{"this in TestProject.Vector3<float> vec,in TestProject.Vector2<float> vec10", false},
+			{"this ref TestProject.Vector2<float> vec0,in TestProject.Vector2<float> vec10", false},
+			{"this ref TestProject.Vector2<float> vec0", false},
 			{"Vector3<double> vec,float vec1", false}
 		};
 

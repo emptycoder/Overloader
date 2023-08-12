@@ -42,7 +42,7 @@ public struct ParameterDto
 					    !attribute.ArgumentList.Arguments[1].EqualsToTemplate(props)) continue;
 					tAttrDto.Attribute = attribute;
 					continue;
-				case nameof(ParamModifier) when attribute.ArgumentList is {Arguments: var args}:
+				case nameof(Modifier) when attribute.ArgumentList is {Arguments: var args}:
 					int argsCount = args.Count;
 					if (args[0].Expression is not LiteralExpressionSyntax modifierExpression
 					    || !modifierExpression.IsKind(SyntaxKind.StringLiteralExpression))

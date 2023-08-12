@@ -15,7 +15,7 @@ public sealed record ParameterData(
 {
 	public bool IsCombineNotExists => CombineIndex == byte.MaxValue;
 
-	public string BuildModifiersWithWhitespace(ParameterSyntax parameter, ITypeSymbol newParamType)
+	public string BuildModifiers(ParameterSyntax parameter, ITypeSymbol newParamType, string separator)
 	{
 		using var sb = SourceBuilder.GetInstance();
 		var clearType = newParamType.GetClearType();
@@ -33,7 +33,7 @@ public sealed record ParameterData(
 				    && !SymbolEqualityComparer.Default.Equals(originalType, typeSymbol)) continue;
 				if (isReplaced)
 					throw new ArgumentException(
-							$"Modifier has already been replaced by another {nameof(ParamModifier)}.")
+							$"Modifier has already been replaced by another {nameof(Modifier)}.")
 						.WithLocation(parameter);
 
 				isReplaced = true;
@@ -49,7 +49,7 @@ public sealed record ParameterData(
 			if (typeSymbol is null
 			    || SymbolEqualityComparer.Default.Equals(clearType, typeSymbol)
 			    || SymbolEqualityComparer.Default.Equals(originalType, typeSymbol))
-				sb.AppendWith(modifierStr, " ");
+				sb.AppendWith(modifierStr, separator);
 		}
 
 		return sb.ToString();
