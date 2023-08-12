@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 
-namespace Overloader.Models.Formatters.Transitions;
+namespace Overloader.Entities.Formatters.Transitions;
 
 public sealed record DecompositionModel(
 	DecompositionTransitionLink[] Links)

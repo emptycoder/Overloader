@@ -1,4 +1,4 @@
-﻿namespace Overloader.Models;
+﻿namespace Overloader.Entities;
 
 public sealed class Store
 {

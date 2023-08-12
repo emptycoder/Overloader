@@ -2,10 +2,9 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
-using Overloader.Models;
 using Overloader.Utils;
 
-namespace Overloader.DTOs;
+namespace Overloader.Entities.DTOs;
 
 public struct ParameterDto
 {

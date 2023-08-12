@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Overloader.Exceptions;
 
-namespace Overloader.Models;
+namespace Overloader.Entities;
 
 public readonly struct ResultOrException<TResult>
 {

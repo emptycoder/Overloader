@@ -2,11 +2,10 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.DTOs;
+using Overloader.Entities.DTOs;
 using Overloader.Exceptions;
 using Overloader.Utils;
 #if DEBUG && !DisableDebugger
-using System.Diagnostics;
 #endif
 
 namespace Overloader;

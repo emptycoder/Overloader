@@ -5,7 +5,7 @@ using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Models;
+namespace Overloader.Entities;
 
 public sealed record ParameterData(
 	ParameterAction ParameterAction,

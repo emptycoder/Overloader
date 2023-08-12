@@ -2,8 +2,8 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
+using Overloader.Entities;
 using Overloader.Enums;
-using Overloader.Models;
 
 namespace Overloader.ChainDeclarations.Overloads.Utils;
 

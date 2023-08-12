@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
-using Overloader.Models;
+using Overloader.Entities;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.Overloads.Utils;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
+using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
-using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader;

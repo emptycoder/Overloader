@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Overloader.ChainDeclarations.Overloads;
+using Overloader.Entities;
 using Overloader.Enums;
-using Overloader.Models;
 
 namespace Overloader.ChainDeclarations;
 
@@ -26,9 +26,13 @@ public static class ChainDeclarations
 		/* 4.1 */ new CombinedDecompositionTransitionOverloads(),
 		/* 5. Cast transition stage */
 		/* 5.0 */ new CastTransitionOverloads(),
-		/* 5.1 */ new CombinedCastTransitionOverloads()
+		/* 5.1 */ new CombinedCastTransitionOverloads(),
 		/* 6. Cast for decomposition transition stage */
+		/* 6.0 */ new CastForDTOverloads(),
+		/* 6.1 */ new CombinedCastForDTOverloads(),
 		/* 7. Cast for integrity transition stage */
+		/* 7.0 */
+		/* 7.1 */
 	};
 }
 

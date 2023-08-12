@@ -1,11 +1,17 @@
 ﻿using Microsoft.CodeAnalysis;
 using Overloader.ContentBuilders;
-using Overloader.DTOs;
+using Overloader.Entities.DTOs;
+using Overloader.Entities.Formatters;
 using Overloader.Exceptions;
-using Overloader.Models.Formatters;
 using Overloader.Utils;
 
-namespace Overloader.Models;
+namespace Overloader.Entities;
+
+public interface IGeneratorProps
+{
+	public ITypeSymbol? Template { get; }
+	public Compilation Compilation { get; }
+}
 
 public record GeneratorProperties : IGeneratorProps, IDisposable
 {

@@ -1,10 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
+using Overloader.Entities;
+using Overloader.Entities.Formatters.Transitions;
 using Overloader.Enums;
 using Overloader.Exceptions;
-using Overloader.Models;
-using Overloader.Models.Formatters.Transitions;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.Overloads.Utils;

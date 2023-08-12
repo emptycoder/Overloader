@@ -3,8 +3,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
+using Overloader.Entities;
 using Overloader.Exceptions;
-using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.Overloads.Utils;

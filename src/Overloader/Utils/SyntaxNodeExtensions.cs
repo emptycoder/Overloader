@@ -1,9 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Overloader.Entities;
 using Overloader.Exceptions;
-using Overloader.Models;
-using Overloader.Models.Formatters;
 
 namespace Overloader.Utils;
 
@@ -108,75 +107,28 @@ public static class SyntaxNodeExtensions
 			$"Type not found or {syntaxNode.ToFullString()} isn't type.").WithLocation(syntaxNode);
 	}
 
-	public static Dictionary<string, FormatterModel> GetFormatters(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
-	{
-		var dict = new Dictionary<string, FormatterModel>(attributeSyntaxes.Count);
-		foreach (var formatterSyntax in attributeSyntaxes)
-		{
-			var formatter = FormatterModel.Parse(formatterSyntax, compilation);
-			if (dict.ContainsKey(formatter.Identifier))
-				throw new ArgumentException($"{nameof(Formatter)} with identifier '{formatter.Identifier}' has been already exist.")
-					.WithLocation(formatterSyntax);
-
-			dict.Add(formatter.Identifier, formatter);
-		}
-
-		return dict;
-	}
-	
-	public static Dictionary<string, Models.Formatters.FormattersBundle> GetBundles(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
-	{
-		var dict = new Dictionary<string, Models.Formatters.FormattersBundle>(attributeSyntaxes.Count);
-		foreach (var formatterSyntax in attributeSyntaxes)
-		{
-			var formattersBundle = Models.Formatters.FormattersBundle.Parse(formatterSyntax, compilation);
-			if (dict.ContainsKey(formattersBundle.Identifier))
-				throw new ArgumentException($"{nameof(FormattersBundle)} with identifier '{formattersBundle.Identifier}' has been already exist.")
-					.WithLocation(formatterSyntax);
-
-			dict.Add(formattersBundle.Identifier, formattersBundle);
-		}
-
-		return dict;
-	}
-
-	public static Dictionary<ITypeSymbol, FormatterModel>? GetFormattersSample(
-		this Dictionary<string, FormatterModel> globalFormatters,
-		Dictionary<string, Models.Formatters.FormattersBundle> formattersBundles,
-		string[]? formattersToUse,
-		SyntaxNode errorSyntax)
-	{
-		if (formattersToUse is null) return null;
-
-		var formatters = new Dictionary<ITypeSymbol, FormatterModel>(formattersToUse.Length, SymbolEqualityComparer.Default);
-		foreach (string identifier in formattersToUse)
-		{
-			if (formattersBundles.TryGetValue(identifier, out var bundle))
-				foreach (string formatterName in bundle.FormatterNames)
-					AddFormatterToSample(formatterName);
-			else
-				AddFormatterToSample(identifier);
-		}
-		return formatters;
-
-		void AddFormatterToSample(string formatterIdentifier)
-		{
-			if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))
-				throw new ArgumentException($"Can't find formatter with identifier '{formatterIdentifier}'.")
-					.WithLocation(errorSyntax);
-
-			foreach (var formatterType in formatter.Types)
-			{
-				if (formatters.TryGetValue(formatterType, out var sameTypeFormatter))
-					throw new ArgumentException($"Type has been already overridden by '{sameTypeFormatter.Identifier}' formatter.")
-						.WithLocation(errorSyntax);
-				formatters.Add(formatterType, formatter);
-			}
-		}
-	}
-
 	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>
 		SymbolEqualityComparer.Default.Equals(arg.GetType(props.Compilation), props.Template);
+
+	public static string GetStringValue(this SyntaxNode syntaxNode, Compilation compilation)
+	{
+		switch (syntaxNode)
+		{
+			case LiteralExpressionSyntax literal when literal.IsKind(SyntaxKind.StringLiteralExpression):
+				return literal.GetVariableName();
+			case MemberAccessExpressionSyntax:
+			case InterpolatedStringExpressionSyntax:
+				var value = compilation
+					.GetSemanticModel(syntaxNode.SyntaxTree)
+					.GetConstantValue(syntaxNode);
+					
+				if (!value.HasValue || value.Value is not string) goto default;
+				return (string) value.Value!;
+			default:
+				throw new ArgumentException("SyntaxNode isn't StringLiteral/InterpolationString/MemberAccess.")
+					.WithLocation(syntaxNode);
+		}
+	}
 
 	public static string GetVariableName(this SyntaxNode syntaxNode)
 	{
@@ -196,14 +148,14 @@ public static class SyntaxNodeExtensions
 				when invocationExpressionSyntax.Expression.IsKind(SyntaxKind.IdentifierName):
 				var args = invocationExpressionSyntax.ArgumentList.Arguments;
 				if (args.Count != 1)
-					throw new ArgumentException("args.Count != 1")
+					throw new ArgumentException("args.Count != 1.")
 						.WithLocation(invocationExpressionSyntax);
 
 				name = args[0].Expression switch
 				{
 					MemberAccessExpressionSyntax syntax => syntax.Name.Identifier.Text,
 					IdentifierNameSyntax syntax => syntax.Identifier.Text,
-					_ => throw new ArgumentException("Expression isn't MemberAccessExpressionSyntax")
+					_ => throw new ArgumentException($"Expression isn't {nameof(MemberAccessExpressionSyntax)}.")
 						.WithLocation(invocationExpressionSyntax)
 				};
 				break;

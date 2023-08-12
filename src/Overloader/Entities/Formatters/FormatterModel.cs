@@ -1,11 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Overloader.Entities.Formatters.Params;
+using Overloader.Entities.Formatters.Transitions;
 using Overloader.Exceptions;
-using Overloader.Models.Formatters.Params;
-using Overloader.Models.Formatters.Transitions;
 using Overloader.Utils;
 
-namespace Overloader.Models.Formatters;
+namespace Overloader.Entities.Formatters;
 
 public sealed record FormatterModel(
 	string Identifier,
@@ -29,7 +29,7 @@ public sealed record FormatterModel(
 				.WithLocation(formatterSyntax);
 
 		if (args[0].Expression is not LiteralExpressionSyntax identifier)
-			throw new ArgumentException("Identifier should be LiteralExpressionSyntax.")
+			throw new ArgumentException($"Identifier should be {nameof(LiteralExpressionSyntax)}.")
 				.WithLocation(args[0].Expression);
 
 		ITypeSymbol[] types;
@@ -78,7 +78,7 @@ public sealed record FormatterModel(
 		for (int argIndex = beforeTransitionParamsCount; argIndex < args.Count; argIndex++)
 		{
 			if (args[argIndex].Expression is not ArrayCreationExpressionSyntax {Initializer.Expressions: var argExpressions})
-				throw new ArgumentException($"Arg of {nameof(FormatterModel)} should be {nameof(ArrayCreationExpressionSyntax)}.")
+				throw new ArgumentException($"Argument of {nameof(FormatterModel)} should be {nameof(ArrayCreationExpressionSyntax)}.")
 					.WithLocation(args[argIndex].Expression);
 
 			

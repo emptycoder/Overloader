@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Models.Formatters.Transitions;
+namespace Overloader.Entities.Formatters.Transitions;
 
 public sealed record DecompositionTransitionLink(
 	ITypeSymbol TemplateType,
@@ -18,7 +18,7 @@ public sealed record DecompositionTransitionLink(
 			throw new ArgumentException($"{nameof(type)} should be {nameof(TypeOfExpressionSyntax)}.")
 				.WithLocation(type);
 
-		if (mapParams is not ArrayCreationExpressionSyntax {Initializer.Expressions: var expressions})
+		if (mapParams is not ArrayCreationExpressionSyntax { Initializer.Expressions: var expressions })
 			throw new ArgumentException($"Expression isn't {nameof(ArrayCreationExpressionSyntax)}.")
 				.WithLocation(mapParams);
 

@@ -2,9 +2,9 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.Overloads.Utils;
+using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
-using Overloader.Models;
 
 namespace Overloader.ChainDeclarations.Overloads;
 

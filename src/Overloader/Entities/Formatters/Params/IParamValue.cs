@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Overloader.Models.Formatters.Params;
+namespace Overloader.Entities.Formatters.Params;
 
 public interface IParamValue
 {

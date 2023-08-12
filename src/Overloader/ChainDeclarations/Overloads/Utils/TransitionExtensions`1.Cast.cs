@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
+using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
-using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.Overloads.Utils;
@@ -59,12 +59,11 @@ public static partial class TransitionExtensions
 						: castedParameter.Type;
 
 					string strIndex = index.ToString();
-					string indexedParamName = transition.Types.Length > 0 ? $"{paramName}{strIndex}" : paramName;
 					headerBuilder
 						.Append(castedParameter.Modifier)
 						.AppendWith(paramType.ToDisplayString(), " ")
-						.Append(indexedParamName);
-					cast = cast.Replace($"${{Var{strIndex}}}", indexedParamName);
+						.Append(castedParameter.Name);
+					cast = cast.Replace($"${{Var{strIndex}}}", castedParameter.Name);
 
 					if (++index == transition.Types.Length)
 						break;

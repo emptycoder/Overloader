@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.Overloads.Utils;
 using Overloader.ContentBuilders;
+using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
-using Overloader.Models;
 using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.Overloads;
@@ -39,8 +39,7 @@ public sealed class CastTransitionOverloads : IChainMember
 					.WithLocation(parameter.GetLocation());
 			
 			transitionIndexes[formatterIndex] = -1;
-			maxTransitionsCount[formatterIndex++] = parameter.Modifiers
-				.Any(modifier =>modifier == SyntaxFactory.Token(SyntaxKind.RefKeyword))
+			maxTransitionsCount[formatterIndex++] = parameter.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.RefKeyword))
 				? 0
 				: formatter.Casts.Count;
 		}

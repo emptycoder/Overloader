@@ -19,7 +19,7 @@ public static class SourceTextExtensions
 		return sourceText.GetSubText(new TextSpan(startPos, endPos - startPos)).ToString();
 	}
 
-	public static int IndexOf(this SourceText sourceText, char character, int startPos = 0)
+	private static int IndexOf(this SourceText sourceText, char character, int startPos = 0)
 	{
 		for (int index = startPos; index < sourceText.Length; index++)
 		{
@@ -30,7 +30,7 @@ public static class SourceTextExtensions
 		return -1;
 	}
 
-	public static int LastIndexOf(this SourceText sourceText, char character)
+	private static int LastIndexOf(this SourceText sourceText, char character)
 	{
 		for (int index = sourceText.Length - 1; index >= 0; index--)
 		{

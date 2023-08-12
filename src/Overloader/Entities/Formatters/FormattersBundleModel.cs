@@ -3,14 +3,14 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Models.Formatters;
+namespace Overloader.Entities.Formatters;
 
-public sealed record FormattersBundle(string Identifier, string[] FormatterNames)
+public sealed record FormattersBundleModel(string Identifier, string[] FormatterNames)
 {
 	public readonly string Identifier = Identifier;
 	public readonly string[] FormatterNames = FormatterNames;
 
-	public static FormattersBundle Parse(AttributeSyntax formatterSyntax, Compilation compilation)
+	public static FormattersBundleModel Parse(AttributeSyntax formatterSyntax, Compilation compilation)
 	{
 		var args = formatterSyntax.ArgumentList?.Arguments ??
 		           throw new ArgumentException("Argument list for formatter can't be null.")
@@ -32,7 +32,7 @@ public sealed record FormattersBundle(string Identifier, string[] FormatterNames
 			formatterNames[index - 1] = formatterName.GetInnerText();
 		}
 
-		return new FormattersBundle(
+		return new FormattersBundleModel(
 			identifier.GetInnerText(),
 			formatterNames
 		);

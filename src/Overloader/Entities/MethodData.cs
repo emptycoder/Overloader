@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis;
 
-namespace Overloader.Models;
+namespace Overloader.Entities;
 
 public struct MethodData
 {

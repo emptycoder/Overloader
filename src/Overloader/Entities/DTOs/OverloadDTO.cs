@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Overloader.DTOs;
+namespace Overloader.Entities.DTOs;
 
 public sealed record OverloadDto(
 	string ClassName,
