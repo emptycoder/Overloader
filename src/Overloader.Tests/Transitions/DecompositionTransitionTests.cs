@@ -21,6 +21,7 @@ using Overloader;
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
 				typeof(TestProject.Vector2<>),
 				new object[]
 				{{
@@ -145,6 +146,7 @@ using Overloader;
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
 				typeof(TestProject.Vector3<>),
 				new object[]
 				{{

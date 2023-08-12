@@ -21,11 +21,14 @@ using Overloader;
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(TestProject.Vector2<>),
+				""vector2"",
 				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var0}}.X, Y = ${{Var0}}.Y }}""
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
 				typeof(TestProject.Vector2<>),
 				new object[]
 				{{
@@ -82,28 +85,28 @@ public record struct Vector2<T>
 
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
-			{"TestProject.Vector2<double> vec0,Vector3<double> vec1", false},
+			{"TestProject.Vector2<double> vector2ToVec,Vector3<double> vec1", false},
 			{"double vecX,double vecY,double vecZ,double vec1X,double vec1Y,double vec1Z", false},
 			{"double vecX,double vecY,double vecZ", false},
+			{"this in TestProject.Vector3<double> vec", false},
 			{"TestProject.Vector2<double> vec0,double vecZ,TestProject.Vector2<double> vec10,double vec1Z", false},
 			{"TestProject.Vector2<double> vec0,double vecZ", false},
-			{"this in TestProject.Vector3<double> vec", false},
-			{"this ref TestProject.Vector2<double> vec0,TestProject.Vector3<double> vec1", false},
-			{"this in TestProject.Vector3<double> vec,in TestProject.Vector2<double> vec10", false},
-			{"this ref TestProject.Vector2<double> vec0,in TestProject.Vector2<double> vec10", false},
-			{"this ref TestProject.Vector2<double> vec0", false},
+			{"TestProject.Vector2<double> vector2ToVec,TestProject.Vector3<double> vec1", false},
+			{"this in TestProject.Vector3<double> vec,TestProject.Vector2<double> vector2ToVec1", false},
+			{"TestProject.Vector2<double> vector2ToVec,TestProject.Vector2<double> vector2ToVec1", false},
+			{"TestProject.Vector2<double> vector2ToVec", false},
 			{"TestProject.Vector3<float> vec,Vector3<double> vec1", false},
-			{"TestProject.Vector2<float> vec0,Vector3<double> vec1", false},
+			{"TestProject.Vector2<float> vector2ToVec,Vector3<double> vec1", false},
 			{"float vecX,float vecY,float vecZ,float vec1X,float vec1Y,float vec1Z", false},
 			{"float vecX,float vecY,float vecZ", false},
-			{"TestProject.Vector2<float> vec0,float vecZ,TestProject.Vector2<float> vec10,float vec1Z", false},
-			{"TestProject.Vector2<float> vec0,float vecZ", false},
 			{"this in TestProject.Vector3<float> vec,TestProject.Vector3<float> vec1", false},
 			{"this in TestProject.Vector3<float> vec", false},
-			{"this ref TestProject.Vector2<float> vec0,TestProject.Vector3<float> vec1", false},
-			{"this in TestProject.Vector3<float> vec,in TestProject.Vector2<float> vec10", false},
-			{"this ref TestProject.Vector2<float> vec0,in TestProject.Vector2<float> vec10", false},
-			{"this ref TestProject.Vector2<float> vec0", false},
+			{"TestProject.Vector2<float> vec0,float vecZ,TestProject.Vector2<float> vec10,float vec1Z", false},
+			{"TestProject.Vector2<float> vec0,float vecZ", false},
+			{"TestProject.Vector2<float> vector2ToVec,TestProject.Vector3<float> vec1", false},
+			{"this in TestProject.Vector3<float> vec,TestProject.Vector2<float> vector2ToVec1", false},
+			{"TestProject.Vector2<float> vector2ToVec,TestProject.Vector2<float> vector2ToVec1", false},
+			{"TestProject.Vector2<float> vector2ToVec", false},
 			{"Vector3<double> vec,float vec1", false}
 		};
 

@@ -13,9 +13,9 @@ public sealed record CastModel(
 	{
 		try
 		{
-			int argsCount = expressions.Count - 1;
-			var templates = new ParamModel[argsCount - 1];
-			for (int index = 0, argIndex = 1; index < argsCount - 1; index++, argIndex++)
+			var templates = new List<ParamModel>();
+			int argIndex = 1;
+			for (; argIndex < expressions.Count - 2; argIndex++)
 			{
 				var modifierStr = string.Empty;
 				if (expressions[argIndex] is MemberAccessExpressionSyntax modifierExpression)
@@ -33,22 +33,25 @@ public sealed record CastModel(
 				}
 
 				if (expressions[argIndex] is not TypeOfExpressionSyntax)
-					throw new ArgumentException($"Type '{argIndex}' should be {nameof(TypeOfExpressionSyntax)}.")
+					throw new ArgumentException($"Type '{expressions[argIndex].ToString()}' should be {nameof(TypeOfExpressionSyntax)}.")
 						.WithLocation(expressions[argIndex]);
 				
 				var type = expressions[argIndex].GetType(compilation);
-				templates[index] = new ParamModel
+				templates.Add(new ParamModel
 				{
 					Name = expressions[++argIndex].GetStringValue(compilation),
 					Modifier = modifierStr,
 					Type = type,
 					IsUnboundType = type.GetClearType().IsUnboundGenericType
-				};
+				});
 			}
 
+			if (argIndex != expressions.Count - 1)
+				throw new ArgumentException($"Structure of {nameof(CastModel)} was broken.");
+
 			return new CastModel(
-				templates,
-				expressions[expressions.Count - 1].GetStringValue(compilation));
+				templates.ToArray(),
+				expressions[argIndex].GetStringValue(compilation));
 		}
 		catch (Exception ex)
 		{

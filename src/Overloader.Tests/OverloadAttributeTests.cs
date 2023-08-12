@@ -65,11 +65,14 @@ using Overloader;
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(TestProject.Vector2<>),
+				""vector3"",
 				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var0}}.X, Y = ${{Var0}}.Y }}""
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
 				typeof(TestProject.Vector2<>),
 				new object[]
 				{{

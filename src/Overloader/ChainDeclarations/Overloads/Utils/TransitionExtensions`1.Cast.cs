@@ -59,11 +59,12 @@ public static partial class TransitionExtensions
 						: castedParameter.Type;
 
 					string strIndex = index.ToString();
+					string indexedParameterName = $"{castedParameter.Name}To{char.ToUpper(paramName[0]).ToString()}{paramName.AsSpan(1).ToString()}";
 					headerBuilder
 						.Append(castedParameter.Modifier)
 						.AppendWith(paramType.ToDisplayString(), " ")
-						.Append(castedParameter.Name);
-					cast = cast.Replace($"${{Var{strIndex}}}", castedParameter.Name);
+						.Append(indexedParameterName);
+					cast = cast.Replace($"${{Var{strIndex}}}", indexedParameterName);
 
 					if (++index == transition.Types.Length)
 						break;

@@ -23,11 +23,14 @@ using Overloader;
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(TestProject.Vector2<>),
+				""vector2"",
 				{castInBlock}
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
 				typeof(TestProject.Vector2<>),
 				new object[]
 				{{
@@ -155,26 +158,30 @@ using Overloader;
 			}},
 			new object[]
 			{{
-				TransitionType.Cast,
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(TestProject.Vector2<float>),
+				""vector2"",
 				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
 			}},
 			new object[]
 			{{
-				TransitionType.Cast,
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(TestProject.Vector3<long>),
+				""vector3"",
 				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
 			}},
 			new object[]
 			{{
-				TransitionType.Cast,
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(long),
+				""x"",
 				typeof(long),
+				""y"",
 				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}, Y = (${{T}}) ${{Var1}} }}""
 			}},
 			new object[]
 			{{
-				TransitionType.Decomposition,
+				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
 				typeof(TestProject.Vector2<>),
 				new object[]
 				{{
@@ -194,13 +201,14 @@ using Overloader;
 			}},
 			new object[]
 			{{
-				TransitionType.Cast,
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(TestProject.Vector2<double>),
+				""vector2"",
 				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
 			}},
 			new object[]
 			{{
-				TransitionType.Decomposition,
+				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
 				typeof(TestProject.Vector2<>),
 				new object[]
 				{{
@@ -313,7 +321,9 @@ using Overloader;
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(TestProject.Vector3<float>),
+				""vector3"",
 				""new TestProject.Vector3<double>() {{ X = (double) ${{Var0}}.X, Y = (double) ${{Var0}}.Y }}""
 			}})]
 [assembly: {nameof(Formatter)}(
@@ -328,7 +338,9 @@ using Overloader;
 			}},
 			new object[]
 			{{
+				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
 				typeof(TestProject.Vector3<double>),
+				""vector3"",
 				""new TestProject.Vector3<float>() {{ X = (float) ${{Var0}}.X, Y = (float) ${{Var0}}.Y }}""
 			}})]
 

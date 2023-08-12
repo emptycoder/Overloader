@@ -83,7 +83,7 @@ public sealed record FormatterModel(
 
 			
 			if (argExpressions[0] is not MemberAccessExpressionSyntax transitionTypeExpression)
-				throw new ArgumentException("Type should be specified as a first parameter.")
+				throw new ArgumentException($"{nameof(TransitionType)} should be specified as a first parameter.")
 					.WithLocation(argExpressions[0]);
 
 			switch (transitionTypeExpression.Name.ToString())
