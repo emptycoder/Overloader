@@ -1,4 +1,4 @@
-﻿namespace Overloader.Tests.Parameter;
+﻿namespace Overloader.Tests.Attributes.Parameter;
 
 [TestFixture]
 public class ParamModifierTests
@@ -6,78 +6,78 @@ public class ParamModifierTests
 	[Test]
 	public void BaseTest()
 	{
-		const string programCs = @$"
-using Overloader;
+		const string programCs = $$"""
+			using Overloader;
 
-[assembly: {nameof(Formatter)}(
-			""Vector3"",
-			typeof(TestProject.Vector3<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T"",
-				""Z"", ""T""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(TestProject.Vector2<>),
-				""vector2"",
-				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var0}}.X, Y = ${{Var0}}.Y }}""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
-				typeof(TestProject.Vector2<>),
+			[assembly: {{nameof(Formatter)}}(
+				"Vector3",
+				typeof(TestProject.Vector3<>),
+				new object[] {"T"},
 				new object[]
-				{{
-					""X"", ""X"",
-					""Y"", ""Y""
-				}}
-			}})]
-[assembly: {nameof(Formatter)}(
-			""Vector2"",
-			typeof(TestProject.Vector2<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T""
-			}})]
+				{
+					"X", "T",
+					"Y", "T",
+					"Z", "T"
+				},
+				new object[]
+				{
+					{{nameof(TransitionType)}}.{{nameof(TransitionType.Cast)}},
+					typeof(TestProject.Vector2<>), "vector2",
+					"new TestProject.Vector3<${T}>() { X = ${Var0}.X, Y = ${Var0}.Y }"
+				},
+				new object[]
+			  	{
+					{{nameof(TransitionType)}}.{{nameof(TransitionType.Decomposition)}},
+					typeof(TestProject.Vector2<>),
+					new object[]
+					{
+						"X", "X",
+						"Y", "Y"
+					}
+				})]
+			[assembly: {{nameof(Formatter)}}(
+				"Vector2",
+				typeof(TestProject.Vector2<>),
+				new object[] {"T"},
+				new object[]
+				{
+					"X", "T",
+					"Y", "T"
+				})]
 
-namespace TestProject;
+			namespace TestProject;
 
-internal partial class Program
-{{
-	static void Main(string[] args) {{ }}
-}}
+			internal partial class Program
+			{
+				static void Main(string[] args) { }
+			}
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"", ""Vector2"")]
-[{nameof(TOverload)}(typeof(float))]
-public static partial class TestClass
-{{
-	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
-	[return: {TAttribute.TagName}]
-	public static double TestMethod2(
-		[{TAttribute.TagName}] [{nameof(Modifier)}(""ref"", ""in"", typeof(Vector2<>))] this in Vector3<double> vec,
-		[{TAttribute.TagName}] [{nameof(CombineWith)}(""vec"")] [{nameof(Modifier)}(""in"", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
-	public static void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
-}}
+			[{{nameof(TSpecify)}}(typeof(double), "Vector3", "Vector2")]
+			[{{nameof(TOverload)}}(typeof(float))]
+			public static partial class TestClass
+			{
+				public static void TestMethod1([{{nameof(Integrity)}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
+			  	[return: {{TAttribute.TagName}}]
+			  	public static double TestMethod2(
+			  		[{{TAttribute.TagName}}] [{{nameof(Modifier)}}("ref", "in", typeof(Vector2<>))] this in Vector3<double> vec,
+			  		[{{TAttribute.TagName}}] [{{nameof(CombineWith)}}("vec")] [{{nameof(Modifier)}}("in", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
+			  	public static void TestMethod3(Vector3<double> vec, [{{TAttribute.TagName}}] double vec1) { }
+			}
 
-public struct Vector3<T>
-{{
-	public T X;
-	public T Y {{ get; set; }}
-	internal T Z {{ get; private set; }}
-}}
+			public struct Vector3<T>
+			{
+				public T X;
+			  	public T Y { get; set; }
+			  	internal T Z { get; private set; }
+			}
 
-public record struct Vector2<T>
-{{
-	public T X;
-	public T Y;
-}}
-";
+			public record struct Vector2<T>
+			{
+				public T X;
+				public T Y;
+			}
+
+		""";
 
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);

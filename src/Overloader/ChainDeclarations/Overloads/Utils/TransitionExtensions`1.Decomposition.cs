@@ -14,6 +14,7 @@ public static partial class TransitionExtensions
 	public static void WriteDecompositionTransitionOverload(
 		SourceBuilder headerBuilder,
 		SourceBuilder bodyBuilder,
+		XmlDocumentation xmlDocumentation,
 		GeneratorProperties props,
 		ParameterData mappedParam,
 		ParameterSyntax parameter,
@@ -58,16 +59,22 @@ public static partial class TransitionExtensions
 							props.Template,
 							transitionLink.TemplateType).PickResult(parameter);
 
+						// TODO: Replace with user specified
 						if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
-							headerBuilder.AppendWith("in", " ");
-
+							headerBuilder
+								.AppendAsConstant("in")
+								.WhiteSpace();
+						
 						headerBuilder
-							.AppendWith(paramType.ToDisplayString(), " ")
+							.Append(paramType.ToDisplayString())
+							.WhiteSpace()
 							.Append(paramName)
 							.Append(linkIndex.ToString());
 
 						if (++linkIndex == transition.Links.Length) break;
-						headerBuilder.AppendWoTrim(", ");
+						headerBuilder
+							.AppendAsConstant(",")
+							.WhiteSpace();
 					}
 				}
 
@@ -80,7 +87,11 @@ public static partial class TransitionExtensions
 						    out string? replacement,
 						    out int linkIndex))
 					{
-						bodyBuilder.Append($"{paramName}{linkIndex.ToString()}.{replacement}");
+						string newParamName = $"{paramName}{linkIndex.ToString()}";
+						xmlDocumentation.AddOverload(formatterParam.Identifier, newParamName);
+						bodyBuilder.Append(newParamName)
+							.AppendAsConstant(".")
+							.Append(replacement ?? string.Empty);
 					}
 					else
 					{
@@ -88,18 +99,22 @@ public static partial class TransitionExtensions
 						var paramType = props.SetDeepestTypeWithTemplateFilling(templateType, props.Template).PickResult(parameter);
 
 						headerBuilder
-							.AppendWoTrim(", ")
-							.AppendWith(paramType.ToDisplayString(), " ")
+							.AppendAsConstant(",")
+							.WhiteSpace()
+							.Append(paramType.ToDisplayString())
+							.WhiteSpace()
 							.Append(paramName)
 							.Append(formatterParam.Identifier);
 
 						bodyBuilder
-							.AppendWoTrim(paramName)
-							.AppendWoTrim(formatterParam.Identifier);
+							.Append(paramName)
+							.Append(formatterParam.Identifier);
 					}
 
 					if (++formatterParamIndex == formatter.Params.Length) break;
-					bodyBuilder.AppendWoTrim(", ");
+					bodyBuilder
+						.AppendAsConstant(",")
+						.WhiteSpace();
 				}
 				break;
 			default:

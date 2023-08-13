@@ -12,6 +12,7 @@ public static partial class TransitionExtensions
 	public delegate void TransitionWriter(
 		SourceBuilder headerBuilder,
 		SourceBuilder bodyBuilder,
+		XmlDocumentation xmlDocumentation,
 		GeneratorProperties props,
 		ParameterData mappedParam,
 		ParameterSyntax parameter,
@@ -22,6 +23,7 @@ public static partial class TransitionExtensions
 		this SourceBuilder headerBuilder,
 		TransitionWriter transitionWriter,
 		SourceBuilder bodyBuilder,
+		XmlDocumentation xmlDocumentation,
 		GeneratorProperties props,
 		in SeparatedSyntaxList<ParameterSyntax> parameters,
 		Span<int> transitionIndexes,
@@ -34,12 +36,16 @@ public static partial class TransitionExtensions
 
 			if (!combineWithMode || mappedParam.IsCombineNotExists)
 			{
-				transitionWriter(headerBuilder, bodyBuilder, props, mappedParam, parameter, transitionIndexes, ref paramIndex);
+				transitionWriter(headerBuilder, bodyBuilder, xmlDocumentation, props, mappedParam, parameter, transitionIndexes, ref paramIndex);
 
 				if (++index == parameters.Count) break;
 				if (!combineWithMode || props.Store.OverloadMap[index].IsCombineNotExists)
-					headerBuilder.AppendWoTrim(", ");
-				bodyBuilder.AppendWoTrim(", ");
+					headerBuilder
+						.AppendAsConstant(",")
+						.WhiteSpace();
+				bodyBuilder
+					.AppendAsConstant(",")
+					.WhiteSpace();
 			}
 			else
 			{
@@ -52,6 +58,7 @@ public static partial class TransitionExtensions
 
 				transitionWriter(EmptySourceBuilder.Instance,
 					bodyBuilder,
+					xmlDocumentation,
 					props,
 					props.Store.OverloadMap![mappedParam.CombineIndex],
 					parameters[mappedParam.CombineIndex],
@@ -59,7 +66,9 @@ public static partial class TransitionExtensions
 					ref tempParamIndex);
 
 				if (++index == parameters.Count) break;
-				bodyBuilder.AppendWoTrim(", ");
+				bodyBuilder
+					.AppendAsConstant(",")
+					.WhiteSpace();
 			}
 		}
 	}
@@ -73,11 +82,12 @@ public static partial class TransitionExtensions
 		{
 			case ParameterAction.FormatterReplacement:
 			{
-				bodyBuilder.AppendWoTrim(EmptySourceBuilder.Instance
+				string[] decompositionParams = EmptySourceBuilder.Instance
 					.AppendFormatterParam(props,
 						props.Store.OverloadMap![mappedParam.CombineIndex].Type,
 						parameter.Identifier.ValueText)
-					.PickResult(parameter));
+					.PickResult(parameter);
+				bodyBuilder.Append(string.Join(", ", decompositionParams));
 				break;
 			}
 			case ParameterAction.Nothing:
@@ -93,14 +103,18 @@ public static partial class TransitionExtensions
 	public static void AppendCombinedSimple(this SourceBuilder bodyBuilder, ParameterData mappedParam, ParameterSyntax parameter)
 	{
 		if (mappedParam.Type.IsRefLikeType)
-			bodyBuilder.AppendWoTrim("ref ");
-		bodyBuilder.AppendWoTrim(parameter.Identifier.ValueText);
+			bodyBuilder
+				.AppendAsConstant("ref")
+				.WhiteSpace();
+		bodyBuilder.Append(parameter.Identifier.ValueText);
 	}
 
 	public static void AppendVariableToBody(this SourceBuilder bodyBuilder, ParameterSyntax parameter, string? paramName = null)
 	{
 		if (parameter.Modifiers.Any(SyntaxKind.RefKeyword))
-			bodyBuilder.AppendWoTrim("ref ");
-		bodyBuilder.AppendWoTrim(paramName ?? parameter.Identifier.ValueText);
+			bodyBuilder
+				.AppendAsConstant("ref")
+				.WhiteSpace();
+		bodyBuilder.Append(paramName ?? parameter.Identifier.ValueText);
 	}
 }

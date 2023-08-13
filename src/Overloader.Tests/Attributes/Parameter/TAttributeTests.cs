@@ -1,4 +1,4 @@
-﻿namespace Overloader.Tests.Parameter;
+﻿namespace Overloader.Tests.Attributes.Parameter;
 
 [TestFixture]
 // ReSharper disable once InconsistentNaming

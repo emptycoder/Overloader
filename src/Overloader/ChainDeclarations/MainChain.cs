@@ -30,11 +30,14 @@ internal class MainChain : IChainMember
 
 		// Declare class/struct/record signature
 		sb.AppendAttributes(entrySyntax.AttributeLists, "\n")
-			.AppendWith(entrySyntax.Modifiers.ToString(), " ")
-			.AppendWith(entrySyntax.Keyword.ToFullString(), " ")
+			.Append(entrySyntax.Modifiers.ToString())
+			.WhiteSpace()
+			.Append(entrySyntax.Keyword.ToFullString())
+			.WhiteSpace()
 			.Append(props.ClassName)
 			.Append(entrySyntax.BaseList?.ToFullString() ?? string.Empty)
-			.AppendWith(entrySyntax.TypeParameterList?.ToString() ?? string.Empty, " ")
+			.Append(entrySyntax.TypeParameterList?.ToString() ?? string.Empty)
+			.WhiteSpace()
 			.Append(entrySyntax.ConstraintClauses.ToFullString(), 1)
 			.NestedIncrease(SyntaxKind.OpenBraceToken);
 

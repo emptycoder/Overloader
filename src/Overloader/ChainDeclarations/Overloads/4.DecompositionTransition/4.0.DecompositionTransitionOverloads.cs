@@ -34,41 +34,52 @@ public sealed class DecompositionTransitionOverloads : IChainMember
 			maxTransitionsCount[formatterIndex++] = formatter.Decompositions.Count;
 		}
 
-		// Check that transitions exists
+		// Check that transitions exist
 		for (int index = 0;;)
 		{
 			if (maxTransitionsCount[index] != 0) break;
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
 
+		var xmlDocumentation = XmlDocumentation.Parse(entry.GetLeadingTrivia());
 		Span<int> transitionIndexes = stackalloc int[props.Store.FormattersWoIntegrityCount];
-		using var bodyBuilder = SourceBuilder.GetInstance();
+		using var bodyBuilder = StringSourceBuilder.Instance;
+		using var parameterBuilder = StringSourceBuilder.Instance;
 		for (;;)
 		{
 			bodyBuilder.Append(entry.Identifier.ToString())
-				.AppendWoTrim("(");
+				.AppendAsConstant("(");
 			props.Builder
-				.AppendChainMemberNameComment(nameof(DecompositionTransitionOverloads))
+				.AppendChainMemberNameComment(nameof(DecompositionTransitionOverloads));
+			
+			parameterBuilder
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-				.Append("(");
-			props.Builder.WriteTransitionOverload(
-				TransitionExtensions.WriteDecompositionTransitionOverload,
-				bodyBuilder,
-				props,
-				parameters,
-				transitionIndexes);
+				.AppendAsConstant("(")
+				.WriteTransitionOverload(
+					TransitionExtensions.WriteDecompositionTransitionOverload,
+					bodyBuilder,
+					xmlDocumentation,
+					props,
+					parameters,
+					transitionIndexes);
+			
 			props.Builder
-				.AppendWith(")", " ")
+				.AppendXmlDocumentation(xmlDocumentation)
+				.AppendAndClear(parameterBuilder)
+				.AppendAsConstant(")")
+				.WhiteSpace()
 				.Append(entry.ConstraintClauses.ToString());
 
 			if (props.Store.IsNeedToRemoveBody)
-				props.Builder.Append(";");
+				props.Builder.AppendAsConstant(";");
 			else
-				props.Builder.Append(" =>", 1)
+				props.Builder
+					.WhiteSpace()
+					.AppendAsConstant("=>", 1)
 					.NestedIncrease()
 					.AppendRefReturnValues(entry.ReturnType)
-					.Append(bodyBuilder.ToStringAndClear())
-					.AppendWoTrim(");", 1)
+					.AppendAndClear(bodyBuilder)
+					.AppendAsConstant(");", 1)
 					.NestedDecrease();
 
 			/*

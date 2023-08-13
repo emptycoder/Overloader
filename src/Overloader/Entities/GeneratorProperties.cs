@@ -76,7 +76,7 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 	}
 
 	public Store Store { get; } = new();
-	public SourceBuilder Builder { get; } = SourceBuilder.GetInstance();
+	public SourceBuilder Builder { get; } = StringSourceBuilder.Instance;
 
 	public string ClassName { get; }
 

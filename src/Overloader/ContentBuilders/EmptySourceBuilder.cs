@@ -2,8 +2,14 @@
 
 public sealed class EmptySourceBuilder : SourceBuilder
 {
-	private EmptySourceBuilder() : base(null!, null!) { }
 	public static SourceBuilder Instance { get; } = new EmptySourceBuilder();
-	public override SourceBuilder AppendWoTrim(ReadOnlySpan<char> str, sbyte breakCount = 0) => this;
-	public override void Dispose() { }
+	protected override char this[int index] => throw new IndexOutOfRangeException();
+	protected override int Length => 0;
+	protected override void AppendChar(char character) { }
+	protected override void AppendString(string str) { }
+	protected override SourceBuilder NewBuilder() => Instance;
+	public override SourceBuilder CloneBuilder() => Instance;
+	protected override void DisposeBuilder() { }
+	protected override void ClearBuilder() { }
+	public override string ToString() => string.Empty;
 }

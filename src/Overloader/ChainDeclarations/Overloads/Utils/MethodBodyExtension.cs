@@ -18,12 +18,12 @@ public static class MethodBodyExtension
 		if (method.ExpressionBody is not null)
 		{
 			props.Builder
-				.AppendWoTrim(" ")
+				.WhiteSpace()
 				.NestedIncrease()
 				.WriteExpressionBody(method.ExpressionBody, replacements, props.Template.ToDisplayString());
 			props.Builder
 				.NestedDecrease()
-				.Append(";", 1);
+				.AppendAsConstant(";", 1);
 		}
 		else if (method.Body is not null)
 		{
@@ -32,7 +32,7 @@ public static class MethodBodyExtension
 		}
 		else
 		{
-			props.Builder.AppendWoTrim(";", 1);
+			props.Builder.AppendAsConstant(";", 1);
 		}
 		return props;
 	}
@@ -50,7 +50,7 @@ public static class MethodBodyExtension
 		string? changeLine = triviaList.ParseTrivia(buffer, templateStr, out var localReplacements);
 		if (changeLine is not null)
 		{
-			sb.AppendWoTrim(changeLine, 1);
+			sb.Append(changeLine, 1);
 		}
 		else if (localReplacements.IsEmpty)
 		{
@@ -88,7 +88,7 @@ public static class MethodBodyExtension
 						sb.NestedDecrease(SyntaxKind.CloseBraceToken);
 						continue;
 					default:
-						sb.AppendWoTrim(nodeOrToken.HasLeadingTrivia ? nodeOrToken.WithLeadingTrivia().ToFullString() : nodeOrToken.ToFullString());
+						sb.AppendAsConstant(nodeOrToken.HasLeadingTrivia ? nodeOrToken.WithLeadingTrivia().ToFullString() : nodeOrToken.ToFullString());
 						continue;
 				}
 			}
@@ -109,8 +109,8 @@ public static class MethodBodyExtension
 					// Don't need go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
 					if (varName.FindInReplacements(replacements) == -1) goto default;
-					sb.AppendWoTrim(varName)
-						.AppendWoTrim(string.Join("", syntax.ArgumentList.Arguments));
+					sb.Append(varName)
+						.Append(string.Join("", syntax.ArgumentList.Arguments));
 					break;
 				case MemberAccessExpressionSyntax syntax:
 					if (syntax.Expression is not IdentifierNameSyntax)
@@ -122,14 +122,14 @@ public static class MethodBodyExtension
 					// Don't need go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
 					if (varName.FindInReplacements(replacements) == -1) goto default;
-					sb.AppendWoTrim(varName)
-						.AppendWoTrim(syntax.Name.ToString());
+					sb.Append(varName)
+						.Append(syntax.Name.ToString());
 					break;
 				case ArgumentSyntax argSyntax:
 					varName = argSyntax.Expression.ToString();
 					int replacementIndex = varName.FindInReplacements(replacements);
 					if (replacementIndex == -1) goto default;
-					sb.AppendWoTrim(replacements[replacementIndex].ConcatedVars);
+					sb.AppendAsConstant(replacements[replacementIndex].ConcatedVars);
 					break;
 				case StatementSyntax:
 				{
@@ -138,7 +138,7 @@ public static class MethodBodyExtension
 					string? changeLine = triviaList.ParseTrivia(buffer, templateStr, out var localReplacements);
 					if (changeLine is not null)
 					{
-						sb.AppendWoTrim(changeLine, 1);
+						sb.Append(changeLine, 1);
 					}
 					else if (localReplacements.IsEmpty)
 					{

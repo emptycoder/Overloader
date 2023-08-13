@@ -21,14 +21,15 @@ public sealed class CombinedIntegrityOverload : IChainMember
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
 
-		using var bodyBuilder = SourceBuilder.GetInstance();
+		using var bodyBuilder = StringSourceBuilder.Instance;
 		bodyBuilder.Append(entry.Identifier.ToString())
-			.AppendWoTrim("(");
+			.AppendAsConstant("(");
 
 		props.Builder
 			.AppendChainMemberNameComment(nameof(CombinedIntegrityOverload))
+			.Append(entry.GetLeadingTrivia().ToString(), 1)
 			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-			.AppendWoTrim("(");
+			.AppendAsConstant("(");
 
 		if (parameters.Count == 0) goto CloseParameterBracket;
 
@@ -62,32 +63,43 @@ public sealed class CombinedIntegrityOverload : IChainMember
 
 				if (++index == parameters.Count) break;
 				if (props.Store.OverloadMap[index].IsCombineNotExists)
-					props.Builder.AppendWoTrim(", ");
-				bodyBuilder.AppendWoTrim(", ");
+					props.Builder
+						.AppendAsConstant(",")
+						.WhiteSpace();
+				bodyBuilder
+					.AppendAsConstant(",")
+					.WhiteSpace();
 			}
 			else
 			{
 				bodyBuilder.AppendCombinedSimple(mappedParam, parameters[mappedParam.CombineIndex]);
 				if (++index == parameters.Count) break;
 				if (props.Store.OverloadMap[index].IsCombineNotExists)
-					props.Builder.AppendWoTrim(", ");
-				bodyBuilder.AppendWoTrim(", ");
+					props.Builder
+						.AppendAsConstant(",")
+						.WhiteSpace();
+				bodyBuilder
+					.AppendAsConstant(",")
+					.WhiteSpace();
 			}
 		}
 
 		CloseParameterBracket:
 		props.Builder
-			.AppendWith(")", " ")
+			.AppendAsConstant(")")
+			.WhiteSpace()
 			.Append(entry.ConstraintClauses.ToString());
 
 		if (props.Store.IsNeedToRemoveBody)
-			props.Builder.Append(";");
+			props.Builder.AppendAsConstant(";");
 		else
-			props.Builder.Append(" =>", 1)
+			props.Builder
+				.WhiteSpace()
+				.AppendAsConstant("=>", 1)
 				.NestedIncrease()
 				.AppendRefReturnValues(entry.ReturnType)
-				.Append(bodyBuilder.ToString())
-				.AppendWoTrim(");", 1)
+				.Append(bodyBuilder)
+				.AppendAsConstant(");", 1)
 				.NestedDecrease();
 
 		return ChainAction.NextMember;

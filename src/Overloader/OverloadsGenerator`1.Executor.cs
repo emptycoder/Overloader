@@ -14,7 +14,7 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 		using var gsb = (GeneratorProperties) obj;
 		try
 		{
-			gsb.Builder.AppendWoTrim(Constants.GeneratedCodeHeader);
+			gsb.Builder.AppendAsConstant(Constants.GeneratedCodeHeader);
 			if (ChainDeclarations.ChainDeclarations.Main.Execute(gsb, gsb.StartEntry.Syntax) != ChainAction.Break)
 				gsb.ReleaseAsOutput();
 		}

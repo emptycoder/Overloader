@@ -65,35 +65,44 @@ public sealed class CombinedCastTransitionOverloads : IChainMember
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
 
-
-		using var bodyBuilder = SourceBuilder.GetInstance();
+		var xmlDocumentation = XmlDocumentation.Parse(entry.GetLeadingTrivia());
+		using var bodyBuilder = StringSourceBuilder.Instance;
+		using var parameterBuilder = StringSourceBuilder.Instance;
 		for (;;)
 		{
 			bodyBuilder.Append(entry.Identifier.ToString())
-				.AppendWoTrim("(");
-			props.Builder
+				.AppendAsConstant("(");
+			
+			parameterBuilder
 				.AppendChainMemberNameComment(nameof(CombinedDecompositionTransitionOverloads))
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-				.Append("(");
-			props.Builder.WriteTransitionOverload(
-				TransitionExtensions.WriteCastTransitionOverload,
-				bodyBuilder,
-				props,
-				parameters,
-				transitionIndexes,
-				true);
+				.AppendAsConstant("(")
+				.WriteTransitionOverload(
+					TransitionExtensions.WriteCastTransitionOverload,
+					bodyBuilder,
+					xmlDocumentation,
+					props,
+					parameters,
+					transitionIndexes,
+					true);
+			
 			props.Builder
-				.AppendWith(")", " ")
+				.AppendXmlDocumentation(xmlDocumentation)
+				.AppendAndClear(parameterBuilder)
+				.AppendAsConstant(")")
+				.WhiteSpace()
 				.Append(entry.ConstraintClauses.ToString());
 
 			if (props.Store.IsNeedToRemoveBody)
-				props.Builder.Append(";");
+				props.Builder.AppendAsConstant(";");
 			else
-				props.Builder.Append(" =>", 1)
+				props.Builder
+					.WhiteSpace()
+					.AppendAsConstant("=>", 1)
 					.NestedIncrease()
 					.AppendRefReturnValues(entry.ReturnType)
-					.Append(bodyBuilder.ToStringAndClear())
-					.AppendWoTrim(");", 1)
+					.AppendAndClear(bodyBuilder)
+					.AppendAsConstant(");", 1)
 					.NestedDecrease();
 
 			/*

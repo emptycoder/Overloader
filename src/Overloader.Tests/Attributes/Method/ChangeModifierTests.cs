@@ -1,4 +1,4 @@
-﻿namespace Overloader.Tests.Method;
+﻿namespace Overloader.Tests.Attributes.Method;
 
 [TestFixture]
 public class ChangeModifierTests

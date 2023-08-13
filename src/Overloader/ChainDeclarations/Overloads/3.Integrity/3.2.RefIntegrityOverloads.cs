@@ -59,8 +59,9 @@ public sealed class RefIntegrityOverloads : IChainMember
 		{
 			props.Builder
 				.AppendChainMemberNameComment(nameof(RefIntegrityOverloads))
+				.Append(entry.GetLeadingTrivia().ToString(), 1)
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-				.Append("(");
+				.AppendAsConstant("(");
 			
 			for (int index = 0;;)
 			{
@@ -89,11 +90,14 @@ public sealed class RefIntegrityOverloads : IChainMember
 				}
 
 				if (++index == parameters.Count) break;
-				props.Builder.AppendWoTrim(", ");
+				props.Builder
+					.AppendAsConstant(",")
+					.WhiteSpace();
 			}
 			
 			props.Builder
-				.AppendWith(")", " ")
+				.AppendAsConstant(")")
+				.WhiteSpace()
 				.Append(entry.ConstraintClauses.ToString());
 			props.WriteMethodBody(entry, Array.Empty<(string, string)>());
 			

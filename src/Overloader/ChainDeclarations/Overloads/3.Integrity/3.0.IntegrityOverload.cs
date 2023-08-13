@@ -18,11 +18,12 @@ public sealed class IntegrityOverload : IChainMember
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
-
+		
 		props.Builder
 			.AppendChainMemberNameComment(nameof(IntegrityOverload))
+			.Append(entry.GetLeadingTrivia().ToString(), 1)
 			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-			.Append("(");
+			.AppendAsConstant("(");
 
 		if (parameters.Count == 0) goto CloseParameterBracket;
 
@@ -50,12 +51,15 @@ public sealed class IntegrityOverload : IChainMember
 			}
 
 			if (++index == parameters.Count) break;
-			props.Builder.AppendWoTrim(", ");
+			props.Builder
+				.AppendAsConstant(",")
+				.WhiteSpace();
 		}
 
 		CloseParameterBracket:
 		props.Builder
-			.AppendWith(")", " ")
+			.AppendAsConstant(")")
+			.WhiteSpace()
 			.Append(entry.ConstraintClauses.ToString());
 		props.WriteMethodBody(entry, Array.Empty<(string, string)>());
 

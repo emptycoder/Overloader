@@ -2,9 +2,11 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ChainDeclarations.Overloads.Utils;
+using Overloader.ContentBuilders;
 using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
+using Overloader.Utils;
 
 namespace Overloader.ChainDeclarations.Overloads;
 
@@ -26,9 +28,12 @@ public sealed class DecompositionOverload : IChainMember
 			.Shared.Rent(props.Store.FormattersWoIntegrityCount);
 
 		props.Builder
-			.AppendChainMemberNameComment(nameof(DecompositionOverload))
+			.AppendChainMemberNameComment(nameof(DecompositionOverload));
+		
+		var xmlDocumentation = XmlDocumentation.Parse(entry.GetLeadingTrivia());
+		using var parameterBuilder = StringSourceBuilder.Instance
 			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-			.Append("(");
+			.AppendAsConstant("(");
 
 		for (int index = 0;;)
 		{
@@ -38,24 +43,26 @@ public sealed class DecompositionOverload : IChainMember
 			switch (mappedParam.ParameterAction)
 			{
 				case ParameterAction.Nothing:
-					props.Builder.Append(parameter.ToFullString());
+					parameterBuilder.Append(parameter.ToFullString());
 					break;
 				case ParameterAction.SimpleReplacement:
 				case ParameterAction.CustomReplacement:
-					props.Builder.AppendParameter(parameter, mappedParam, props.Compilation);
+					parameterBuilder.AppendParameter(parameter, mappedParam, props.Compilation);
 					break;
 				case ParameterAction.FormatterIntegrityReplacement:
-					props.Builder.AppendIntegrityParam(props, mappedParam, parameter);
+					parameterBuilder.AppendIntegrityParam(props, mappedParam, parameter);
 					break;
 				case ParameterAction.FormatterReplacement:
 					string paramName = parameter.Identifier.ToString();
-					string concatedParams = props.Builder
+					var decompositionParams = parameterBuilder
 						.AppendFormatterParam(
 							props,
 							mappedParam.Type,
 							paramName)
 						.PickResult(parameter);
-					replacementVariableNames[replacementVariableIndex++] = (paramName, concatedParams);
+					replacementVariableNames[replacementVariableIndex++] = (paramName, string.Join(", ", decompositionParams));
+					foreach (string decompositionParam in decompositionParams)
+						xmlDocumentation.AddOverload(decompositionParam, paramName);
 					break;
 				default:
 					throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
@@ -63,11 +70,16 @@ public sealed class DecompositionOverload : IChainMember
 			}
 
 			if (++index == parameters.Count) break;
-			props.Builder.AppendWoTrim(", ");
+			parameterBuilder
+				.AppendAsConstant(",")
+				.WhiteSpace();
 		}
-
+		
 		props.Builder
-			.AppendWith(")", " ")
+			.AppendXmlDocumentation(xmlDocumentation)
+			.Append(parameterBuilder)
+			.AppendAsConstant(")")
+			.WhiteSpace()
 			.Append(entry.ConstraintClauses.ToString());
 		props.WriteMethodBody(entry, replacementVariableNames.AsSpan(0, replacementVariableIndex));
 		ArrayPool<(string, string)>.Shared.Return(replacementVariableNames);

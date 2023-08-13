@@ -51,35 +51,46 @@ public sealed class CombinedDecompositionTransitionOverloads : IChainMember
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
 
+		var xmlDocumentation = XmlDocumentation.Parse(entry.GetLeadingTrivia());
 		Span<int> transitionIndexes = stackalloc int[maxTransitionsCount.Length];
-		using var bodyBuilder = SourceBuilder.GetInstance();
+		using var bodyBuilder = StringSourceBuilder.Instance;
+		using var parameterBuilder = StringSourceBuilder.Instance;
 		for (;;)
 		{
 			bodyBuilder.Append(entry.Identifier.ToString())
-				.AppendWoTrim("(");
+				.AppendAsConstant("(");
 			props.Builder
-				.AppendChainMemberNameComment(nameof(CombinedDecompositionTransitionOverloads))
+				.AppendChainMemberNameComment(nameof(CombinedDecompositionTransitionOverloads));
+			
+			parameterBuilder
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-				.Append("(");
-			props.Builder.WriteTransitionOverload(
-				TransitionExtensions.WriteDecompositionTransitionOverload,
-				bodyBuilder,
-				props,
-				parameters,
-				transitionIndexes,
-				true);
+				.AppendAsConstant("(")
+				.WriteTransitionOverload(
+					TransitionExtensions.WriteDecompositionTransitionOverload,
+					bodyBuilder,
+					xmlDocumentation,
+					props,
+					parameters,
+					transitionIndexes,
+					true);
+			
 			props.Builder
-				.AppendWith(")", " ")
+				.AppendXmlDocumentation(xmlDocumentation)
+				.AppendAndClear(parameterBuilder)
+				.WhiteSpace()
+				.AppendAsConstant(")")
 				.Append(entry.ConstraintClauses.ToString());
 
 			if (props.Store.IsNeedToRemoveBody)
-				props.Builder.Append(";");
+				props.Builder.AppendAsConstant(";");
 			else
-				props.Builder.Append(" =>", 1)
+				props.Builder
+					.WhiteSpace()
+					.Append("=>", 1)
 					.NestedIncrease()
 					.AppendRefReturnValues(entry.ReturnType)
-					.Append(bodyBuilder.ToStringAndClear())
-					.AppendWoTrim(");", 1)
+					.AppendAndClear(bodyBuilder)
+					.AppendAsConstant(");", 1)
 					.NestedDecrease();
 
 			/*

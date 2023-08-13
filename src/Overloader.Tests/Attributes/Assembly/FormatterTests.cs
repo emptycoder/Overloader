@@ -1,4 +1,4 @@
-﻿namespace Overloader.Tests;
+﻿namespace Overloader.Tests.Attributes.Assembly;
 
 [TestFixture]
 public class FormatterTests

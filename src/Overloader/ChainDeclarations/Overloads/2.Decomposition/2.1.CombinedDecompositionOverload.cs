@@ -27,16 +27,19 @@ public sealed class CombinedDecompositionOverload : IChainMember
 
 		var entry = (MethodDeclarationSyntax) syntaxNode;
 		var parameters = entry.ParameterList.Parameters;
-
-		using var bodyBuilder = SourceBuilder.GetInstance();
+		
+		props.Builder
+			.AppendChainMemberNameComment(nameof(CombinedDecompositionOverload));
+			
+		var xmlDocumentation = XmlDocumentation.Parse(entry.GetLeadingTrivia());
+		using var bodyBuilder = StringSourceBuilder.Instance;
+		using var parameterBuilder = StringSourceBuilder.Instance
+			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
+			.AppendAsConstant("(");
+		
 		bodyBuilder
 			.Append(entry.Identifier.ToString())
-			.Append("(");
-
-		props.Builder
-			.AppendChainMemberNameComment(nameof(CombinedDecompositionOverload))
-			.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-			.Append("(");
+			.AppendAsConstant("(");
 
 		for (int index = 0;;)
 		{
@@ -48,25 +51,28 @@ public sealed class CombinedDecompositionOverload : IChainMember
 				switch (mappedParam.ParameterAction)
 				{
 					case ParameterAction.Nothing:
-						props.Builder.Append(parameter.ToFullString());
+						parameterBuilder.Append(parameter.ToFullString());
 						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.SimpleReplacement:
 					case ParameterAction.CustomReplacement:
-						props.Builder.AppendParameter(parameter, mappedParam, props.Compilation);
+						parameterBuilder.AppendParameter(parameter, mappedParam, props.Compilation);
 						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterIntegrityReplacement:
-						props.Builder.AppendIntegrityParam(props, mappedParam, parameter);
+						parameterBuilder.AppendIntegrityParam(props, mappedParam, parameter);
 						bodyBuilder.AppendVariableToBody(parameter, paramName);
 						break;
 					case ParameterAction.FormatterReplacement:
-						bodyBuilder.AppendWoTrim(props.Builder
+						var decompositionParams = parameterBuilder
 							.AppendFormatterParam(
 								props,
 								mappedParam.Type,
 								paramName)
-							.PickResult(parameter));
+							.PickResult(parameter);
+						bodyBuilder.Append(string.Join(", ", decompositionParams));
+						foreach (string decompositionParam in decompositionParams)
+							xmlDocumentation.AddOverload(decompositionParam, paramName);
 						break;
 					default:
 						throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[index]} parameterAction.")
@@ -75,29 +81,40 @@ public sealed class CombinedDecompositionOverload : IChainMember
 
 				if (++index == parameters.Count) break;
 				if (props.Store.OverloadMap[index].IsCombineNotExists)
-					props.Builder.AppendWoTrim(", ");
-				bodyBuilder.AppendWoTrim(", ");
+					parameterBuilder
+						.AppendAsConstant(",")
+						.WhiteSpace();
+				bodyBuilder
+					.AppendAsConstant(",")
+					.WhiteSpace();
 			}
 			else
 			{
 				bodyBuilder.AppendCombined(props, mappedParam, parameters[mappedParam.CombineIndex]);
 				if (++index == parameters.Count) break;
-				bodyBuilder.AppendWoTrim(", ");
+				bodyBuilder
+					.AppendAsConstant(",")
+					.WhiteSpace();
 			}
 		}
 
 		props.Builder
-			.AppendWith(")", " ")
+			.AppendXmlDocumentation(xmlDocumentation)
+			.Append(parameterBuilder)
+			.AppendAsConstant(")")
+			.WhiteSpace()
 			.Append(entry.ConstraintClauses.ToString());
 
 		if (props.Store.IsNeedToRemoveBody)
-			props.Builder.Append(";");
+			props.Builder.AppendAsConstant(";");
 		else
-			props.Builder.Append(" =>", 1)
+			props.Builder
+				.WhiteSpace()
+				.AppendAsConstant("=>", 1)
 				.NestedIncrease()
 				.AppendRefReturnValues(entry.ReturnType)
-				.Append(bodyBuilder.ToString())
-				.AppendWoTrim(");", 1)
+				.Append(bodyBuilder)
+				.AppendAsConstant(");", 1)
 				.NestedDecrease();
 
 		return ChainAction.NextMember;

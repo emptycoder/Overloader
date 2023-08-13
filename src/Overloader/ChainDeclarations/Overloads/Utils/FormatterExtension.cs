@@ -8,7 +8,8 @@ namespace Overloader.ChainDeclarations.Overloads.Utils;
 
 public static class FormatterExtension
 {
-	public static ResultOrException<string> AppendFormatterParam(this SourceBuilder sb,
+	public static ResultOrException<string[]> AppendFormatterParam(
+		this SourceBuilder sb,
 		GeneratorProperties props,
 		ITypeSymbol type,
 		string paramName)
@@ -25,9 +26,9 @@ public static class FormatterExtension
 		var @params = rootType.TypeArguments.ToArray();
 		if (@params.Length != formatter.GenericParams.Length)
 			return new ArgumentException(
-				$"Different generic params in formatter ({formatter.GenericParams.Length}) and type ({@params.Length})");
+				$"Different generic params in formatter ({formatter.GenericParams.Length.ToString()}) and type ({@params.Length.ToString()})");
 
-		using var bodyBuilder = SourceBuilder.GetInstance();
+		var decompositionParams = new string[formatter.Params.Length];
 		for (int paramIndex = 0;;)
 		{
 			var formatterParam = formatter.Params[paramIndex];
@@ -37,19 +38,21 @@ public static class FormatterExtension
 			
 			if (exception is not null) return exception;
 			if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
-				sb.AppendWith("in", " ");
+				sb.AppendAsConstant("in")
+					.WhiteSpace();
 
-			sb.AppendWith(paramType.ToDisplayString(), " ")
+			sb.Append(paramType.ToDisplayString())
+				.WhiteSpace()
 				.Append(paramName)
 				.Append(formatterParam.Identifier);
-			bodyBuilder.AppendWoTrim(paramName).AppendWoTrim(formatterParam.Identifier);
+			decompositionParams[paramIndex] = $"{paramName}{formatterParam.Identifier}";
 
 			if (++paramIndex == formatter.Params.Length) break;
-			sb.AppendWoTrim(", ");
-			bodyBuilder.AppendWoTrim(", ");
+			sb.AppendAsConstant(",")
+				.WhiteSpace();
 		}
 
-		return bodyBuilder.ToString();
+		return decompositionParams;
 	}
 
 	public static SourceBuilder AppendIntegrityParam(
@@ -60,8 +63,9 @@ public static class FormatterExtension
 	{
 		var newType = props.SetDeepestType(mappedParam.Type, props.Template, props.Template).PickResult(parameter);
 		return sb.AppendAttributes(parameter.AttributeLists, " ")
-			.AppendWoTrim(mappedParam.BuildModifiers(parameter, newType, " "))
-			.AppendWith(newType.ToDisplayString(), " ")
+			.AppendAndBuildModifiers(mappedParam, parameter, newType, " ")
+			.Append(newType.ToDisplayString())
+			.WhiteSpace()
 			.Append(parameter.Identifier.ToFullString());
 	}
 }

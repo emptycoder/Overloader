@@ -12,6 +12,7 @@ public static partial class TransitionExtensions
 	public static void WriteCastTransitionOverload(
 		SourceBuilder headerBuilder,
 		SourceBuilder bodyBuilder,
+		XmlDocumentation xmlDocumentation,
 		GeneratorProperties props,
 		ParameterData mappedParam,
 		ParameterSyntax parameter,
@@ -60,15 +61,19 @@ public static partial class TransitionExtensions
 
 					string strIndex = index.ToString();
 					string indexedParameterName = $"{castedParameter.Name}To{char.ToUpper(paramName[0]).ToString()}{paramName.AsSpan(1).ToString()}";
+					xmlDocumentation.AddOverload(paramName, indexedParameterName);
 					headerBuilder
 						.Append(castedParameter.Modifier)
-						.AppendWith(paramType.ToDisplayString(), " ")
+						.Append(paramType.ToDisplayString())
+						.WhiteSpace()
 						.Append(indexedParameterName);
 					cast = cast.Replace($"${{Var{strIndex}}}", indexedParameterName);
 
 					if (++index == transition.Types.Length)
 						break;
-					headerBuilder.AppendWoTrim(", ");
+					headerBuilder
+						.AppendAsConstant(",")
+						.WhiteSpace();
 				}
 
 				bodyBuilder.Append(cast.Replace("${T}", props.Template.ToDisplayString()));

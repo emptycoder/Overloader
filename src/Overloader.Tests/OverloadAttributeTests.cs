@@ -66,8 +66,7 @@ using Overloader;
 			new object[]
 			{{
 				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(TestProject.Vector2<>),
-				""vector3"",
+				typeof(TestProject.Vector2<>), ""vector3"",
 				""new TestProject.Vector3<${{T}}>() {{ X = ${{Var0}}.X, Y = ${{Var0}}.Y }}""
 			}},
 			new object[]

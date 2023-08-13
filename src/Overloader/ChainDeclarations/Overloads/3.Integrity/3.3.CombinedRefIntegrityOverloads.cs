@@ -58,16 +58,18 @@ public sealed class CombinedRefIntegrityOverloads : IChainMember
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
 
-		using var bodyBuilder = SourceBuilder.GetInstance();
+		using var bodyBuilder = StringSourceBuilder.Instance;
 		for (;;)
 		{
-			bodyBuilder.Append(entry.Identifier.ToString())
-				.AppendWoTrim("(");
+			bodyBuilder
+				.Append(entry.Identifier.ToString())
+				.AppendAsConstant("(");
 
 			props.Builder
 				.AppendChainMemberNameComment(nameof(CombinedRefIntegrityOverloads))
+				.Append(entry.GetLeadingTrivia().ToString(), 1)
 				.AppendMethodDeclarationSpecifics(entry, props.Store.MethodData)
-				.AppendWoTrim("(");
+				.AppendAsConstant("(");
 			
 			for (int index = 0;;)
 			{
@@ -102,31 +104,42 @@ public sealed class CombinedRefIntegrityOverloads : IChainMember
 
 					if (++index == parameters.Count) break;
 					if (props.Store.OverloadMap[index].IsCombineNotExists)
-						props.Builder.AppendWoTrim(", ");
-					bodyBuilder.AppendWoTrim(", ");
+						props.Builder
+							.AppendAsConstant(",")
+							.WhiteSpace();
+					bodyBuilder
+						.AppendAsConstant(",")
+						.WhiteSpace();
 				}
 				else
 				{
 					bodyBuilder.AppendCombinedSimple(mappedParam, parameters[mappedParam.CombineIndex]);
 					if (++index == parameters.Count) break;
 					if (props.Store.OverloadMap[index].IsCombineNotExists)
-						props.Builder.AppendWoTrim(", ");
-					bodyBuilder.AppendWoTrim(", ");
+						props.Builder
+							.AppendAsConstant(",")
+							.WhiteSpace();
+					bodyBuilder
+						.AppendAsConstant(",")
+						.WhiteSpace();
 				}
 			}
 			
 			props.Builder
-				.AppendWith(")", " ")
+				.AppendAsConstant(")")
+				.WhiteSpace()
 				.Append(entry.ConstraintClauses.ToString());
 
 			if (props.Store.IsNeedToRemoveBody)
-				props.Builder.Append(";");
+				props.Builder.AppendAsConstant(";");
 			else
-				props.Builder.Append(" =>", 1)
+				props.Builder
+					.WhiteSpace()
+					.Append("=>", 1)
 					.NestedIncrease()
 					.AppendRefReturnValues(entry.ReturnType)
-					.Append(bodyBuilder.ToStringAndClear())
-					.AppendWoTrim(");", 1)
+					.AppendAndClear(bodyBuilder)
+					.AppendAsConstant(");", 1)
 					.NestedDecrease();
 			
 			/*
