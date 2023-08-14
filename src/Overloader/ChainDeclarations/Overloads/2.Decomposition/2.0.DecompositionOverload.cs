@@ -77,6 +77,7 @@ public sealed class DecompositionOverload : IChainMember
 		
 		props.Builder
 			.AppendXmlDocumentation(xmlDocumentation)
+			.BreakLine()
 			.Append(parameterBuilder)
 			.AppendAsConstant(")")
 			.WhiteSpace()

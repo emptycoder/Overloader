@@ -94,7 +94,6 @@ public sealed class CombinedIntegrityOverload : IChainMember
 			props.Builder.AppendAsConstant(";");
 		else
 			props.Builder
-				.WhiteSpace()
 				.AppendAsConstant("=>", 1)
 				.NestedIncrease()
 				.AppendRefReturnValues(entry.ReturnType)

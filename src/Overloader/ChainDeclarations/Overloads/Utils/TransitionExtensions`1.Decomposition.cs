@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
+using Overloader.Entities.Formatters;
 using Overloader.Entities.Formatters.Transitions;
 using Overloader.Enums;
 using Overloader.Exceptions;
@@ -19,7 +20,8 @@ public static partial class TransitionExtensions
 		ParameterData mappedParam,
 		ParameterSyntax parameter,
 		Span<int> transitionIndexes,
-		ref int paramIndex)
+		ref int paramIndex,
+		Func<int, FormatterModel, object> castGetter)
 	{
 		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ParameterAction)
@@ -39,7 +41,7 @@ public static partial class TransitionExtensions
 				break;
 			case ParameterAction.FormatterReplacement:
 				if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
-					throw new ArgumentException("Unexpected exception. Formatters changed in real time.")
+					throw new ArgumentException("Unexpected exception. Formatters changed after analyzing stage.")
 						.WithLocation(parameter);
 				var transitionIndex = transitionIndexes[paramIndex++];
 				DecompositionModel? transition = null;
@@ -49,7 +51,7 @@ public static partial class TransitionExtensions
 				}
 				else
 				{
-					transition = formatter.Decompositions[transitionIndex];
+					transition = (DecompositionModel) castGetter(transitionIndex, formatter);
 					// Build transition method header
 					for (int linkIndex = 0;;)
 					{

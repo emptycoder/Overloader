@@ -100,6 +100,7 @@ public sealed class CombinedDecompositionOverload : IChainMember
 
 		props.Builder
 			.AppendXmlDocumentation(xmlDocumentation)
+			.BreakLine()
 			.Append(parameterBuilder)
 			.AppendAsConstant(")")
 			.WhiteSpace()
@@ -109,7 +110,6 @@ public sealed class CombinedDecompositionOverload : IChainMember
 			props.Builder.AppendAsConstant(";");
 		else
 			props.Builder
-				.WhiteSpace()
 				.AppendAsConstant("=>", 1)
 				.NestedIncrease()
 				.AppendRefReturnValues(entry.ReturnType)

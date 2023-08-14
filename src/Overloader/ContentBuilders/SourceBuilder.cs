@@ -11,8 +11,16 @@ public abstract class SourceBuilder : IDisposable
 
 	public SourceBuilder Append(SourceBuilder builder)
 	{
+		if (_nextLine)
+		{
+			for (int index = 0; index < _nestedLevel; index++)
+				AppendString(PaddingStr);
+			_nextLine = false;
+		}
+		
 		for (int index = 0; index < builder.Length; index++)
 			AppendChar(builder[index]);
+		
 		return this;
 	}
 
@@ -52,8 +60,10 @@ public abstract class SourceBuilder : IDisposable
 		return this;
 	}
 
+	public SourceBuilder AppendWoTrim(string str, byte breakCount = 0) =>
+		AppendWoTrim(str.AsSpan(), breakCount);
 
-	private SourceBuilder AppendWoTrim(ReadOnlySpan<char> str, byte breakCount = 0)
+	public SourceBuilder AppendWoTrim(ReadOnlySpan<char> str, byte breakCount = 0)
 	{
 		if (_nextLine)
 		{
@@ -112,8 +122,18 @@ public abstract class SourceBuilder : IDisposable
 		return this;
 	}
 
-	public SourceBuilder WhiteSpace() =>
-		AppendAsConstant(" ");
+	public SourceBuilder WhiteSpace()
+	{
+		AppendChar(' ');
+		return this;
+	}
+
+	public SourceBuilder BreakLine()
+	{
+		_nextLine = true;
+		AppendChar('\n');
+		return this;
+	}
 
 	public void Clear()
 	{

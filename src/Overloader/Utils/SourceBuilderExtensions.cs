@@ -118,6 +118,7 @@ public static class SourceBuilderExtensions
 		this SourceBuilder sourceBuilder,
 		XmlDocumentation documentation)
 	{
+		XmlNodeSyntax? lastXmlText = null;
 		foreach (var data in documentation.Trivia)
 		{
 			switch (data.Kind())
@@ -131,24 +132,48 @@ public static class SourceBuilderExtensions
 						    || elementSyntax.StartTag.Attributes.FirstOrDefault(attr => attr.Name.LocalName.Text is "name")
 							    is not XmlNameAttributeSyntax xmlNameAttributeSyntax)
 						{
-							sourceBuilder.Append(xmlNode.ToFullString());
+							if (xmlNode is XmlTextSyntax)
+								lastXmlText = xmlNode;
+							else
+							{
+								if (lastXmlText is not null)
+								{
+									sourceBuilder
+										.AppendWoTrim(lastXmlText.ToFullString())
+										.WhiteSpace();
+									lastXmlText = null;
+								}
+								sourceBuilder.AppendWoTrim(xmlNode.ToFullString());
+							}
 							continue;
 						}
 
-						foreach (string identifier in documentation.ParamsMap[xmlNameAttributeSyntax.Identifier.ToString()])
-							sourceBuilder.Append(xmlNameAttributeSyntax
-								.WithIdentifier(SyntaxFactory.IdentifierName(identifier))
-								.ToFullString());
+						string varName = xmlNameAttributeSyntax.Identifier.ToString();
+						foreach (string identifier in documentation.ParamsMap[varName])
+						{
+							sourceBuilder
+								.AppendWoTrim(lastXmlText!.ToFullString())
+								.WhiteSpace()
+								.AppendWoTrim(elementSyntax.ToFullString().Replace($"name=\"{varName}\"", $"name=\"{identifier}\""));
+						}
+						lastXmlText = null;
 					}
+
+					if (lastXmlText is not null)
+						sourceBuilder
+							.Append(lastXmlText.ToFullString());
 					break;
 				case SyntaxKind.MultiLineDocumentationCommentTrivia:
 					throw new NotSupportedException();
+				case SyntaxKind.EndOfLineTrivia:
+				case SyntaxKind.WhitespaceTrivia:
+					break;
 				default:
 					sourceBuilder.Append(data.ToFullString());
 					break;
 			}
 		}
 
-		return sourceBuilder.AppendAsConstant("\n");
+		return sourceBuilder;
 	}
 }

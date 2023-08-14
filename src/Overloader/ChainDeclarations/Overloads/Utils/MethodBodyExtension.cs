@@ -50,7 +50,7 @@ public static class MethodBodyExtension
 		string? changeLine = triviaList.ParseTrivia(buffer, templateStr, out var localReplacements);
 		if (changeLine is not null)
 		{
-			sb.Append(changeLine, 1);
+			sb.AppendWoTrim(changeLine, 1);
 		}
 		else if (localReplacements.IsEmpty)
 		{
@@ -88,7 +88,7 @@ public static class MethodBodyExtension
 						sb.NestedDecrease(SyntaxKind.CloseBraceToken);
 						continue;
 					default:
-						sb.AppendAsConstant(nodeOrToken.HasLeadingTrivia ? nodeOrToken.WithLeadingTrivia().ToFullString() : nodeOrToken.ToFullString());
+						sb.AppendWoTrim(nodeOrToken.HasLeadingTrivia ? nodeOrToken.WithLeadingTrivia().ToFullString() : nodeOrToken.ToFullString());
 						continue;
 				}
 			}
@@ -109,8 +109,8 @@ public static class MethodBodyExtension
 					// Don't need go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
 					if (varName.FindInReplacements(replacements) == -1) goto default;
-					sb.Append(varName)
-						.Append(string.Join("", syntax.ArgumentList.Arguments));
+					sb.AppendWoTrim(varName)
+						.AppendWoTrim(string.Join("", syntax.ArgumentList.Arguments));
 					break;
 				case MemberAccessExpressionSyntax syntax:
 					if (syntax.Expression is not IdentifierNameSyntax)
@@ -122,14 +122,14 @@ public static class MethodBodyExtension
 					// Don't need go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
 					if (varName.FindInReplacements(replacements) == -1) goto default;
-					sb.Append(varName)
-						.Append(syntax.Name.ToString());
+					sb.AppendWoTrim(varName)
+						.AppendWoTrim(syntax.Name.ToString());
 					break;
 				case ArgumentSyntax argSyntax:
 					varName = argSyntax.Expression.ToString();
 					int replacementIndex = varName.FindInReplacements(replacements);
 					if (replacementIndex == -1) goto default;
-					sb.AppendAsConstant(replacements[replacementIndex].ConcatedVars);
+					sb.AppendWoTrim(replacements[replacementIndex].ConcatedVars);
 					break;
 				case StatementSyntax:
 				{
@@ -138,7 +138,7 @@ public static class MethodBodyExtension
 					string? changeLine = triviaList.ParseTrivia(buffer, templateStr, out var localReplacements);
 					if (changeLine is not null)
 					{
-						sb.Append(changeLine, 1);
+						sb.AppendWoTrim(changeLine, 1);
 					}
 					else if (localReplacements.IsEmpty)
 					{

@@ -55,7 +55,6 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 			if (!syntaxReceiver.Candidates.Any()) return;
 
 #if !DEBUG || ForceTasks
-			// TODO: 4 thread for working
 			var tasks = new List<Task>();
 #endif
 			var formatters = syntaxReceiver.FormatterSyntaxes.GetFormatters(context.Compilation);

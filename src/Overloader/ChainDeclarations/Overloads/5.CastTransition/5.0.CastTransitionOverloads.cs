@@ -75,10 +75,12 @@ public sealed class CastTransitionOverloads : IChainMember
 					xmlDocumentation,
 					props,
 					parameters,
-					transitionIndexes);
+					transitionIndexes,
+					(index, formatter) => formatter.Casts[index]);
 			
 			props.Builder
 				.AppendXmlDocumentation(xmlDocumentation)
+				.BreakLine()
 				.AppendAndClear(parameterBuilder)
 				.AppendAsConstant(")")
 				.WhiteSpace()
@@ -88,7 +90,6 @@ public sealed class CastTransitionOverloads : IChainMember
 				props.Builder.AppendAsConstant(";");
 			else
 				props.Builder
-					.WhiteSpace()
 					.AppendAsConstant("=>", 1)
 					.NestedIncrease()
 					.AppendRefReturnValues(entry.ReturnType)

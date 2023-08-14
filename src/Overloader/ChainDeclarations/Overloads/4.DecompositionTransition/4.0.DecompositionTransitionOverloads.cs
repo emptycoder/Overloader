@@ -61,10 +61,12 @@ public sealed class DecompositionTransitionOverloads : IChainMember
 					xmlDocumentation,
 					props,
 					parameters,
-					transitionIndexes);
+					transitionIndexes,
+					(index, formatter) => formatter.Decompositions[index]);
 			
 			props.Builder
 				.AppendXmlDocumentation(xmlDocumentation)
+				.BreakLine()
 				.AppendAndClear(parameterBuilder)
 				.AppendAsConstant(")")
 				.WhiteSpace()
@@ -74,7 +76,6 @@ public sealed class DecompositionTransitionOverloads : IChainMember
 				props.Builder.AppendAsConstant(";");
 			else
 				props.Builder
-					.WhiteSpace()
 					.AppendAsConstant("=>", 1)
 					.NestedIncrease()
 					.AppendRefReturnValues(entry.ReturnType)

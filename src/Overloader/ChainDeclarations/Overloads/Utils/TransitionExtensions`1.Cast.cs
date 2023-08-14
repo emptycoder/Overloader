@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
+using Overloader.Entities.Formatters;
+using Overloader.Entities.Formatters.Transitions;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -17,7 +19,8 @@ public static partial class TransitionExtensions
 		ParameterData mappedParam,
 		ParameterSyntax parameter,
 		Span<int> transitionIndexes,
-		ref int paramIndex)
+		ref int paramIndex,
+		Func<int, FormatterModel, object> castGetter)
 	{
 		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ParameterAction)
@@ -44,8 +47,8 @@ public static partial class TransitionExtensions
 					bodyBuilder.AppendVariableToBody(parameter, paramName);
 					break;
 				}
-
-				var transition = formatter.Casts[transitionIndex];
+				
+				var transition = (CastModel) castGetter(transitionIndex, formatter);
 				string cast = transition.CastCodeTemplate;
 				for (int index = 0;;)
 				{

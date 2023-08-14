@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
+using Overloader.Entities.Formatters;
 using Overloader.Enums;
 
 namespace Overloader.ChainDeclarations.Overloads.Utils;
@@ -17,7 +18,8 @@ public static partial class TransitionExtensions
 		ParameterData mappedParam,
 		ParameterSyntax parameter,
 		Span<int> transitionIndexes,
-		ref int paramIndex);
+		ref int paramIndex,
+		Func<int, FormatterModel, object> castGetter);
 
 	public static void WriteTransitionOverload(
 		this SourceBuilder headerBuilder,
@@ -27,6 +29,7 @@ public static partial class TransitionExtensions
 		GeneratorProperties props,
 		in SeparatedSyntaxList<ParameterSyntax> parameters,
 		Span<int> transitionIndexes,
+		Func<int, FormatterModel, object> castGetter,
 		bool combineWithMode = false)
 	{
 		for (int index = 0, paramIndex = 0;;)
@@ -36,7 +39,7 @@ public static partial class TransitionExtensions
 
 			if (!combineWithMode || mappedParam.IsCombineNotExists)
 			{
-				transitionWriter(headerBuilder, bodyBuilder, xmlDocumentation, props, mappedParam, parameter, transitionIndexes, ref paramIndex);
+				transitionWriter(headerBuilder, bodyBuilder, xmlDocumentation, props, mappedParam, parameter, transitionIndexes, ref paramIndex, castGetter);
 
 				if (++index == parameters.Count) break;
 				if (!combineWithMode || props.Store.OverloadMap[index].IsCombineNotExists)
@@ -63,7 +66,8 @@ public static partial class TransitionExtensions
 					props.Store.OverloadMap![mappedParam.CombineIndex],
 					parameters[mappedParam.CombineIndex],
 					transitionIndexes,
-					ref tempParamIndex);
+					ref tempParamIndex,
+					castGetter);
 
 				if (++index == parameters.Count) break;
 				bodyBuilder
