@@ -227,7 +227,7 @@ internal record struct Vector2<T>
 		
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
-		Assert.That(result.GenerationErrors, Is.Not.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Not.Empty);
 	}
 	
 	[Test]
@@ -248,7 +248,7 @@ internal record struct Vector2<T>
 			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")] 
 			public partial class Test
 			{
-				public void TestMethod([T] Vector3<Vector2<double>> test) {}
+				public void TestMethod([{{TAttribute.TagName}}] Vector3<Vector2<double>> test) {}
 			}
 
 			public struct Vector3<T> { }
@@ -262,6 +262,6 @@ internal record struct Vector2<T>
 		
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
-		Assert.That(result.GenerationErrors, Is.Not.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Not.Empty);
 	}
 }
