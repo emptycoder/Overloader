@@ -7,11 +7,13 @@ namespace Overloader.Utils;
 
 public static class FormatterExtensions
 {
-	public static Dictionary<string, FormatterModel> GetFormatters(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	public static Dictionary<string, FormatterModel> GetFormatters(this IEnumerable<AttributeSyntax> attributeSyntaxes, Compilation compilation)
 	{
-		var dict = new Dictionary<string, FormatterModel>(attributeSyntaxes.Count);
+		var dict = new Dictionary<string, FormatterModel>();
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
+			if (formatterSyntax.Name.GetName() is not nameof(Formatter)) continue;
+			
 			var formatter = FormatterModel.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formatter.Identifier))
 				throw new ArgumentException($"{nameof(Formatter)} with identifier '{formatter.Identifier}' has been already exist.")
@@ -23,11 +25,13 @@ public static class FormatterExtensions
 		return dict;
 	}
 	
-	public static Dictionary<string, FormattersBundleModel> GetBundles(this IList<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	public static Dictionary<string, FormattersBundleModel> GetBundles(this IEnumerable<AttributeSyntax> attributeSyntaxes, Compilation compilation)
 	{
-		var dict = new Dictionary<string, FormattersBundleModel>(attributeSyntaxes.Count);
+		var dict = new Dictionary<string, FormattersBundleModel>();
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
+			if (formatterSyntax.Name.GetName() is not nameof(FormattersBundle)) continue;
+			
 			var formattersBundle = FormattersBundleModel.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formattersBundle.Identifier))
 				throw new ArgumentException($"{nameof(FormattersBundle)} with identifier '{formattersBundle.Identifier}' has been already exist.")

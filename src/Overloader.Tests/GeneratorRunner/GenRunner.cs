@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Overloader.Tests.GeneratorRunner;
 
-public static class GenRunner<T> where T : ISourceGenerator, new()
+public static class GenRunner<T> where T : IIncrementalGenerator, new()
 {
 	private static readonly T GeneratorCached = new();
 

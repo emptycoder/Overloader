@@ -21,11 +21,12 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 	private readonly Dictionary<ITypeSymbol, FormatterModel> _overloadFormatters;
 	public readonly bool IsTSpecified;
 
-	public GeneratorExecutionContext Context;
+	public SourceProductionContext Context;
 	public CandidateDto StartEntry;
 
 	public GeneratorProperties(
-		GeneratorExecutionContext context,
+		SourceProductionContext context,
+		Compilation compilation,
 		CandidateDto startEntry,
 		Dictionary<ITypeSymbol, FormatterModel>? formatters,
 		bool isTSpecified,
@@ -34,6 +35,7 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 		Dictionary<ITypeSymbol, FormatterModel>? overloadFormatters)
 	{
 		Context = context;
+		Compilation = compilation;
 		StartEntry = startEntry;
 		IsTSpecified = isTSpecified;
 		ClassName = className;
@@ -77,14 +79,11 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 
 	public Store Store { get; } = new();
 	public SourceBuilder Builder { get; } = StringSourceBuilder.Instance;
-
+	public Compilation Compilation { get; }
 	public string ClassName { get; }
 
 	void IDisposable.Dispose() => Builder.Dispose();
 	public ITypeSymbol Template { get; }
-
-	// ReSharper disable once InconsistentlySynchronizedField
-	public Compilation Compilation => Context.Compilation;
 
 	public bool TryGetFormatter(ITypeSymbol type, out FormatterModel formatter) =>
 		_overloadFormatters.TryGetValue(type, out formatter) ||
@@ -94,7 +93,7 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 
 	public void ReleaseAsOutput()
 	{
-		lock (Context.Compilation)
+		lock (Compilation)
 		{
 			int partialRev = 0;
 			string source = Builder.ToString();

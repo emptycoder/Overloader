@@ -1,14 +1,17 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Chains;
 using Overloader.Entities;
+using Overloader.Entities.DTOs;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
 namespace Overloader;
 
-[Generator]
-public sealed partial class OverloadsGenerator : ISourceGenerator
+[Generator(LanguageNames.CSharp)]
+public sealed partial class OverloadsGenerator : IIncrementalGenerator
 {
 	private const string GeneratedCodeHeader = 
 		$"""
@@ -58,33 +61,33 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 		}
 	};
 
-	public void Execute(GeneratorExecutionContext context)
+	public static void Execute(
+		SourceProductionContext context,
+		Compilation compilation,
+		ImmutableArray<CandidateDto?> candidates,
+		ImmutableArray<AttributeSyntax> globalAttributes)
 	{
-		if (context.Compilation.Language is not "C#" ||
-		    context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver) return;
-
 		try
 		{
-			if (syntaxReceiver.Exception is not null) throw syntaxReceiver.Exception;
-			if (!syntaxReceiver.Candidates.Any()) return;
-
 #if !DEBUG || ForceTasks
 			var tasks = new List<Task>();
 #endif
-			var formatters = syntaxReceiver.FormatterSyntaxes.GetFormatters(context.Compilation);
-			var formattersBundles = syntaxReceiver.BundleSyntaxes.GetBundles(context.Compilation);
-			foreach (var candidate in syntaxReceiver.Candidates)
+			var formatters = globalAttributes.GetFormatters(compilation);
+			var formattersBundles = globalAttributes.GetBundles(compilation);
+
+			foreach (var candidate in candidates.Select(candidate => candidate!.Value))
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;
 				var formattersSample = formatters.GetFormattersSample(formattersBundles, candidate.FormattersToUse, candidate.Syntax);
 
 				var formatterOverloadProps = new GeneratorProperties(
 					context,
+					compilation,
 					candidate,
 					formattersSample,
 					true,
 					candidateClassName,
-					candidate.DefaultType!.GetType(context.Compilation),
+					candidate.DefaultType!.GetType(compilation),
 					null);
 #if !DEBUG || ForceTasks
 				tasks.Add(Task.Factory.StartNew(OverloadCreation, formatterOverloadProps));
@@ -96,11 +99,12 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 				{
 					var genericWithFormatterOverloadProps = new GeneratorProperties(
 						context,
+						compilation,
 						candidate,
 						formattersSample,
 						false,
 						overloadDto.ClassName,
-						overloadDto.TypeSyntax.GetType(context.Compilation),
+						overloadDto.TypeSyntax.GetType(compilation),
 						formatters.GetFormattersSample(formattersBundles, overloadDto.FormattersToUse, overloadDto.TypeSyntax)
 					);
 
@@ -116,29 +120,9 @@ public sealed partial class OverloadsGenerator : ISourceGenerator
 			tasks.ForEach(task => task.Wait());
 #endif
 		}
-		catch (LocationException ex)
-		{
-			context.ReportDiagnostic(Diagnostic.Create(
-				new DiagnosticDescriptor(
-					$"{nameof(Overloader)[0]}I-0001", 
-					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)} during Analyzing", 
-					ex.InnerException!.ToString(), 
-					nameof(Overloader),
-					DiagnosticSeverity.Error,
-					true),
-				ex.Location));
-		}
 		catch (Exception ex)
 		{
-			context.ReportDiagnostic(Diagnostic.Create(
-				new DiagnosticDescriptor(
-					$"{nameof(Overloader)[0]}I-0002",
-					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)} during Analyzing",
-					ex.ToString(),
-					nameof(Overloader),
-					DiagnosticSeverity.Error,
-					true),
-				Location.None));
+			ReportErrorDuringInitialize(context, ex);
 		}
 	}
 }
