@@ -1,5 +1,5 @@
 using System.Text;
-using Overloader.Utils;
+using Overloader.Compatibility;
 
 namespace Overloader.ContentBuilders;
 
@@ -19,9 +19,9 @@ public sealed class StringSourceBuilder : SourceBuilder
 		_builder[index];
 	protected override int Length =>
 		_builder.Length;
-	protected override void AppendChar(char character) =>
+	protected override void AppendCharToBuilder(char character) =>
 		_builder.Append(character);
-	protected override void AppendString(string str) =>
+	protected override void AppendStringToBuilder(string str) =>
 		_builder.Append(str);
 
 	public override string ToString() =>

@@ -89,18 +89,22 @@ public class DecompositionTransitionTests
 
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
+			{"double,double,double,TestProject.Vector3<double>", false},
+			{"TestProject.Vector3<double>,double,double,double", false},
 			{"double,double,double,double,double,double", false},
 			{"double,double,double", false},
+			{"TestProject.Vector3<double>", false},
 			{"TestProject.Vector2<double>,double,TestProject.Vector2<double>,double", false},
 			{"TestProject.Vector2<double>,double", false},
-			{"TestProject.Vector3<double>", false},
 			{"TestProject.Vector3<float>,Vector3<double>", false},
+			{"float,float,float,TestProject.Vector3<float>", false},
+			{"TestProject.Vector3<float>,float,float,float", false},
 			{"float,float,float,float,float,float", false},
 			{"float,float,float", false},
-			{"TestProject.Vector2<float>,float,TestProject.Vector2<float>,float", false},
-			{"TestProject.Vector2<float>,float", false},
 			{"TestProject.Vector3<float>,TestProject.Vector3<float>", false},
 			{"TestProject.Vector3<float>", false},
+			{"TestProject.Vector2<float>,float,TestProject.Vector2<float>,float", false},
+			{"TestProject.Vector2<float>,float", false},
 			{"Vector3<double>,float", false}
 		};
 
@@ -124,73 +128,76 @@ public class DecompositionTransitionTests
 	[Test]
 	public void DecompositionTest()
 	{
-		const string programCs = @$"
-using Overloader;
+		const string programCs = 
+			$$"""
 
-[assembly: {nameof(Formatter)}(
-			""Vector3"",
-			typeof(TestProject.Vector3<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T"",
-				""Z"", ""T""
-			}})]
-[assembly: {nameof(Formatter)}(
-			""Vector2"",
-			typeof(TestProject.Vector2<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
-				typeof(TestProject.Vector3<>),
-				new object[]
-				{{
-					""X"", ""X"",
-					""Y"", ""Y""
-				}}
-			}})]
+			  using Overloader;
 
-namespace TestProject;
+			  [assembly: {{nameof(Formatter)}}(
+			  			"Vector3",
+			  			typeof(TestProject.Vector3<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T",
+			  				"Z", "T"
+			  			})]
+			  [assembly: {{nameof(Formatter)}}(
+			  			"Vector2",
+			  			typeof(TestProject.Vector2<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Decomposition)}},
+			  				typeof(TestProject.Vector3<>),
+			  				new object[]
+			  				{
+			  					"X", "X",
+			  					"Y", "Y"
+			  				}
+			  			})]
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"", ""Vector2"")]
-[{nameof(TOverload)}(typeof(float))]
-internal partial class Program
-{{
-	static void Main(string[] args) {{ }}
+			  namespace TestProject;
 
-	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+			  [{{nameof(TSpecify)}}(typeof(double), "Vector3", "Vector2")]
+			  [{{nameof(TOverload)}}(typeof(float))]
+			  internal partial class Program
+			  {
+			  	static void Main(string[] args) { }
+			  
+			  	public static void TestMethod1([{{nameof(Integrity)}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
+			  
+			  	[return: {{TAttribute.TagName}}]
+			  	public static double TestMethod2(
+			  		[{{TAttribute.TagName}}] Vector2<double> vec,
+			  		[{{TAttribute.TagName}}] in Vector3<double> vec1,
+			  		[{{TAttribute.TagName}}] in Vector2<double> vec2)
+			  	{
+			  		//# "double" -> "${T}"
+			  		return (double) (vec.X + vec1.X + vec.Y + vec1.Y );
+			  	}
+			  }
 
-	[return: {TAttribute.TagName}]
-	public static double TestMethod2(
-		[{TAttribute.TagName}] Vector2<double> vec,
-		[{TAttribute.TagName}] in Vector3<double> vec1,
-		[{TAttribute.TagName}] in Vector2<double> vec2)
-	{{
-		//# ""double"" -> ""${{T}}""
-		return (double) (vec.X + vec1.X + vec.Y + vec1.Y );
-	}}
-}}
+			  internal struct Vector3<T>
+			  {
+			  	public T X;
+			  	public T Y { get; set; }
+			  	internal T Z { get; private set; }
+			  }
 
-internal struct Vector3<T>
-{{
-	public T X;
-	public T Y {{ get; set; }}
-	internal T Z {{ get; private set; }}
-}}
+			  internal record struct Vector2<T>
+			  {
+			  	public T X;
+			  	public T Y;
+			  }
 
-internal record struct Vector2<T>
-{{
-	public T X;
-	public T Y;
-}}
-";
+			  """;
 
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
@@ -198,9 +205,21 @@ internal record struct Vector2<T>
 
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
+			{"double,double,TestProject.Vector3<double>,TestProject.Vector2<double>", false},
+			{"TestProject.Vector2<double>,double,double,double,TestProject.Vector2<double>", false},
+			{"double,double,double,double,double,TestProject.Vector2<double>", false},
+			{"TestProject.Vector2<double>,TestProject.Vector3<double>,double,double", false},
+			{"double,double,TestProject.Vector3<double>,double,double", false},
+			{"TestProject.Vector2<double>,double,double,double,double,double", false},
 			{"double,double,double,double,double,double,double", false},
 			{"TestProject.Vector3<double>,TestProject.Vector3<double>,double,double,double,TestProject.Vector3<double>", false},
 			{"TestProject.Vector3<float>,Vector3<double>", false},
+			{"float,float,TestProject.Vector3<float>,TestProject.Vector2<float>", false},
+			{"TestProject.Vector2<float>,float,float,float,TestProject.Vector2<float>", false},
+			{"float,float,float,float,float,TestProject.Vector2<float>", false},
+			{"TestProject.Vector2<float>,TestProject.Vector3<float>,float,float", false},
+			{"float,float,TestProject.Vector3<float>,float,float", false},
+			{"TestProject.Vector2<float>,float,float,float,float,float", false},
 			{"float,float,float,float,float,float,float", false},
 			{"TestProject.Vector3<float>,TestProject.Vector3<float>,float,float,float,TestProject.Vector3<float>", false},
 			{"TestProject.Vector2<float>,TestProject.Vector3<float>,TestProject.Vector2<float>", false}

@@ -1,14 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.ContentBuilders;
 using Overloader.Enums;
-using Overloader.Exceptions;
-using Overloader.Utils;
 
 namespace Overloader.Entities;
 
 public sealed record ParameterData(
-	ParameterAction ParameterAction,
+	ParameterReplacement ReplacementType,
 	ITypeSymbol Type,
 	List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)> ModifierChangers,
 	byte CombineIndex)

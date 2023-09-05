@@ -4,4 +4,10 @@
 	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chaindeclarations_005Coverloads_005C3_002Eintegrity/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chaindeclarations_005Coverloads_005C4_002Edecompositiontransition/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chaindeclarations_005Coverloads_005C5_002Ecasttransition/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chaindeclarations_005Coverloads_005C6_002Ecastfordecompositiontransition/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chaindeclarations_005Coverloads_005C6_002Ecastfordecompositiontransition/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chains_005Coverloads_005C1_002Eanalyze/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chains_005Coverloads_005C2_002Edecomposition/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chains_005Coverloads_005C3_002Eintegrity/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chains_005Coverloads_005C4_002Edecompositiontransition/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chains_005Coverloads_005C5_002Ecasttransition/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=chains_005Coverloads_005C6_002Ecastfordecompositiontransition/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

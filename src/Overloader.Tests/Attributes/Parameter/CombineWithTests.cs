@@ -31,7 +31,7 @@ internal partial class Program
 	static void Main(string[] args) {{ }}
 
 	public static void {nameof(BaseTest)}(
-		[{TAttribute.TagName}] ref Vector3<double> vec,
+		[{TAttribute.TagName}] Vector3<double> vec,
 		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1) {{ }}
 }}
 
@@ -49,13 +49,17 @@ internal struct Vector3<T>
 
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
+			{"double,double,double,TestProject.Vector3<double>", false},
+			{"TestProject.Vector3<double>,double,double,double", false},
+			{"double,double,double,double,double,double", false},
+			{"double,double,double", false},
+			{"TestProject.Vector3<double>", false},
+			{"float,float,float,TestProject.Vector3<float>", false},
+			{"TestProject.Vector3<float>,float,float,float", false},
 			{"float,float,float,float,float,float", false},
 			{"float,float,float", false},
 			{"TestProject.Vector3<float>,TestProject.Vector3<float>", false},
-			{"TestProject.Vector3<float>", false},
-			{"double,double,double,double,double,double", false},
-			{"double,double,double", false},
-			{"TestProject.Vector3<double>", false}
+			{"TestProject.Vector3<float>", false}
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees

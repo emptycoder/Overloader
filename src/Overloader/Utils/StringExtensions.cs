@@ -2,6 +2,16 @@
 
 public static class StringExtensions
 {
+	public static int FindInReplacements(this string value, Span<(string VarName, string ConcatedVars)> replacements)
+	{
+		for (int index = 0; index < replacements.Length; index++)
+		{
+			if (!replacements[index].VarName.Equals(value)) continue;
+			return index;
+		}
+		return -1;
+	}
+	
 	public static bool TryToFindMatch(this ReadOnlySpan<char> data, ReadOnlySpan<char> entry, string separator)
 	{
 		for (;;)

@@ -86,6 +86,8 @@ public class ParamModifierTests
 		var methodOverloads = new Dictionary<string, bool>(3)
 		{
 			{"TestProject.Vector2<double> vector2ToVec,Vector3<double> vec1", false},
+			{"double vecX,double vecY,double vecZ,TestProject.Vector3<double> vec1", false},
+			{"this in TestProject.Vector3<double> vec,double vec1X,double vec1Y,double vec1Z", false},
 			{"double vecX,double vecY,double vecZ,double vec1X,double vec1Y,double vec1Z", false},
 			{"double vecX,double vecY,double vecZ", false},
 			{"this in TestProject.Vector3<double> vec", false},
@@ -97,6 +99,8 @@ public class ParamModifierTests
 			{"TestProject.Vector2<double> vector2ToVec", false},
 			{"TestProject.Vector3<float> vec,Vector3<double> vec1", false},
 			{"TestProject.Vector2<float> vector2ToVec,Vector3<double> vec1", false},
+			{"this in TestProject.Vector3<float> vec,float vec1X,float vec1Y,float vec1Z", false},
+			{"float vecX,float vecY,float vecZ,TestProject.Vector3<float> vec1", false},
 			{"float vecX,float vecY,float vecZ,float vec1X,float vec1Y,float vec1Z", false},
 			{"float vecX,float vecY,float vecZ", false},
 			{"this in TestProject.Vector3<float> vec,TestProject.Vector3<float> vec1", false},
@@ -122,6 +126,7 @@ public class ParamModifierTests
 		{
 			Assert.That(methodOverloads, Does.ContainKey(identifier));
 			methodOverloads[identifier] = true;
+			// Console.WriteLine(identifier);
 		}
 
 		Assert.That(methodOverloads, Does.Not.ContainValue(false));

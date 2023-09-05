@@ -84,8 +84,12 @@ internal struct Vector3<T>
 
 		var methodOverloads = new Dictionary<string, bool>(4)
 		{
+			{"double,double,long,TestProject.Vector3<double>", false},
+			{"TestProject.Vector3<double>,double,double,long", false},
 			{"double,double,long,double,double,long", false},
 			{"TestProject.Vector3<float>,Vector3<double>", false},
+			{"float,double,double,TestProject.Vector3<float>", false},
+			{"TestProject.Vector3<float>,float,double,double", false},
 			{"float,double,double,float,double,double", false},
 			{"TestProject.Vector3<float>,TestProject.Vector3<float>", false},
 			{"float[]", false},

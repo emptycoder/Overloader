@@ -12,7 +12,7 @@ public sealed record FormatterModel(
 	ITypeSymbol[] Types,
 	IParamValue[] GenericParams,
 	(string Identifier, IParamValue Param)[] Params,
-	List<DecompositionModel> Decompositions,
+	List<DecomposeModel> Decompositions,
 	List<CastModel> Casts,
 	List<CastModel> CastsForDecomposition,
 	List<CastModel> CastsForIntegrity)
@@ -71,7 +71,7 @@ public sealed record FormatterModel(
 		var genericParams = ParseParams(arg1.Initializer, compilation);
 		var @params = ParseParamsWithNames(arg2.Initializer, compilation);
         
-		var decompositions = new List<DecompositionModel>();
+		var decompositions = new List<DecomposeModel>();
 		var casts = new List<CastModel>();
 		var castsForDecomposition = new List<CastModel>();
 		var castsForIntegrity = new List<CastModel>();
@@ -89,7 +89,7 @@ public sealed record FormatterModel(
 			switch (transitionTypeExpression.Name.ToString())
 			{
 				case nameof(TransitionType.Decomposition):
-					decompositions.Add(DecompositionModel.Parse(argExpressions, compilation));
+					decompositions.Add(DecomposeModel.Parse(argExpressions, compilation));
 					break;
 				case nameof(TransitionType.Cast):
 					casts.Add(CastModel.Parse(argExpressions, compilation));

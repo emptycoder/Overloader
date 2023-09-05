@@ -1,5 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
@@ -9,12 +9,17 @@ namespace Overloader.Utils;
 
 public static class SourceBuilderExtensions
 {
+	private static readonly ImmutableHashSet<string> AttributesToRemove = 
+		typeof(TAttribute).Assembly.DefinedTypes
+		.Select(type => type.Name.Replace("Attribute", ""))
+		.ToImmutableHashSet();
+	
 	public static SourceBuilder AppendUsings(this SourceBuilder sb, SyntaxNode syntax)
 	{
 		foreach (var @using in syntax.DescendantNodes().Where(node => node is UsingDirectiveSyntax))
-			sb.Append(@using.ToFullString(), 1);
+			sb.TrimAppend(@using.ToFullString(), 1);
 
-		return sb.Append(string.Empty, 1);
+		return sb.TrimAppend(string.Empty, 1);
 	}
 
 	public static SourceBuilder AppendNamespace(this SourceBuilder sb, string? @namespace)
@@ -22,15 +27,15 @@ public static class SourceBuilderExtensions
 		if (string.IsNullOrWhiteSpace(@namespace)) return sb;
 		return sb.AppendAsConstant("namespace")
 			.WhiteSpace()
-			.Append(@namespace!)
+			.TrimAppend(@namespace!)
 			.AppendAsConstant(";");
 	}
 
 	public static SourceBuilder AppendRefReturnValues(this SourceBuilder sb, TypeSyntax typeSyntax)
 	{
 		if (typeSyntax is not RefTypeSyntax refSyntax) return sb;
-		return sb.Append(refSyntax.RefKeyword.ToFullString())
-			.Append(refSyntax.ReadOnlyKeyword.ToFullString());
+		return sb.TrimAppend(refSyntax.RefKeyword.ToFullString())
+			.TrimAppend(refSyntax.ReadOnlyKeyword.ToFullString());
 	}
 
 	public static SourceBuilder AppendAttributes(
@@ -43,20 +48,20 @@ public static class SourceBuilderExtensions
 			bool isOpened = false;
 			foreach (var attr in listOfAttrs.Attributes)
 			{
-				if (Constants.AttributesToRemove.Contains(attr.Name.ToString())) continue;
+				if (AttributesToRemove.Contains(attr.Name.ToString())) continue;
 				if (!isOpened && (isOpened = true))
 				{
 					var target = listOfAttrs.Target;
 					sb.AppendAsConstant("(");
 					if (target is not null)
-						sb.Append(target.ToString())
+						sb.TrimAppend(target.ToString())
 							.WhiteSpace();
 				}
 				else
 					sb.AppendAsConstant(",")
 						.WhiteSpace();
 
-				sb.Append(attr.ToString());
+				sb.TrimAppend(attr.ToString());
 			}
 
 			if (isOpened) sb.AppendAsConstant(")")
@@ -92,12 +97,12 @@ public static class SourceBuilderExtensions
 						.WithLocation(parameter);
 
 				isReplaced = true;
-				builder.Append(modifierStr)
+				builder.TrimAppend(modifierStr)
 					.WhiteSpace();
 			}
 
 			if (!isReplaced) 
-				builder.Append(modifierText)
+				builder.TrimAppend(modifierText)
 					.WhiteSpace();
 		}
 
@@ -107,73 +112,10 @@ public static class SourceBuilderExtensions
 			if (typeSymbol is null
 			    || SymbolEqualityComparer.Default.Equals(clearType, typeSymbol)
 			    || SymbolEqualityComparer.Default.Equals(originalType, typeSymbol))
-				builder.Append(modifierStr)
+				builder.TrimAppend(modifierStr)
 					.AppendAsConstant(separator);
 		}
 
 		return builder;
-	}
-	
-	public static SourceBuilder AppendXmlDocumentation(
-		this SourceBuilder sourceBuilder,
-		XmlDocumentation documentation)
-	{
-		XmlNodeSyntax? lastXmlText = null;
-		foreach (var data in documentation.Trivia)
-		{
-			switch (data.Kind())
-			{
-				case SyntaxKind.SingleLineDocumentationCommentTrivia:
-					var content = ((DocumentationCommentTriviaSyntax) data.GetStructure()!).Content;
-					foreach (var xmlNode in content)
-					{
-						if (xmlNode is not XmlElementSyntax elementSyntax
-						    || elementSyntax.StartTag.Name.LocalName.Text is not "param"
-						    || elementSyntax.StartTag.Attributes.FirstOrDefault(attr => attr.Name.LocalName.Text is "name")
-							    is not XmlNameAttributeSyntax xmlNameAttributeSyntax)
-						{
-							if (xmlNode is XmlTextSyntax)
-								lastXmlText = xmlNode;
-							else
-							{
-								if (lastXmlText is not null)
-								{
-									sourceBuilder
-										.AppendWoTrim(lastXmlText.ToFullString())
-										.WhiteSpace();
-									lastXmlText = null;
-								}
-								sourceBuilder.AppendWoTrim(xmlNode.ToFullString());
-							}
-							continue;
-						}
-
-						string varName = xmlNameAttributeSyntax.Identifier.ToString();
-						foreach (string identifier in documentation.ParamsMap[varName])
-						{
-							sourceBuilder
-								.AppendWoTrim(lastXmlText!.ToFullString())
-								.WhiteSpace()
-								.AppendWoTrim(elementSyntax.ToFullString().Replace($"name=\"{varName}\"", $"name=\"{identifier}\""));
-						}
-						lastXmlText = null;
-					}
-
-					if (lastXmlText is not null)
-						sourceBuilder
-							.Append(lastXmlText.ToFullString());
-					break;
-				case SyntaxKind.MultiLineDocumentationCommentTrivia:
-					throw new NotSupportedException();
-				case SyntaxKind.EndOfLineTrivia:
-				case SyntaxKind.WhitespaceTrivia:
-					break;
-				default:
-					sourceBuilder.Append(data.ToFullString());
-					break;
-			}
-		}
-
-		return sourceBuilder;
 	}
 }
