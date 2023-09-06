@@ -21,7 +21,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 			return ChainAction.NextMember;
 
 		if (!props.Store.OverloadMap.Any(param =>
-			    param.ReplacementType is ParameterReplacement.Formatter
+			    param.ReplacementType is RequiredReplacement.Formatter
 			    && param.IsCombineNotExists))
 			return ChainAction.NextMember;
 		
@@ -36,7 +36,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 			indexes[index] = -1;
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
-			if (mappedParam.ReplacementType is not ParameterReplacement.Formatter) continue;
+			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter) continue;
 			if (!mappedParam.IsCombineNotExists)
 			{
 				countOfCombineWith++;
@@ -108,24 +108,24 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 		var paramName = parameter.Identifier.ToFullString();
 		switch (mappedParam.ReplacementType)
 		{
-			case ParameterReplacement.None:
+			case RequiredReplacement.None:
 				head.TrimAppend(parameter.ToFullString());
 				body.AppendVariableToBody(parameter, paramName);
 				break;
-			case ParameterReplacement.Template:
-			case ParameterReplacement.UserType:
+			case RequiredReplacement.Template:
+			case RequiredReplacement.UserType:
 				head.AppendParameter(parameter, mappedParam, props.Compilation);
 				body.AppendVariableToBody(parameter, paramName);
 				break;
-			case ParameterReplacement.FormatterIntegrity:
+			case RequiredReplacement.FormatterIntegrity:
 				head.AppendIntegrityParam(props, mappedParam, parameter);
 				body.AppendVariableToBody(parameter, paramName);
 				break;
-			case ParameterReplacement.Formatter when indexes[paramIndex] == -1:
+			case RequiredReplacement.Formatter when indexes[paramIndex] == -1:
 				head.AppendIntegrityParam(props, mappedParam, parameter);
 				body.AppendVariableToBody(parameter, paramName);
 				break;
-			case ParameterReplacement.Formatter:
+			case RequiredReplacement.Formatter:
 				var decompositionParams = head
 					.AppendFormatterParam(
 						props,

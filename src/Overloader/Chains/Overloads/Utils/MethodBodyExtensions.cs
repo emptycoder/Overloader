@@ -18,7 +18,7 @@ public static class MethodBodyExtensions
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 		switch (mappedParam.ReplacementType)
 		{
-			case ParameterReplacement.Formatter:
+			case RequiredReplacement.Formatter:
 			{
 				string[] decompositionParams = EmptySourceBuilder.Instance
 					.AppendFormatterParam(
@@ -29,10 +29,10 @@ public static class MethodBodyExtensions
 				body.TrimAppend(string.Join(", ", decompositionParams));
 				break;
 			}
-			case ParameterReplacement.None:
-			case ParameterReplacement.Template:
-			case ParameterReplacement.UserType:
-			case ParameterReplacement.FormatterIntegrity:
+			case RequiredReplacement.None:
+			case RequiredReplacement.Template:
+			case RequiredReplacement.UserType:
+			case RequiredReplacement.FormatterIntegrity:
 			default:
 				body.AppendCombinedWoFormatter(mappedParam, parameter);
 				break;

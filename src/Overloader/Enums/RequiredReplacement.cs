@@ -1,6 +1,6 @@
 ﻿namespace Overloader.Enums;
 
-public enum ParameterReplacement : sbyte
+public enum RequiredReplacement : sbyte
 {
 	None,
 	Template,

@@ -31,7 +31,7 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 			indexes[index] = -1;
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
-			if (mappedParam.ReplacementType is not ParameterReplacement.Formatter) continue;
+			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter) continue;
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out _))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
@@ -91,20 +91,20 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 		var paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ReplacementType)
 		{
-			case ParameterReplacement.None:
+			case RequiredReplacement.None:
 				head.TrimAppend(parameter.ToFullString());
 				break;
-			case ParameterReplacement.Template:
-			case ParameterReplacement.UserType:
+			case RequiredReplacement.Template:
+			case RequiredReplacement.UserType:
 				head.AppendParameter(parameter, mappedParam, props.Compilation);
 				break;
-			case ParameterReplacement.FormatterIntegrity:
+			case RequiredReplacement.FormatterIntegrity:
 				head.AppendIntegrityParam(props, mappedParam, parameter);
 				break;
-			case ParameterReplacement.Formatter when indexes[paramIndex] == -1:
+			case RequiredReplacement.Formatter when indexes[paramIndex] == -1:
 				head.AppendIntegrityParam(props, mappedParam, parameter);
 				break;
-			case ParameterReplacement.Formatter:
+			case RequiredReplacement.Formatter:
 				var decompositionParams = head
 					.AppendFormatterParam(
 						props,

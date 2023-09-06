@@ -31,7 +31,7 @@ public sealed class CastForITOverloads : TransitionCastOverloader, IChainMember
 			transitionIndexes[index] = -1;
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap[index];
-			if (mappedParam.ReplacementType is not ParameterReplacement.FormatterIntegrity)
+			if (mappedParam.ReplacementType is not RequiredReplacement.FormatterIntegrity)
 				continue;
 
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))

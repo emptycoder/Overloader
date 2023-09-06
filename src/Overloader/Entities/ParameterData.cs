@@ -4,7 +4,7 @@ using Overloader.Enums;
 namespace Overloader.Entities;
 
 public sealed record ParameterData(
-	ParameterReplacement ReplacementType,
+	RequiredReplacement ReplacementType,
 	ITypeSymbol Type,
 	List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)> ModifierChangers,
 	byte CombineIndex)

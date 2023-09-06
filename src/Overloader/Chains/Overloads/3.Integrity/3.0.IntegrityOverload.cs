@@ -48,15 +48,15 @@ public sealed class IntegrityOverload : BodyMethodsOverloader, IChainMember
 		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ReplacementType)
 		{
-			case ParameterReplacement.None:
+			case RequiredReplacement.None:
 				head.TrimAppend(parameter.ToFullString());
 				break;
-			case ParameterReplacement.Template:
-			case ParameterReplacement.UserType:
+			case RequiredReplacement.Template:
+			case RequiredReplacement.UserType:
 				head.AppendParameter(parameter, mappedParam, props.Compilation);
 				break;
-			case ParameterReplacement.FormatterIntegrity:
-			case ParameterReplacement.Formatter:
+			case RequiredReplacement.FormatterIntegrity:
+			case RequiredReplacement.Formatter:
 				head.AppendIntegrityParam(props, mappedParam, parameter);
 				break;
 			default:

@@ -25,17 +25,17 @@ public abstract class TransitionCastOverloader : ArrowMethodOverloader
 		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ReplacementType)
 		{
-			case ParameterReplacement.None:
+			case RequiredReplacement.None:
 				head.TrimAppend(parameter.ToFullString());
 				body.AppendVariableToBody(parameter, paramName);
 				break;
-			case ParameterReplacement.Template:
-			case ParameterReplacement.UserType:
+			case RequiredReplacement.Template:
+			case RequiredReplacement.UserType:
 				head.AppendParameter(parameter, mappedParam, props.Compilation);
 				body.AppendVariableToBody(parameter, paramName);
 				break;
-			case ParameterReplacement.Formatter:
-			case ParameterReplacement.FormatterIntegrity:
+			case RequiredReplacement.Formatter:
+			case RequiredReplacement.FormatterIntegrity:
 				if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
 					throw new ArgumentException("Unexpected exception. Formatters have been changed in real time.")
 						.WithLocation(parameter);

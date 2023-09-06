@@ -32,7 +32,7 @@ public sealed class CombinedCastForDTOverloads : TransitionCastOverloader, IChai
 			transitionIndexes[index] = -1;
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap![index];
-			if (mappedParam.ReplacementType is not ParameterReplacement.Formatter) continue;
+			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter) continue;
 			if (!mappedParam.IsCombineNotExists)
 			{
 				countOfCombineWith++;

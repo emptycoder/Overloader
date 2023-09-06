@@ -31,7 +31,7 @@ public sealed class CombinedCastForITOverloads : TransitionCastOverloader, IChai
 		{
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap![index];
-			if (mappedParam.ReplacementType is not ParameterReplacement.FormatterIntegrity)
+			if (mappedParam.ReplacementType is not RequiredReplacement.FormatterIntegrity)
 				continue;
 			if (!mappedParam.IsCombineNotExists)
 			{

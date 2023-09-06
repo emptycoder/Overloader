@@ -29,28 +29,28 @@ public sealed class AnalyzeMethodParams : IChainMember
 			bool shouldBeReplaced = ParameterDto.TryGetParameterDtoByTemplate(parameters[index], props, out var paramDto);
 			var parameterAction = shouldBeReplaced switch
 			{
-				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => ParameterReplacement.UserType,
+				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => RequiredReplacement.UserType,
 				true when parameterType is INamedTypeSymbol { IsGenericType: true } =>
 					props.TryGetFormatter(parameterType.GetClearType(), out var formatter)
 						? paramDto.HasForceOverloadIntegrity || !formatter.Params.Any()
-							? ParameterReplacement.FormatterIntegrity
-							: ParameterReplacement.Formatter
+							? RequiredReplacement.FormatterIntegrity
+							: RequiredReplacement.Formatter
 						: throw new ArgumentException($"Not found formatter for {parameterType}")
 							.WithLocation(parameters[index]),
 				true when props.TryGetFormatter(parameterType.GetClearType(), out var formatter) =>
 					paramDto.HasForceOverloadIntegrity || !formatter.Params.Any() || parameterType is not INamedTypeSymbol
-						? ParameterReplacement.FormatterIntegrity
-						: ParameterReplacement.Formatter,
-				true => ParameterReplacement.Template,
-				false => ParameterReplacement.None
+						? RequiredReplacement.FormatterIntegrity
+						: RequiredReplacement.Formatter,
+				true => RequiredReplacement.Template,
+				false => RequiredReplacement.None
 			};
 			var newParameterType = parameterAction switch
 			{
-				ParameterReplacement.None => default,
-				ParameterReplacement.Template => props.Template,
-				ParameterReplacement.UserType => paramDto.Attribute.ArgumentList!.Arguments[0].GetType(props.Compilation),
-				ParameterReplacement.Formatter => default,
-				ParameterReplacement.FormatterIntegrity => default,
+				RequiredReplacement.None => default,
+				RequiredReplacement.Template => props.Template,
+				RequiredReplacement.UserType => paramDto.Attribute.ArgumentList!.Arguments[0].GetType(props.Compilation),
+				RequiredReplacement.Formatter => default,
+				RequiredReplacement.FormatterIntegrity => default,
 				_ => throw new ArgumentOutOfRangeException()
 			} ?? parameterType;
 

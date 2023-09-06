@@ -31,8 +31,8 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 			transitionIndexes[index] = -1;
 			var parameter = parameters[index];
 			var mappedParam = props.Store.OverloadMap![index];
-			if (mappedParam.ReplacementType is not ParameterReplacement.Formatter
-			    and not ParameterReplacement.FormatterIntegrity) continue;
+			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter
+			    and not RequiredReplacement.FormatterIntegrity) continue;
 			if (!mappedParam.IsCombineNotExists)
 			{
 				countOfCombineWith++;
