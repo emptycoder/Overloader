@@ -9,7 +9,7 @@ namespace Overloader.Chains.Overloads.Utils;
 
 public static class MethodBodyExtensions
 {
-	public static void AppendCombined(
+	public static void AppendCombinedParameter(
 		this SourceBuilder body,
 		GeneratorProperties props,
 		int paramIndex)
@@ -34,32 +34,21 @@ public static class MethodBodyExtensions
 			case RequiredReplacement.UserType:
 			case RequiredReplacement.FormatterIntegrity:
 			default:
-				body.AppendCombinedWoFormatter(mappedParam, parameter);
+				body.AppendParameterWoFormatter(parameter);
 				break;
 		}
 	}
 
-	public static void AppendCombinedWoFormatter(
+	public static void AppendParameterWoFormatter(
 		this SourceBuilder body,
-		ParameterData mappedParam,
-		ParameterSyntax parameter)
+		ParameterSyntax parameter,
+		bool? isRef = null,
+		string? paramName = null)
 	{
-		if (mappedParam.Type.IsRefLikeType)
+		if (isRef ?? parameter.Modifiers.Any(SyntaxKind.RefKeyword))
 			body
 				.AppendAsConstant("ref")
 				.WhiteSpace();
-		body.TrimAppend(parameter.Identifier.ValueText);
-	}
-
-	public static void AppendVariableToBody(
-		this SourceBuilder bodyBuilder,
-		ParameterSyntax parameter,
-		string? paramName = null)
-	{
-		if (parameter.Modifiers.Any(SyntaxKind.RefKeyword))
-			bodyBuilder
-				.AppendAsConstant("ref")
-				.WhiteSpace();
-		bodyBuilder.TrimAppend(paramName ?? parameter.Identifier.ValueText);
+		body.TrimAppend(paramName ?? parameter.Identifier.ValueText);
 	}
 }

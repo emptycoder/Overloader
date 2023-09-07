@@ -17,7 +17,6 @@ public sealed record FormatterModel(
 	List<CastModel> CastsForDecomposition,
 	List<CastModel> CastsForIntegrity)
 {
-
 	public static FormatterModel Parse(AttributeSyntax formatterSyntax, Compilation compilation)
 	{
 		var args = formatterSyntax.ArgumentList?.Arguments ??
@@ -70,7 +69,7 @@ public sealed record FormatterModel(
 
 		var genericParams = ParseParams(arg1.Initializer, compilation);
 		var @params = ParseParamsWithNames(arg2.Initializer, compilation);
-        
+
 		var decompositions = new List<DecomposeModel>();
 		var casts = new List<CastModel>();
 		var castsForDecomposition = new List<CastModel>();
@@ -81,7 +80,7 @@ public sealed record FormatterModel(
 				throw new ArgumentException($"Argument of {nameof(FormatterModel)} should be {nameof(ArrayCreationExpressionSyntax)}.")
 					.WithLocation(args[argIndex].Expression);
 
-			
+
 			if (argExpressions[0] is not MemberAccessExpressionSyntax transitionTypeExpression)
 				throw new ArgumentException($"{nameof(TransitionType)} should be specified as a first parameter.")
 					.WithLocation(argExpressions[0]);
@@ -102,8 +101,8 @@ public sealed record FormatterModel(
 					break;
 				default:
 					throw new ArgumentException($"Value '{transitionTypeExpression.Name}' out of valid range ('{
-							string.Join(", ", Enum.GetNames(typeof(TransitionType)))
-						}').").WithLocation(argExpressions[0]);
+						string.Join(", ", Enum.GetNames(typeof(TransitionType)))
+					}').").WithLocation(argExpressions[0]);
 			}
 		}
 
@@ -135,7 +134,7 @@ public sealed record FormatterModel(
 	{
 		if (initializer is null || initializer.Expressions.Count == 0)
 			return Array.Empty<(string, IParamValue)>();
-		
+
 		if (initializer.Expressions.Count % 2 != 0)
 			throw new ArgumentException($"Problem with count of expressions for named array in {initializer}.")
 				.WithLocation(initializer);

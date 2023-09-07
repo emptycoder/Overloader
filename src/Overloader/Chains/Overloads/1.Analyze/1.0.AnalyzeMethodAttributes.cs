@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
 using Overloader.Enums;
 using Overloader.Exceptions;
@@ -11,17 +10,16 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		var entry = (MethodDeclarationSyntax) props.Store.MethodSyntax!;
 		props.Store.IsSmthChanged = false;
-		props.Store.MethodData.ReturnType = entry.ReturnType.GetType(props.Compilation);
-		props.Store.MethodData.MethodModifiers = new string[entry.Modifiers.Count];
-		props.Store.MethodData.MethodName = entry.Identifier.ToString();
+		props.Store.MethodData.ReturnType = props.Store.MethodSyntax.ReturnType.GetType(props.Compilation);
+		props.Store.MethodData.MethodModifiers = new string[props.Store.MethodSyntax.Modifiers.Count];
+		props.Store.MethodData.MethodName = props.Store.MethodSyntax.Identifier.ToString();
 
 		for (int index = 0; index < props.Store.MethodData.MethodModifiers.Length; index++)
-			props.Store.MethodData.MethodModifiers[index] = entry.Modifiers[index].ToString();
+			props.Store.MethodData.MethodModifiers[index] = props.Store.MethodSyntax.Modifiers[index].ToString();
 
 		bool isAllowForAttrSet = false;
-		foreach (var attrList in entry.AttributeLists)
+		foreach (var attrList in props.Store.MethodSyntax.AttributeLists)
 		foreach (var attribute in attrList.Attributes)
 		{
 			string attrName = attribute.Name.GetName();
@@ -55,7 +53,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 				}
 				case TAttribute.TagName:
 				{
-					var returnTypeSymbol = entry.ReturnType.GetType(props.Compilation);
+					var returnTypeSymbol = props.Store.MethodSyntax.ReturnType.GetType(props.Compilation);
 					var returnTypeSymbolRoot = returnTypeSymbol.GetClearType();
 					switch (attribute.ArgumentList?.Arguments.Count ?? 0)
 					{
@@ -87,6 +85,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 							throw new ArgumentException($"Unexpected count of arguments in {TAttribute.TagName}.")
 								.WithLocation(attribute);
 					}
+
 					break;
 				}
 				case nameof(ChangeModifier) when (attribute.ArgumentList?.Arguments.Count ?? 0) <= 1:

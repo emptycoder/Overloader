@@ -11,9 +11,7 @@ public sealed class DecompositionTransitionOverloads : TransitionDecomposeOverlo
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.Store.OverloadMap is null
-		    || !props.Store.IsSmthChanged
-		    || props.StartEntry.IgnoreTransitions)
+		if (props.StartEntry.IgnoreTransitions)
 			return ChainAction.NextMember;
 
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
@@ -39,10 +37,9 @@ public sealed class DecompositionTransitionOverloads : TransitionDecomposeOverlo
 			if (maxTransitionsCount[index] != 0) break;
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
-		
+
 		WriteMethodOverloads(
 			props,
-			XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia()),
 			transitionIndexes,
 			maxTransitionsCount);
 
@@ -55,7 +52,9 @@ public sealed class DecompositionTransitionOverloads : TransitionDecomposeOverlo
 		SourceBuilder body,
 		int paramIndex)
 	{
-		head.AppendAsConstant(", ");
-		body.AppendAsConstant(", ");
+		head.AppendAsConstant(",")
+			.WhiteSpace();
+		body.AppendAsConstant(",")
+			.WhiteSpace();
 	}
 }

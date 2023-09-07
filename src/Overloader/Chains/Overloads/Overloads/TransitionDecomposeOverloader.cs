@@ -17,6 +17,7 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 		SourceBuilder body,
 		XmlDocumentation xmlDocumentation,
 		Span<int> indexes,
+		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
@@ -26,23 +27,23 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 		{
 			case RequiredReplacement.None:
 				head.TrimAppend(parameter.ToFullString());
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.Template:
 			case RequiredReplacement.UserType:
 				head.AppendParameter(parameter, mappedParam, props.Compilation);
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.FormatterIntegrity:
 				head.AppendIntegrityParam(props, mappedParam, parameter);
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.Formatter:
 				if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
 					throw new ArgumentException("Formatters changed after analyzing stage.")
-						.Unexpected()
+						.Unreachable()
 						.WithLocation(parameter);
-				
+
 				DecomposeModel? transition = null;
 				int transitionIndex = indexes[paramIndex];
 				if (transitionIndex >= formatter.Decompositions.Count)
@@ -60,8 +61,7 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 							transitionLink.TemplateType,
 							props.Template,
 							transitionLink.TemplateType).PickResult(parameter);
-						
-						// TODO: Replace with user specified
+
 						if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
 							head
 								.AppendAsConstant("in")
@@ -126,9 +126,10 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 				return;
 			default:
 				throw new ArgumentException($"Can't find case for {mappedParam.ReplacementType} parameterAction.")
+					.Unreachable()
 					.WithLocation(parameter);
 		}
-		
+
 		xmlDocumentation.AddOverload(paramName, paramName);
 	}
 }

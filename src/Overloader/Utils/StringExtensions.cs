@@ -9,9 +9,10 @@ public static class StringExtensions
 			if (!replacements[index].VarName.Equals(value)) continue;
 			return index;
 		}
+
 		return -1;
 	}
-	
+
 	public static bool TryToFindMatch(this ReadOnlySpan<char> data, ReadOnlySpan<char> entry, string separator)
 	{
 		for (;;)
@@ -33,7 +34,7 @@ public static class StringExtensions
 
 		var key = data.Slice(0, separatorIndex).ChangeBoundsByChar();
 		var value = data.Slice(separatorIndex + separator.Length).ChangeBoundsByChar();
-		
+
 		if (key.Length == 0)
 			throw new ArgumentException($"Key can't be empty for {data.ToString()}.");
 

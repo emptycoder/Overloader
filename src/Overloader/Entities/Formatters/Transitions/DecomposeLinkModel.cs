@@ -18,7 +18,7 @@ public sealed record DecomposeLinkModel(
 			throw new ArgumentException($"{nameof(type)} should be {nameof(TypeOfExpressionSyntax)}.")
 				.WithLocation(type);
 
-		if (mapParams is not ArrayCreationExpressionSyntax { Initializer.Expressions: var expressions })
+		if (mapParams is not ArrayCreationExpressionSyntax {Initializer.Expressions: var expressions})
 			throw new ArgumentException($"Expression isn't {nameof(ArrayCreationExpressionSyntax)}.")
 				.WithLocation(mapParams);
 

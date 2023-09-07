@@ -7,18 +7,19 @@ namespace Overloader.Entities;
 
 public class XmlDocumentation
 {
-	private readonly Dictionary<string, List<string>> _paramsMap = new();
+	public static readonly XmlDocumentation Empty = new(SyntaxTriviaList.Empty);
+	private readonly Dictionary<string, List<string>> _paramsMap = new(StringComparer.Ordinal);
 	private readonly SyntaxTriviaList _trivia;
 
 	private XmlDocumentation(in SyntaxTriviaList trivia) =>
 		_trivia = trivia;
-	
+
 	public void AddOverload(string oldParamName, string newParamName)
 	{
 		if (!_paramsMap.TryGetValue(oldParamName, out var paramsList)) return;
 		paramsList.Add(newParamName);
 	}
-	
+
 	public void Clear()
 	{
 		foreach (var kv in _paramsMap)
@@ -29,7 +30,7 @@ public class XmlDocumentation
 	{
 		bool hasSmthData = false;
 		XmlNodeSyntax? lastXmlText = null;
-		ReadOnlySpan<char> trimChars = stackalloc char[1] { ' ' };
+		ReadOnlySpan<char> trimChars = stackalloc char[1] {' '};
 		foreach (var data in _trivia)
 		{
 			switch (data.Kind())
@@ -54,8 +55,10 @@ public class XmlDocumentation
 										.WhiteSpace();
 									lastXmlText = null;
 								}
+
 								sourceBuilder.Append(xmlNode.ToFullString());
 							}
+
 							continue;
 						}
 
@@ -67,6 +70,7 @@ public class XmlDocumentation
 								.WhiteSpace()
 								.Append(elementSyntax.ToFullString().Replace($"name=\"{varName}\"", $"name=\"{identifier}\""));
 						}
+
 						lastXmlText = null;
 					}
 
@@ -106,9 +110,10 @@ public class XmlDocumentation
 						    || elementSyntax.StartTag.Name.LocalName.Text is not "param"
 						    || elementSyntax.StartTag.Attributes.FirstOrDefault(attr => attr.Name.LocalName.Text is "name")
 							    is not XmlNameAttributeSyntax xmlNameAttributeSyntax) continue;
-						
+
 						xmlDocumentation._paramsMap.Add(xmlNameAttributeSyntax.Identifier.ToString(), new List<string>());
 					}
+
 					break;
 				case SyntaxKind.MultiLineDocumentationCommentTrivia:
 					throw new NotSupportedException();
@@ -117,6 +122,4 @@ public class XmlDocumentation
 
 		return xmlDocumentation;
 	}
-
-	public static readonly XmlDocumentation Empty = new(SyntaxTriviaList.Empty);
 }

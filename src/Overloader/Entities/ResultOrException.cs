@@ -22,6 +22,7 @@ public readonly struct ResultOrException<TResult>
 	public static ResultOrException<TResult> Result(TResult result) => result;
 
 	public Exception PickException => _exception ?? throw new ArgumentNullException(nameof(_exception), "Exception isn't exists.");
+
 	public TResult PickResult(SyntaxNode? syntaxNode = null)
 	{
 		if (_exception is not null)
@@ -41,7 +42,7 @@ public readonly struct ResultOrException<TResult>
 
 		value = _result!;
 	}
-	
+
 	public TResult PickResult(Location? location = null)
 	{
 		if (_exception is not null)

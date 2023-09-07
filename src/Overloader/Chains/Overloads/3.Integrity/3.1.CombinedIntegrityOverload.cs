@@ -1,4 +1,6 @@
-﻿using Overloader.Chains.Overloads.Overloads;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Overloader.Chains.Overloads.Overloads;
 using Overloader.Chains.Overloads.Utils;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
@@ -11,15 +13,10 @@ public sealed class CombinedIntegrityOverload : ArrowMethodOverloader, IChainMem
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.Store.OverloadMap is null
-		    || !props.Store.IsSmthChanged
-		    || props.Store.CombineParametersCount == 0)
+		if (props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;
-		
-		WriteMethodOverload(
-			props,
-			XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia()));
 
+		WriteMethodOverload(props);
 		return ChainAction.NextMember;
 	}
 
@@ -31,8 +28,10 @@ public sealed class CombinedIntegrityOverload : ArrowMethodOverloader, IChainMem
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
 		if (mappedParam.IsCombineNotExists)
-			head.AppendAsConstant(", ");
-		body.AppendAsConstant(", ");
+			head.AppendAsConstant(",")
+				.WhiteSpace();
+		body.AppendAsConstant(",")
+			.WhiteSpace();
 	}
 
 	protected override void WriteParameter(
@@ -41,19 +40,21 @@ public sealed class CombinedIntegrityOverload : ArrowMethodOverloader, IChainMem
 		SourceBuilder body,
 		XmlDocumentation xmlDocumentation,
 		Span<int> indexes,
+		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
-		
+
 		if (!mappedParam.IsCombineNotExists)
 		{
-			body.AppendCombinedWoFormatter(
-				props.Store.OverloadMap[mappedParam.CombineIndex],
-				props.Store.MethodSyntax.ParameterList.Parameters[mappedParam.CombineIndex]);
+			body.AppendParameterWoFormatter(
+				props.Store.MethodSyntax.ParameterList.Parameters[mappedParam.CombineIndex],
+				// Refer to ref attribute on not combined parameter due body apply logic
+				parameter.Modifiers.Any(SyntaxKind.RefKeyword));
 			return;
 		}
-		
+
 		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ReplacementType)
 		{
@@ -70,9 +71,11 @@ public sealed class CombinedIntegrityOverload : ArrowMethodOverloader, IChainMem
 				break;
 			default:
 				throw new ArgumentException($"Can't find case for '{mappedParam.ReplacementType}' parameter action.")
+					.Unreachable()
 					.WithLocation(parameter);
 		}
+
 		xmlDocumentation.AddOverload(paramName, paramName);
-		body.AppendVariableToBody(parameter, paramName);
+		body.AppendParameterWoFormatter(parameter, paramName: paramName);
 	}
 }

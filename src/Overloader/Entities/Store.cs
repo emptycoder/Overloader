@@ -6,11 +6,11 @@ namespace Overloader.Entities;
 public sealed class Store
 {
 	public byte CombineParametersCount;
-	public bool ShouldRemoveBody;
 	public bool IsSmthChanged;
 	public MethodData MethodData;
-	public ParameterData[] OverloadMap;
 	public MethodDeclarationSyntax MethodSyntax;
+	public ParameterData[] OverloadMap;
+	public bool ShouldRemoveBody;
 	public bool SkipMember;
+	public XmlDocumentation XmlDocumentation;
 }
-

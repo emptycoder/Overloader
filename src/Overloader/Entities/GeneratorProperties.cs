@@ -67,8 +67,8 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 					var clearType = castTemplate.IsUnboundType
 						? (INamedTypeSymbol) castTemplate.Type
 						: castTemplate.Type.GetClearType();
-					
-					
+
+
 					if (clearType.IsGenericType && !TryGetFormatter(clearType, out _))
 						throw new ArgumentException($"Can't get formatter for {ClassName}/{clearType.ToDisplayString()}.")
 							.WithLocation(StartEntry.Syntax);
@@ -79,10 +79,10 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 
 	public Store Store { get; } = new();
 	public SourceBuilder Builder { get; } = StringSourceBuilder.Instance;
-	public Compilation Compilation { get; }
 	public string ClassName { get; }
 
 	void IDisposable.Dispose() => Builder.Dispose();
+	public Compilation Compilation { get; }
 	public ITypeSymbol Template { get; }
 
 	public bool TryGetFormatter(ITypeSymbol type, out FormatterModel formatter) =>

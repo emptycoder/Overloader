@@ -9,11 +9,11 @@ namespace Overloader.Utils;
 
 public static class SourceBuilderExtensions
 {
-	private static readonly ImmutableHashSet<string> AttributesToRemove = 
+	private static readonly ImmutableHashSet<string> AttributesToRemove =
 		typeof(TAttribute).Assembly.DefinedTypes
-		.Select(type => type.Name.Replace("Attribute", ""))
-		.ToImmutableHashSet();
-	
+			.Select(type => type.Name.Replace("Attribute", ""))
+			.ToImmutableHashSet();
+
 	public static SourceBuilder AppendUsings(this SourceBuilder sb, SyntaxNode syntax)
 	{
 		foreach (var @using in syntax.DescendantNodes().Where(node => node is UsingDirectiveSyntax))
@@ -64,13 +64,14 @@ public static class SourceBuilderExtensions
 				sb.TrimAppend(attr.ToString());
 			}
 
-			if (isOpened) sb.AppendAsConstant(")")
-				.AppendAsConstant(separator);
+			if (isOpened)
+				sb.AppendAsConstant(")")
+					.AppendAsConstant(separator);
 		}
 
 		return sb;
 	}
-	
+
 	public static SourceBuilder AppendAndBuildModifiers(
 		this SourceBuilder builder,
 		ParameterData parameterData,
@@ -101,7 +102,7 @@ public static class SourceBuilderExtensions
 					.WhiteSpace();
 			}
 
-			if (!isReplaced) 
+			if (!isReplaced)
 				builder.TrimAppend(modifierText)
 					.WhiteSpace();
 		}

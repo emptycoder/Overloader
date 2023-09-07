@@ -1,9 +1,7 @@
-﻿using System.Collections.Immutable;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities;
 using Overloader.Entities.DTOs;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -26,23 +24,23 @@ public sealed partial class OverloadsGenerator
 					(s, _) => s is TypeDeclarationSyntax {AttributeLists.Count: >= 1},
 					(ctx, _) => GetCandidates(ctx))
 				.Where(candidate => candidate.HasValue);
-			
+
 			var globalAttributes = context.SyntaxProvider
 				.CreateSyntaxProvider(
 					(s, _) => s is AttributeListSyntax {Target.Identifier.RawKind: (int) SyntaxKind.AssemblyKeyword},
 					(ctx, _) => Enumerable.FirstOrDefault(((AttributeListSyntax) ctx.Node).Attributes))
 				.Where(item => item is not null);
-			
+
 			context.RegisterSourceOutput(context.CompilationProvider
 					.Combine(candidatesProvider.Collect())
 					.Combine(globalAttributes.Collect()),
-				((ctx, t) =>
-					Execute(ctx, t.Left.Left, t.Left.Right, t.Right)));
+				(ctx, t) =>
+					Execute(ctx, t.Left.Left, t.Left.Right, t.Right));
 		}
 		catch (Exception ex)
 		{
 			context.RegisterSourceOutput(context.CompilationProvider,
-				((ctx, _) => ReportErrorDuringInitialize(ctx, ex)));
+				(ctx, _) => ReportErrorDuringInitialize(ctx, ex));
 		}
 	}
 
@@ -55,9 +53,9 @@ public sealed partial class OverloadsGenerator
 			case LocationException locationException:
 				context.ReportDiagnostic(Diagnostic.Create(
 					new DiagnosticDescriptor(
-						$"{nameof(Overloader)[0]}I-0001", 
-						$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)} during Analyzing", 
-						ex.InnerException!.ToString(), 
+						$"{nameof(Overloader)[0]}I-0001",
+						$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)} during Analyzing",
+						ex.InnerException!.ToString(),
 						nameof(Overloader),
 						DiagnosticSeverity.Error,
 						true),

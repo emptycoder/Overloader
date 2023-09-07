@@ -7,8 +7,8 @@ namespace Overloader.Entities.Formatters;
 
 public sealed record FormattersBundleModel(string Identifier, string[] FormatterNames)
 {
-	public readonly string Identifier = Identifier;
 	public readonly string[] FormatterNames = FormatterNames;
+	public readonly string Identifier = Identifier;
 
 	public static FormattersBundleModel Parse(AttributeSyntax formatterSyntax, Compilation compilation)
 	{
@@ -23,7 +23,7 @@ public sealed record FormattersBundleModel(string Identifier, string[] Formatter
 			throw new ArgumentException("Identifier should be LiteralExpressionSyntax.")
 				.WithLocation(args[0].Expression);
 
-		var formatterNames = new string[args.Count - 1];
+		string[] formatterNames = new string[args.Count - 1];
 		for (int index = 1; index < args.Count; index++)
 		{
 			if (args[index].Expression is not LiteralExpressionSyntax formatterName)

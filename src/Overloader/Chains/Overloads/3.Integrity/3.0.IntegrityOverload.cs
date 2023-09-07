@@ -11,15 +11,10 @@ public sealed class IntegrityOverload : BodyMethodsOverloader, IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.Store.OverloadMap is null
-		    || !props.Store.IsSmthChanged
-		    || props.IsTSpecified)
+		if (props.IsTSpecified)
 			return ChainAction.NextMember;
-		
-		WriteMethodOverload(
-			props,
-			XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia()));
 
+		WriteMethodOverload(props);
 		return ChainAction.NextMember;
 	}
 
@@ -28,19 +23,21 @@ public sealed class IntegrityOverload : BodyMethodsOverloader, IChainMember
 		SourceBuilder head,
 		SourceBuilder body,
 		int paramIndex) =>
-		head.AppendAsConstant(", ");
+		head.AppendAsConstant(",")
+			.WhiteSpace();
 
 	protected override void WriteMethodBody(
 		GeneratorProperties props,
 		SourceBuilder body) =>
 		WriteMethodBody(props, body, Array.Empty<(string, string)>());
-	
+
 	protected override void WriteParameter(
 		GeneratorProperties props,
 		SourceBuilder head,
 		SourceBuilder body,
 		XmlDocumentation xmlDocumentation,
 		Span<int> indexes,
+		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
@@ -61,9 +58,10 @@ public sealed class IntegrityOverload : BodyMethodsOverloader, IChainMember
 				break;
 			default:
 				throw new ArgumentException($"Can't find case for '{mappedParam.ReplacementType}' parameter action.")
-					.Unexpected()
+					.Unreachable()
 					.WithLocation(parameter);
 		}
+
 		xmlDocumentation.AddOverload(paramName, paramName);
 	}
 }

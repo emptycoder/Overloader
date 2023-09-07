@@ -17,7 +17,7 @@ public sealed record CastModel(
 			int argIndex = 1;
 			for (; argIndex < expressions.Count - 2; argIndex++)
 			{
-				var modifierStr = string.Empty;
+				string modifierStr = string.Empty;
 				if (expressions[argIndex] is MemberAccessExpressionSyntax modifierExpression)
 				{
 					modifierStr = modifierExpression.Name.ToString() switch
@@ -35,7 +35,7 @@ public sealed record CastModel(
 				if (expressions[argIndex] is not TypeOfExpressionSyntax)
 					throw new ArgumentException($"Type '{expressions[argIndex].ToString()}' should be {nameof(TypeOfExpressionSyntax)}.")
 						.WithLocation(expressions[argIndex]);
-				
+
 				var type = expressions[argIndex].GetType(compilation);
 				templates.Add(new ParamModel
 				{

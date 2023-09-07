@@ -13,17 +13,15 @@ namespace Overloader.Chains.Overloads;
 public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 {
 	private readonly AsyncLocal<List<(string, string)>> _replacements = new();
-	
+
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.Store.OverloadMap is null
-		    || !props.Store.IsSmthChanged
-		    || props.StartEntry.IgnoreTransitions)
+		if (props.StartEntry.IgnoreTransitions)
 			return ChainAction.NextMember;
-		
+
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
 		if (parameters.Count == 0) return ChainAction.NextMember;
-		
+
 		Span<int> indexes = stackalloc int[parameters.Count];
 		Span<int> maxIndexesCount = stackalloc int[parameters.Count];
 		for (int index = 0; index < parameters.Count; index++)
@@ -35,7 +33,7 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out _))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
-			
+
 			maxIndexesCount[index] = parameter.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.RefKeyword))
 				? 0
 				: 1;
@@ -50,12 +48,12 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 				indexes[index] = 0;
 				break;
 			}
+
 			if (++index == maxIndexesCount.Length) return ChainAction.NextMember;
 		}
-		
+
 		WriteMethodOverloads(
 			props,
-			XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia()),
 			indexes,
 			maxIndexesCount);
 
@@ -67,7 +65,8 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 		SourceBuilder head,
 		SourceBuilder body,
 		int paramIndex) =>
-		head.AppendAsConstant(", ");
+		head.AppendAsConstant(",")
+			.WhiteSpace();
 
 	protected override void WriteMethodBody(
 		GeneratorProperties props,
@@ -84,11 +83,12 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 		SourceBuilder body,
 		XmlDocumentation xmlDocumentation,
 		Span<int> indexes,
+		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
-		var paramName = parameter.Identifier.ToString();
+		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ReplacementType)
 		{
 			case RequiredReplacement.None:
@@ -105,13 +105,13 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 				head.AppendIntegrityParam(props, mappedParam, parameter);
 				break;
 			case RequiredReplacement.Formatter:
-				var decompositionParams = head
+				string[] decompositionParams = head
 					.AppendFormatterParam(
 						props,
 						mappedParam.Type,
 						paramName)
 					.PickResult(parameter);
-			
+
 				var list = _replacements.Value ?? (_replacements.Value = new List<(string, string)>());
 				list.Add((paramName, string.Join(", ", decompositionParams)));
 				foreach (string decompositionParam in decompositionParams)
@@ -119,9 +119,10 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 				return;
 			default:
 				throw new ArgumentException($"Can't find case for '{mappedParam.ReplacementType}' parameter action.")
+					.Unreachable()
 					.WithLocation(parameter);
 		}
-		
+
 		xmlDocumentation.AddOverload(paramName, paramName);
 	}
 }

@@ -11,13 +11,11 @@ public sealed class CombinedDecompositionTransitionOverloads : TransitionDecompo
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.Store.OverloadMap is null
-		    || !props.Store.IsSmthChanged
-		    || props.StartEntry.IgnoreTransitions)
+		if (props.StartEntry.IgnoreTransitions)
 			return ChainAction.NextMember;
-		
+
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
-		
+
 		if (parameters.Count == 0) return ChainAction.NextMember;
 
 		ushort countOfCombineWith = 0;
@@ -40,19 +38,18 @@ public sealed class CombinedDecompositionTransitionOverloads : TransitionDecompo
 					.WithLocation(parameter.GetLocation());
 			maxTransitionsCount[index] = formatter.Decompositions.Count;
 		}
-		
+
 		if (countOfCombineWith == 0) return ChainAction.NextMember;
-		
+
 		// Check that transitions exists
 		for (int index = 0;;)
 		{
 			if (maxTransitionsCount[index] != 0) break;
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
-		
+
 		WriteMethodOverloads(
 			props,
-			XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia()),
 			transitionsIndexes,
 			maxTransitionsCount);
 
@@ -67,8 +64,10 @@ public sealed class CombinedDecompositionTransitionOverloads : TransitionDecompo
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
 		if (mappedParam.IsCombineNotExists)
-			head.AppendAsConstant(", ");
-		body.AppendAsConstant(", ");
+			head.AppendAsConstant(",")
+				.WhiteSpace();
+		body.AppendAsConstant(",")
+			.WhiteSpace();
 	}
 
 	protected override void WriteParameter(
@@ -77,6 +76,7 @@ public sealed class CombinedDecompositionTransitionOverloads : TransitionDecompo
 		SourceBuilder body,
 		XmlDocumentation xmlDocumentation,
 		Span<int> indexes,
+		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
@@ -87,6 +87,7 @@ public sealed class CombinedDecompositionTransitionOverloads : TransitionDecompo
 				body,
 				xmlDocumentation,
 				indexes,
+				maxIndexesCount,
 				paramIndex);
 		else
 			base.WriteParameter(
@@ -95,6 +96,7 @@ public sealed class CombinedDecompositionTransitionOverloads : TransitionDecompo
 				body,
 				XmlDocumentation.Empty,
 				indexes,
+				maxIndexesCount,
 				mappedParam.CombineIndex);
 	}
 }

@@ -8,6 +8,7 @@ namespace Overloader.Chains;
 public static class ChainDeclarations
 {
 	public static readonly IChainMember Main = new InitChain();
+
 	public static readonly IChainMember[] MethodWorkers =
 	{
 		/* 1. Analyze stage */
@@ -19,9 +20,9 @@ public static class ChainDeclarations
 		/* 3. Integrity stage */
 		/* 3.0 */ new IntegrityOverload(),
 		/* 3.1 */ new CombinedIntegrityOverload(),
-		// /* 3.2 */ new MainRefIntegrityOverload(),
-		// /* 3.3 */ new RefIntegrityOverloads(),
-		// /* 3.4 */ new CombinedRefIntegrityOverloads(),
+		/* 3.2 */ new MainRefIntegrityOverload(),
+		/* 3.3 */ new RefIntegrityOverloads(),
+		/* 3.4 */ new CombinedRefIntegrityOverloads(),
 		/* 4. Decomposition transition stage */
 		/* 4.0 */ new DecompositionTransitionOverloads(),
 		/* 4.1 */ new CombinedDecompositionTransitionOverloads(),

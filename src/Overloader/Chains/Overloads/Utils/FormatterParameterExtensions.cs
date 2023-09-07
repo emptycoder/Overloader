@@ -28,16 +28,16 @@ public static class FormatterParameterExtensions
 			return new ArgumentException(
 				$"Different generic params in formatter ({formatter.GenericParams.Length.ToString()}) and type ({@params.Length.ToString()})");
 
-		var decompositionParams = new string[formatter.Params.Length];
+		string[] decompositionParams = new string[formatter.Params.Length];
 		for (int paramIndex = 0;;)
 		{
 			var formatterParam = formatter.Params[paramIndex];
 			var templateType = formatterParam.Param.GetType(props.Template);
 			props.SetDeepestTypeWithTemplateFilling(templateType, props.Template)
 				.Deconstruct(out var paramType, out var exception);
-			
+
 			if (exception is not null) return exception;
-			if (paramType is { IsValueType: true, SpecialType: SpecialType.System_ValueType })
+			if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
 				sb.AppendAsConstant("in")
 					.WhiteSpace();
 

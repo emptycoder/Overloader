@@ -65,6 +65,7 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 
 			sb.TrimAppend(statementStr, 1);
 		}
+
 		ArrayPool<(string, string)>.Shared.Return(buffer);
 	}
 
@@ -208,6 +209,7 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 							changeLine = newStatement.ToString().Replace("${T}", templateStr);
 							break;
 					}
+
 					break;
 			}
 		}

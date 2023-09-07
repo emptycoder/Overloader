@@ -15,11 +15,9 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.Store.OverloadMap is null
-		    || !props.Store.IsSmthChanged
-		    || props.StartEntry.IgnoreTransitions)
+		if (props.StartEntry.IgnoreTransitions)
 			return ChainAction.NextMember;
-		
+
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
 		if (parameters.Count == 0) return ChainAction.NextMember;
 
@@ -38,18 +36,18 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 				countOfCombineWith++;
 				continue;
 			}
-			
+
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
-			
+
 			maxTransitionsCount[index] = parameter.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.RefKeyword))
 				? 0
 				: formatter.Casts.Count;
 		}
-		
+
 		if (countOfCombineWith == 0) return ChainAction.NextMember;
-		
+
 		// Check that transitions exists
 		for (int index = 0;;)
 		{
@@ -59,18 +57,18 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 				transitionIndexes[index] = 0;
 				break;
 			}
+
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
-		
+
 		WriteMethodOverloads(
 			props,
-			XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia()),
 			transitionIndexes,
 			maxTransitionsCount);
 
 		return ChainAction.NextMember;
 	}
-	
+
 	protected override void ParameterSeparatorAppender(
 		GeneratorProperties props,
 		SourceBuilder head,
@@ -79,21 +77,24 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
 		if (mappedParam.IsCombineNotExists)
-			head.AppendAsConstant(", ");
-		body.AppendAsConstant(", ");
+			head.AppendAsConstant(",")
+				.WhiteSpace();
+		body.AppendAsConstant(",")
+			.WhiteSpace();
 	}
-	
+
 	protected override CastModel GetCastModel(
 		FormatterModel formatter,
 		int transitionIndex) =>
 		formatter.Casts[transitionIndex];
-	
+
 	protected override void WriteParameter(
 		GeneratorProperties props,
 		SourceBuilder head,
 		SourceBuilder body,
 		XmlDocumentation xmlDocumentation,
 		Span<int> indexes,
+		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
@@ -104,6 +105,7 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 				body,
 				xmlDocumentation,
 				indexes,
+				maxIndexesCount,
 				paramIndex);
 		else
 			base.WriteParameter(
@@ -112,6 +114,7 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 				body,
 				XmlDocumentation.Empty,
 				indexes,
+				maxIndexesCount,
 				mappedParam.CombineIndex);
 	}
 }

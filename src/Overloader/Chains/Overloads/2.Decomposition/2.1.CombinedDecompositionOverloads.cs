@@ -14,9 +14,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.Store.OverloadMap is null
-		    || !props.Store.IsSmthChanged
-		    || props.StartEntry.IgnoreTransitions
+		if (props.StartEntry.IgnoreTransitions
 		    || props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;
 
@@ -24,11 +22,11 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 			    param.ReplacementType is RequiredReplacement.Formatter
 			    && param.IsCombineNotExists))
 			return ChainAction.NextMember;
-		
+
 		ushort countOfCombineWith = 0;
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
 		if (parameters.Count == 0) return ChainAction.NextMember;
-		
+
 		Span<int> indexes = stackalloc int[parameters.Count];
 		Span<int> maxIndexesCount = stackalloc int[parameters.Count];
 		for (int index = 0; index < parameters.Count; index++)
@@ -42,11 +40,11 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 				countOfCombineWith++;
 				continue;
 			}
-			
+
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out _))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
-			
+
 			maxIndexesCount[index] = parameter.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.RefKeyword))
 				? 0
 				: 1;
@@ -62,12 +60,12 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 				indexes[index] = 0;
 				break;
 			}
+
 			if (++index == maxIndexesCount.Length) return ChainAction.NextMember;
 		}
-		
+
 		WriteMethodOverloads(
 			props,
-			XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia()),
 			indexes,
 			maxIndexesCount);
 
@@ -82,8 +80,10 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
 		if (mappedParam.IsCombineNotExists)
-			head.AppendAsConstant(", ");
-		body.AppendAsConstant(", ");
+			head.AppendAsConstant(",")
+				.WhiteSpace();
+		body.AppendAsConstant(",")
+			.WhiteSpace();
 	}
 
 	protected override void WriteParameter(
@@ -92,41 +92,42 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 		SourceBuilder body,
 		XmlDocumentation xmlDocumentation,
 		Span<int> indexes,
+		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
-		
+
 		if (!mappedParam.IsCombineNotExists)
 		{
-			body.AppendCombined(
+			body.AppendCombinedParameter(
 				props,
 				mappedParam.CombineIndex);
 			return;
 		}
-		
-		var paramName = parameter.Identifier.ToFullString();
+
+		string paramName = parameter.Identifier.ToFullString();
 		switch (mappedParam.ReplacementType)
 		{
 			case RequiredReplacement.None:
 				head.TrimAppend(parameter.ToFullString());
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.Template:
 			case RequiredReplacement.UserType:
 				head.AppendParameter(parameter, mappedParam, props.Compilation);
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.FormatterIntegrity:
 				head.AppendIntegrityParam(props, mappedParam, parameter);
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.Formatter when indexes[paramIndex] == -1:
 				head.AppendIntegrityParam(props, mappedParam, parameter);
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.Formatter:
-				var decompositionParams = head
+				string[] decompositionParams = head
 					.AppendFormatterParam(
 						props,
 						mappedParam.Type,
@@ -138,9 +139,10 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 				return;
 			default:
 				throw new ArgumentException($"Can't find case for '{mappedParam.ReplacementType}' parameter action.")
+					.Unreachable()
 					.WithLocation(parameter);
 		}
-		
+
 		xmlDocumentation.AddOverload(paramName, paramName);
 	}
 }

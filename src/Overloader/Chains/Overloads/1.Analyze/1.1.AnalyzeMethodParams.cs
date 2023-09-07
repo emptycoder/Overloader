@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities;
 using Overloader.Entities.DTOs;
 using Overloader.Enums;
@@ -12,10 +11,8 @@ public sealed class AnalyzeMethodParams : IChainMember
 {
 	unsafe ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		// props.Store.FormattersWoIntegrityCount = 0;
-		// props.Store.FormattersIntegrityCount = 0;
 		props.Store.CombineParametersCount = 0;
-		
+
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
 		props.Store.OverloadMap = new ParameterData[parameters.Count];
 
@@ -30,7 +27,7 @@ public sealed class AnalyzeMethodParams : IChainMember
 			var parameterAction = shouldBeReplaced switch
 			{
 				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => RequiredReplacement.UserType,
-				true when parameterType is INamedTypeSymbol { IsGenericType: true } =>
+				true when parameterType is INamedTypeSymbol {IsGenericType: true} =>
 					props.TryGetFormatter(parameterType.GetClearType(), out var formatter)
 						? paramDto.HasForceOverloadIntegrity || !formatter.Params.Any()
 							? RequiredReplacement.FormatterIntegrity
@@ -63,15 +60,13 @@ public sealed class AnalyzeMethodParams : IChainMember
 					? (byte) parameters.IndexOf(param => param.Identifier.ValueText == paramDto.CombineWith)
 					: Byte.MaxValue);
 
-			// bool isFormatterWoIntegrity = parameterAction is ParameterReplacement.Formatter;
-			// bool isFormatterIntegrity = parameterAction is ParameterReplacement.FormatterIntegrity;
-
-			// props.Store.FormattersWoIntegrityCount += *(byte*) &isFormatterWoIntegrity;
-			// props.Store.FormattersIntegrityCount += *(byte*) &isFormatterIntegrity;
 			props.Store.CombineParametersCount += *(byte*) &isCombineWith;
 			props.Store.IsSmthChanged |= shouldBeReplaced;
 		}
 
-		return ChainAction.NextMember;
+		props.Store.XmlDocumentation = XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia());
+		return props.Store.IsSmthChanged
+			? ChainAction.NextMember
+			: ChainAction.Break;
 	}
 }

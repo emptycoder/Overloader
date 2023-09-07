@@ -15,9 +15,7 @@ public sealed class CastTransitionOverloads : TransitionCastOverloader, IChainMe
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.Store.OverloadMap is null
-		    || !props.Store.IsSmthChanged
-		    || props.StartEntry.IgnoreTransitions)
+		if (props.StartEntry.IgnoreTransitions)
 			return ChainAction.NextMember;
 
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
@@ -37,7 +35,7 @@ public sealed class CastTransitionOverloads : TransitionCastOverloader, IChainMe
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
 					.WithLocation(parameter.GetLocation());
-			
+
 			maxTransitionsCount[index] = parameter.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.RefKeyword))
 				? 0
 				: formatter.Casts.Count;
@@ -52,12 +50,12 @@ public sealed class CastTransitionOverloads : TransitionCastOverloader, IChainMe
 				transitionIndexes[index] = 0;
 				break;
 			}
+
 			if (++index == maxTransitionsCount.Length) return ChainAction.NextMember;
 		}
-		
+
 		WriteMethodOverloads(
 			props,
-			XmlDocumentation.Parse(props.Store.MethodSyntax.GetLeadingTrivia()),
 			transitionIndexes,
 			maxTransitionsCount);
 
@@ -70,8 +68,10 @@ public sealed class CastTransitionOverloads : TransitionCastOverloader, IChainMe
 		SourceBuilder body,
 		int paramIndex)
 	{
-		head.AppendAsConstant(", ");
-		body.AppendAsConstant(", ");
+		head.AppendAsConstant(",")
+			.WhiteSpace();
+		body.AppendAsConstant(",")
+			.WhiteSpace();
 	}
 
 	protected override CastModel GetCastModel(

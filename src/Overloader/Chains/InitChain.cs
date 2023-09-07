@@ -57,7 +57,7 @@ internal class InitChain : IChainMember
 				}
 				catch (Exception ex)
 				{
-					throw ex.Unexpected($"Something went wrong during executing of {worker.GetType().Name}.");
+					throw ex.Unreachable($"Something went wrong during executing of {worker.GetType().Name}.");
 				}
 			}
 		}

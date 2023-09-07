@@ -28,7 +28,7 @@ public static class TypeExtensions
 			props.SetDeepestType(@params[paramIndex], templateType, genericType)
 				.Deconstruct(out var value, out var exception);
 			if (exception is not null) return exception;
-			
+
 			@params[paramIndex] = value;
 		}
 
@@ -46,7 +46,7 @@ public static class TypeExtensions
 		props.SetDeepestType(argType, templateType, argType)
 			.Deconstruct(out var paramType, out var exception);
 		if (exception is not null) return exception;
-		
+
 		var paramClearType = paramType.GetClearType();
 		if (!paramClearType.IsUnboundGenericType) return ResultOrException<ITypeSymbol>.Result(paramType);
 
@@ -55,6 +55,7 @@ public static class TypeExtensions
 		for (int typeParamIndex = 0; typeParamIndex < typeParameters.Length; typeParamIndex++)
 			typeParameters[typeParamIndex] = templateType;
 
-		return ResultOrException<ITypeSymbol>.Result(paramType.ConstructWithClearType(paramClearType.OriginalDefinition.Construct(typeParameters), props.Compilation));
+		return ResultOrException<ITypeSymbol>.Result(paramType.ConstructWithClearType(paramClearType.OriginalDefinition.Construct(typeParameters),
+			props.Compilation));
 	}
 }

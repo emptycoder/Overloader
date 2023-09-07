@@ -12,12 +12,14 @@ namespace Overloader.Chains.Overloads.Overloads;
 public abstract class TransitionCastOverloader : ArrowMethodOverloader
 {
 	protected abstract CastModel GetCastModel(FormatterModel formatter, int transitionIndex);
+
 	protected override void WriteParameter(
 		GeneratorProperties props,
 		SourceBuilder head,
 		SourceBuilder body,
 		XmlDocumentation xmlDocumentation,
 		Span<int> indexes,
+		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
 		var mappedParam = props.Store.OverloadMap[paramIndex];
@@ -27,24 +29,24 @@ public abstract class TransitionCastOverloader : ArrowMethodOverloader
 		{
 			case RequiredReplacement.None:
 				head.TrimAppend(parameter.ToFullString());
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.Template:
 			case RequiredReplacement.UserType:
 				head.AppendParameter(parameter, mappedParam, props.Compilation);
-				body.AppendVariableToBody(parameter, paramName);
+				body.AppendParameterWoFormatter(parameter, paramName: paramName);
 				break;
 			case RequiredReplacement.Formatter:
 			case RequiredReplacement.FormatterIntegrity:
 				if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
 					throw new ArgumentException("Unexpected exception. Formatters have been changed in real time.")
 						.WithLocation(parameter);
-				
+
 				int transitionIndex = indexes[paramIndex];
 				if (transitionIndex == -1)
 				{
 					head.AppendIntegrityParam(props, mappedParam, parameter);
-					body.AppendVariableToBody(parameter, paramName);
+					body.AppendParameterWoFormatter(parameter, paramName: paramName);
 					return;
 				}
 
@@ -83,9 +85,10 @@ public abstract class TransitionCastOverloader : ArrowMethodOverloader
 				return;
 			default:
 				throw new ArgumentException($"Can't find case for {mappedParam.ReplacementType} parameterAction.")
+					.Unreachable()
 					.WithLocation(parameter);
 		}
-		
+
 		xmlDocumentation.AddOverload(paramName, paramName);
 	}
 }

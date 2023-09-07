@@ -121,7 +121,7 @@ public static class SyntaxNodeExtensions
 				var value = compilation
 					.GetSemanticModel(syntaxNode.SyntaxTree)
 					.GetConstantValue(syntaxNode);
-					
+
 				if (!value.HasValue || value.Value is not string) goto default;
 				return (string) value.Value!;
 			default:
