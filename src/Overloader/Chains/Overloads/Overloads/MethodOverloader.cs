@@ -78,19 +78,20 @@ public abstract class MethodOverloader
 		Span<int> maxIndexesCount)
 	{
 		/*
-			0 0 0 0 0
-			^
-
-			1 0 0 0 0
-			^
-			Repeat until it < maxLength[index]
-			And when first value equals maxLength[index] reset to zero and add 1 to next rank
-			0 1 0 0 0
-			^
-
-			1 1 0 0 0
-			^
-			And so on...
+		   -1 -1 -1 -1 -1
+		   ^
+		   
+		   0 -1 -1 -1 -1
+		   ^
+		   Repeat until it < maxLength[index]
+		   And when first value equals maxLength[index] reset to zero and add 1 to next rank
+		   -1 means that no transition will be applied
+		   -1 0 -1 -1 -1
+		   ^
+		   
+		   0 0 -1 -1 -1
+		   ^
+		   And so on...
 		*/
 		for (int index = 0;;)
 		{
