@@ -56,6 +56,7 @@ public class ParamModifierTests
 			[{{nameof(TOverload)}}(typeof(float))]
 			public static partial class TestClass
 			{
+				[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 				public static void TestMethod1([{{nameof(Integrity)}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
 			  	[return: {{TAttribute.TagName}}]
 			  	public static double TestMethod2(

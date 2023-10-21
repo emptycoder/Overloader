@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
@@ -9,11 +8,31 @@ namespace Overloader.Utils;
 
 public static class SourceBuilderExtensions
 {
-	private static readonly ImmutableHashSet<string> AttributesToRemove =
-		typeof(TAttribute).Assembly.DefinedTypes
-			.Select(type => type.Name.Replace("Attribute", ""))
-			.ToImmutableHashSet();
-
+	private static readonly HashSet<string> AttributesToRemove = new()
+	{
+		/* Assembly */
+		nameof(Formatter),
+		nameof(FormattersBundle),
+		/* Method */
+		nameof(AllowFor),
+		nameof(ChangeModifier),
+		nameof(ChangeName),
+		nameof(ForceChanged),
+		nameof(IgnoreFor),
+		/* Parameter */
+		nameof(CombineWith),
+		nameof(Integrity),
+		nameof(Modifier),
+		nameof(Ref),
+		TAttribute.TagName,
+		/* Type */
+		nameof(BlackListMode),
+		nameof(IgnoreTransitions),
+		nameof(RemoveBody),
+		nameof(TOverload),
+		nameof(TSpecify)
+	};
+	
 	public static SourceBuilder AppendUsings(this SourceBuilder sb, SyntaxNode syntax)
 	{
 		foreach (var @using in syntax.DescendantNodes().Where(node => node is UsingDirectiveSyntax))
@@ -52,7 +71,7 @@ public static class SourceBuilderExtensions
 				if (!isOpened && (isOpened = true))
 				{
 					var target = listOfAttrs.Target;
-					sb.AppendAsConstant("(");
+					sb.AppendAsConstant("[");
 					if (target is not null)
 						sb.TrimAppend(target.ToString())
 							.WhiteSpace();
@@ -65,7 +84,7 @@ public static class SourceBuilderExtensions
 			}
 
 			if (isOpened)
-				sb.AppendAsConstant(")")
+				sb.AppendAsConstant("]")
 					.AppendAsConstant(separator);
 		}
 

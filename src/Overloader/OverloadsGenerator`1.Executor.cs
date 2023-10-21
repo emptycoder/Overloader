@@ -39,7 +39,7 @@ public sealed partial class OverloadsGenerator : IIncrementalGenerator
 		{
 			gsb.Context.ReportDiagnostic(Diagnostic.Create(
 				new DiagnosticDescriptor(
-					$"{nameof(Overloader)[0]}E-0001",
+					$"{nameof(Overloader)[0]}E0001",
 					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)} during Execution",
 					ex.InnerException!.ToString(),
 					nameof(Overloader),
@@ -51,7 +51,7 @@ public sealed partial class OverloadsGenerator : IIncrementalGenerator
 		{
 			gsb.Context.ReportDiagnostic(Diagnostic.Create(
 				new DiagnosticDescriptor(
-					$"{nameof(Overloader)[0]}E-0002",
+					$"{nameof(Overloader)[0]}E0002",
 					$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)} during Execution",
 					ex.ToString(),
 					nameof(Overloader),

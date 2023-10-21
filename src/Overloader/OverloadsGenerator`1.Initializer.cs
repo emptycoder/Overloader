@@ -53,7 +53,7 @@ public sealed partial class OverloadsGenerator
 			case LocationException locationException:
 				context.ReportDiagnostic(Diagnostic.Create(
 					new DiagnosticDescriptor(
-						$"{nameof(Overloader)[0]}I-0001",
+						$"{nameof(Overloader)[0]}I0001",
 						$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)} during Analyzing",
 						ex.InnerException!.ToString(),
 						nameof(Overloader),
@@ -64,7 +64,7 @@ public sealed partial class OverloadsGenerator
 			default:
 				context.ReportDiagnostic(Diagnostic.Create(
 					new DiagnosticDescriptor(
-						$"{nameof(Overloader)[0]}I-0002",
+						$"{nameof(Overloader)[0]}I0002",
 						$"An {nameof(DiagnosticSeverity.Error)} was thrown by {nameof(Overloader)} during Analyzing",
 						ex.ToString(),
 						nameof(Overloader),
@@ -147,7 +147,8 @@ public sealed partial class OverloadsGenerator
 						throw new ArgumentException($"Argument should be {nameof(TypeOfExpressionSyntax)}.")
 							.WithLocation(declarationSyntax);
 
-					typeEntry.FormattersToUse = new string[arguments.Count - 1];
+					int count = arguments.Count - 1;
+					typeEntry.FormattersToUse = count == 0 ? Array.Empty<string>() : new string[count];
 					for (int argIndex = 1, formatterIndex = 0; argIndex < arguments.Count; argIndex++, formatterIndex++)
 					{
 						if (arguments[argIndex].Expression is not LiteralExpressionSyntax literal)
