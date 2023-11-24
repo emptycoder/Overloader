@@ -54,7 +54,8 @@ public static class SourceBuilderExtensions
 	{
 		if (typeSyntax is not RefTypeSyntax refSyntax) return sb;
 		return sb.TrimAppend(refSyntax.RefKeyword.ToFullString())
-			.TrimAppend(refSyntax.ReadOnlyKeyword.ToFullString());
+			.TrimAppend(refSyntax.ReadOnlyKeyword.ToFullString())
+			.WhiteSpace();
 	}
 
 	public static SourceBuilder AppendAttributes(

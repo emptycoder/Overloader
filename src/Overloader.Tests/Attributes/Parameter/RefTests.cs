@@ -39,6 +39,11 @@ public static partial class TestClass
 		Vector3<double> vec3,
 		[{TAttribute.TagName}] [{nameof(Ref)}] [{nameof(CombineWith)}(""vec1"")] Vector3<double> vec4,
 		Vector3<double> vec5) => default!;
+
+	[return: {TAttribute.TagName}]
+	public static ref int TestMethod2(
+		[{TAttribute.TagName}] this ref int value,
+		[{TAttribute.TagName}] [{nameof(Ref)}] [{nameof(Integrity)}] Vector3<double> vec2) => ref value;
 }}
 
 public struct Vector3<T>
@@ -53,7 +58,7 @@ public struct Vector3<T>
 		Assert.That(result.CompilationErrors, Is.Empty);
 		Assert.That(result.GenerationDiagnostics, Is.Empty);
 
-		var methodOverloads = new Dictionary<string, bool>(3)
+		var methodOverloads = new Dictionary<string, bool>
 		{
 			{"this TestProject.Vector3<double> vec,in TestProject.Vector3<double> vec1,TestProject.Vector3<double> vec2,Vector3<double> vec3,double vec4X,double vec4Y,double vec4Z,Vector3<double> vec5", false},
 			{"this TestProject.Vector3<double> vec,in TestProject.Vector3<double> vec1,TestProject.Vector3<double> vec2,Vector3<double> vec3,Vector3<double> vec5", false},
@@ -67,7 +72,10 @@ public struct Vector3<T>
 			{"this ref TestProject.Vector3<float> vec,in TestProject.Vector3<float> vec1,TestProject.Vector3<float> vec2,Vector3<double> vec3,TestProject.Vector3<float> vec4,Vector3<double> vec5", false},
 			{"this TestProject.Vector3<float> vec,in TestProject.Vector3<float> vec1,TestProject.Vector3<float> vec2,Vector3<double> vec3,ref TestProject.Vector3<float> vec4,Vector3<double> vec5", false},
 			{"this ref TestProject.Vector3<float> vec,in TestProject.Vector3<float> vec1,TestProject.Vector3<float> vec2,Vector3<double> vec3,ref TestProject.Vector3<float> vec4,Vector3<double> vec5", false},
-			{"this ref TestProject.Vector3<float> vec,in TestProject.Vector3<float> vec1,TestProject.Vector3<float> vec2,Vector3<double> vec3,Vector3<double> vec5", false}
+			{"this ref TestProject.Vector3<float> vec,in TestProject.Vector3<float> vec1,TestProject.Vector3<float> vec2,Vector3<double> vec3,Vector3<double> vec5", false},
+			{"this ref double value,ref TestProject.Vector3<double> vec2", false},
+			{"this ref float value,TestProject.Vector3<float> vec2", false},
+			{"this ref float value,ref TestProject.Vector3<float> vec2", false}
 		};
 
 		foreach (string? identifier in from generatedTree in result.Result.GeneratedTrees
