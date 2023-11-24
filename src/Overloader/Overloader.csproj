@@ -47,7 +47,7 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.4.0" />
 		<!-- Package the generator in the analyzer directory of the nuget package -->
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-		<None Include="$(OutputPath)\$(AssemblyName).Abstract.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="true"/>
+		<None Include="$(OutputPath)\$(AssemblyName).Abstract.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false"/>
 	</ItemGroup>
 
 	<ItemGroup>
