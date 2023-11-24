@@ -100,9 +100,7 @@ public sealed record FormatterModel(
 					castsForIntegrity.Add(CastModel.Parse(argExpressions, compilation));
 					break;
 				default:
-					throw new ArgumentException($"Value '{transitionTypeExpression.Name}' out of valid range ('{
-						string.Join(", ", Enum.GetNames(typeof(TransitionType)))
-					}').").WithLocation(argExpressions[0]);
+					throw new ArgumentException($"Value '{transitionTypeExpression.Name}' out of valid range.").WithLocation(argExpressions[0]);
 			}
 		}
 
