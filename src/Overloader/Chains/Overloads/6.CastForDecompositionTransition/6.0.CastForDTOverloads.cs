@@ -75,5 +75,5 @@ public sealed class CastForDTOverloads : TransitionCastOverloader, IChainMember
 	protected override CastModel GetCastModel(
 		FormatterModel formatter,
 		int transitionIndex) =>
-		formatter.Casts[transitionIndex];
+		formatter.CastsForDecomposition[transitionIndex];
 }

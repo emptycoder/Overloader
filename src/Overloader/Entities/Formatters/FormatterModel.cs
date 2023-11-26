@@ -94,7 +94,7 @@ public sealed record FormatterModel(
 					casts.Add(CastModel.Parse(argExpressions, compilation));
 					break;
 				case nameof(TransitionType.CastForDecomposition):
-					castsForIntegrity.Add(CastModel.Parse(argExpressions, compilation));
+					castsForDecomposition.Add(CastModel.Parse(argExpressions, compilation));
 					break;
 				case nameof(TransitionType.CastForIntegrity):
 					castsForIntegrity.Add(CastModel.Parse(argExpressions, compilation));

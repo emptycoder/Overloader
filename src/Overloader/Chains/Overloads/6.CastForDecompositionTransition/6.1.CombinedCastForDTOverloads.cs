@@ -86,7 +86,7 @@ public sealed class CombinedCastForDTOverloads : TransitionCastOverloader, IChai
 	protected override CastModel GetCastModel(
 		FormatterModel formatter,
 		int transitionIndex) =>
-		formatter.Casts[transitionIndex];
+		formatter.CastsForDecomposition[transitionIndex];
 
 	protected override void WriteParameter(
 		GeneratorProperties props,
