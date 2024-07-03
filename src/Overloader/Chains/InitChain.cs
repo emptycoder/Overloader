@@ -55,6 +55,10 @@ internal class InitChain : IChainMember
 					if (worker.Execute(props) == ChainAction.Break)
 						break;
 				}
+				catch (LocationException)
+				{
+					throw;
+				}
 				catch (Exception ex)
 				{
 					throw ex.Unreachable($"Something went wrong during executing of {worker.GetType().Name}.");
