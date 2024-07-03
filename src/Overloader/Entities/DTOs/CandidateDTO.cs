@@ -1,24 +1,62 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Overloader.Entities.Attributes;
+using Overloader.Utils;
 
 namespace Overloader.Entities.DTOs;
 
-public struct CandidateDto
+public record struct CandidateDto(
+	TypeDeclarationSyntax Syntax,
+	// ReSharper disable once InconsistentNaming
+	TSpecifyDto TSpecifyDto,
+	List<TOverloadDto> OverloadTypes,
+	bool IsInvertedMode,
+	bool IgnoreTransitions)
 {
-	private LazyList<OverloadDto> _overloadTypes = new();
-
-	public readonly TypeDeclarationSyntax Syntax;
-	public List<OverloadDto> OverloadTypes => _overloadTypes.Value;
-	public string[]? FormattersToUse;
-	public bool IsBlackListMode = false;
-	public bool IgnoreTransitions = false;
-	public TypeSyntax? DefaultType;
-
-	public CandidateDto() => throw new NotSupportedException();
-	public CandidateDto(TypeDeclarationSyntax syntax) => Syntax = syntax;
-
-	private struct LazyList<T>
+	public static bool TryParse(GeneratorSyntaxContext context, out CandidateDto? candidateDto)
 	{
-		private List<T>? _list;
-		public List<T> Value => _list ??= new List<T>();
+		var declarationSyntax = (TypeDeclarationSyntax) context.Node;
+		TSpecifyDto? tSpecifyDto = null;
+		var ignoreTransitions = false;
+		var isBlackListMode = false;
+		var overloadTypes = new LazyList<TOverloadDto>();
+		
+		foreach (var attributeList in declarationSyntax.AttributeLists)
+		foreach (var attribute in attributeList.Attributes)
+		{
+			switch (attribute.Name.GetName())
+			{
+				case nameof(TOverload)
+					when attribute.ArgumentList is not null:
+				{
+					string className = declarationSyntax.Identifier.ValueText;
+					overloadTypes.Value.Add(TOverloadDto.Parse(className, attribute));
+					break;
+				}
+				case nameof(IgnoreTransitions):
+					ignoreTransitions = true;
+					break;
+				case nameof(InvertedMode):
+					isBlackListMode = true;
+					break;
+				case nameof(TSpecify):
+					tSpecifyDto = TSpecifyDto.Parse(attribute);
+					continue;
+			}
+		}
+
+		if (tSpecifyDto is null)
+		{
+			candidateDto = default;
+			return false;
+		}
+
+		candidateDto = new CandidateDto(
+			declarationSyntax,
+			tSpecifyDto,
+			overloadTypes.Value,
+			isBlackListMode,
+			ignoreTransitions);
+		return true;
 	}
 }

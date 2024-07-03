@@ -17,8 +17,8 @@ internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""private"", typeof(float))]
-	[{nameof(ChangeModifier)}(""public"", ""internal"", typeof(double))]
+	[{nameof(ChangeModifier)}(""public"", ""private"", templateTypeFor: typeof(float))]
+	[{nameof(ChangeModifier)}(""public"", ""internal"", templateTypeFor: typeof(double))]
 	[{nameof(ChangeModifier)}(""private"", ""protected"")]
 	public static void {nameof(BaseTest)}() {{ }}
 }}

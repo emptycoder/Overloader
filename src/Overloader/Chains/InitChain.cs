@@ -13,7 +13,7 @@ internal class InitChain : IChainMember
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
 		var sb = props.Builder;
-		switch (props.IsTSpecified)
+		switch (props.IsDefaultOverload)
 		{
 			case true when props.StartEntry.IgnoreTransitions:
 			case true when !props.StartEntry.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword):
@@ -47,7 +47,7 @@ internal class InitChain : IChainMember
 			if (member is not MethodDeclarationSyntax methodSyntax) continue;
 
 			props.Store.MethodSyntax = methodSyntax;
-			props.Store.SkipMember = props.StartEntry.IsBlackListMode;
+			props.Store.SkipMember = props.StartEntry.IsInvertedMode;
 			foreach (var worker in ChainDeclarations.MethodWorkers)
 			{
 				try

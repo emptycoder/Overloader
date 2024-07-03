@@ -9,4 +9,6 @@ namespace Overloader;
 public class TSpecify : Attribute
 {
 	public TSpecify(Type templateType, params string[] formatters) { }
+	
+	public TSpecify(Type[] templateTypes, params string[] formatters) { }
 }

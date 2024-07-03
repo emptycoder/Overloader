@@ -59,7 +59,7 @@ public abstract class TransitionCastOverloader : ArrowMethodOverloader
 						? props
 							.SetDeepestType(
 								castedParameter.Type,
-								props.Template,
+								props.Templates[mappedParam.TemplateIndex],
 								castedParameter.Type)
 							.PickResult(parameter)
 						: castedParameter.Type;
@@ -81,7 +81,7 @@ public abstract class TransitionCastOverloader : ArrowMethodOverloader
 						.WhiteSpace();
 				}
 
-				body.TrimAppend(cast.Replace("${T}", props.Template.ToDisplayString()));
+				body.TrimAppend(cast.Replace("${T}", props.Templates[mappedParam.TemplateIndex].ToDisplayString()));
 				return;
 			default:
 				throw new ArgumentException($"Can't find case for {mappedParam.ReplacementType} parameterAction.")

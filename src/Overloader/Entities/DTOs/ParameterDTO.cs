@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Overloader.Entities.Attributes;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
@@ -8,16 +9,16 @@ namespace Overloader.Entities.DTOs;
 
 public struct ParameterDto
 {
-	public AttributeSyntax Attribute;
+	public TAttributeDto? Attribute;
 	public bool HasForceOverloadIntegrity;
 	public string? CombineWith;
 	public List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)> ModifierChangers;
 
 	public static bool TryGetParameterDtoByTemplate(ParameterSyntax syntaxNode,
 		IGeneratorProps props,
-		out ParameterDto tAttrDto)
+		out ParameterDto parameterDto)
 	{
-		tAttrDto = new ParameterDto
+		parameterDto = new ParameterDto
 		{
 			ModifierChangers = new List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)>(0)
 		};
@@ -28,18 +29,21 @@ public struct ParameterDto
 			switch (attrName)
 			{
 				case nameof(Integrity):
-					tAttrDto.HasForceOverloadIntegrity = true;
+					parameterDto.HasForceOverloadIntegrity = true;
 					continue;
 				case nameof(Overloader.CombineWith) when attribute.ArgumentList is {Arguments: var args}:
 					if (args.Count != 1)
 						throw new ArgumentException("Not allowed with arguments count != 1.")
 							.WithLocation(syntaxNode);
-					tAttrDto.CombineWith = args[0].Expression.GetVariableName();
+					parameterDto.CombineWith = args[0].Expression.GetVariableName();
 					continue;
 				case TAttribute.TagName:
-					if (attribute.ArgumentList is {Arguments.Count: > 1} &&
-					    !attribute.ArgumentList.Arguments[1].EqualsToTemplate(props)) continue;
-					tAttrDto.Attribute = attribute;
+					var tAttrDto = TAttributeDto.Parse(attribute, props.Compilation);
+					if (SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])
+					    || tAttrDto.ForType is null)
+					{
+						parameterDto.Attribute = tAttrDto;
+					}
 					continue;
 				case nameof(Modifier) when attribute.ArgumentList is {Arguments: var args}:
 					int argsCount = args.Count;
@@ -49,7 +53,7 @@ public struct ParameterDto
 							.WithLocation(args[0].Expression);
 
 					if (argsCount == 1)
-						tAttrDto.ModifierChangers.Add((modifierExpression.GetVariableName(), null, null));
+						parameterDto.ModifierChangers.Add((modifierExpression.GetVariableName(), null, null));
 
 					if (args[1].Expression is not LiteralExpressionSyntax insteadOfExpression)
 						throw new ArgumentException("Allowed only string or null literals.")
@@ -64,7 +68,7 @@ public struct ParameterDto
 					};
 
 					if (argsCount == 2)
-						tAttrDto.ModifierChangers.Add((
+						parameterDto.ModifierChangers.Add((
 							modifierExpression.GetVariableName(),
 							insteadOf,
 							null));
@@ -73,7 +77,7 @@ public struct ParameterDto
 					var namedTypeSymbol = type.GetClearType();
 					if (namedTypeSymbol.IsUnboundGenericType) type = type.OriginalDefinition;
 
-					tAttrDto.ModifierChangers.Add((
+					parameterDto.ModifierChangers.Add((
 						modifierExpression.GetVariableName(),
 						insteadOf,
 						type));
@@ -81,6 +85,6 @@ public struct ParameterDto
 			}
 		}
 
-		return tAttrDto.Attribute != null;
+		return parameterDto.Attribute != null;
 	}
 }

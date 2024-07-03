@@ -11,6 +11,7 @@ public static class FormatterParameterExtensions
 	public static ResultOrException<string[]> AppendFormatterParam(
 		this SourceBuilder sb,
 		GeneratorProperties props,
+		byte templateIndex,
 		ITypeSymbol type,
 		string paramName)
 	{
@@ -32,8 +33,8 @@ public static class FormatterParameterExtensions
 		for (int paramIndex = 0;;)
 		{
 			var formatterParam = formatter.Params[paramIndex];
-			var templateType = formatterParam.Param.GetType(props.Template);
-			props.SetDeepestTypeWithTemplateFilling(templateType, props.Template)
+			var templateType = formatterParam.Param.GetType(props.Templates[templateIndex]);
+			props.SetDeepestTypeWithTemplateFilling(templateType, props.Templates[templateIndex])
 				.Deconstruct(out var paramType, out var exception);
 
 			if (exception is not null) return exception;
@@ -61,7 +62,8 @@ public static class FormatterParameterExtensions
 		ParameterData mappedParam,
 		ParameterSyntax parameter)
 	{
-		var newType = props.SetDeepestType(mappedParam.Type, props.Template, props.Template).PickResult(parameter);
+		var template = props.Templates[mappedParam.TemplateIndex];
+		var newType = props.SetDeepestType(mappedParam.Type, template, template).PickResult(parameter);
 		return sb.AppendAttributes(parameter.AttributeLists, " ")
 			.AppendAndBuildModifiers(mappedParam, parameter, newType, " ")
 			.TrimAppend(newType.ToDisplayString())

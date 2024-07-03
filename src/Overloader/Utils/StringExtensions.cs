@@ -13,11 +13,11 @@ public static class StringExtensions
 		return -1;
 	}
 
-	public static bool TryToFindMatch(this ReadOnlySpan<char> data, ReadOnlySpan<char> entry, string separator)
+	public static bool TryToFindMatch(this ReadOnlySpan<char> data, ReadOnlySpan<char> entry, ReadOnlySpan<char> separator)
 	{
 		for (;;)
 		{
-			int matchIndex = data.IndexOf(separator.AsSpan(), StringComparison.Ordinal);
+			int matchIndex = data.IndexOf(separator, StringComparison.Ordinal);
 			if (matchIndex == -1) return data.Trim().SequenceEqual(entry);
 			if (data.Slice(0, matchIndex).Trim().SequenceEqual(entry)) return true;
 			if (matchIndex + 1 >= data.Length) return false;

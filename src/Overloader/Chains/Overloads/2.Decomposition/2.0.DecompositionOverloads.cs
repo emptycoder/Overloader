@@ -108,6 +108,7 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 				string[] decompositionParams = head
 					.AppendFormatterParam(
 						props,
+						mappedParam.TemplateIndex,
 						mappedParam.Type,
 						paramName)
 					.PickResult(parameter);

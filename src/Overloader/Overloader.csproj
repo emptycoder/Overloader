@@ -23,9 +23,9 @@
 		<PackageTags>source; generator; generics; csharp-sourcegenerator</PackageTags>
 		<PackageReadmeFile>NuGetReadme.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<AssemblyVersion>3.0.3</AssemblyVersion>
-		<FileVersion>3.0.3</FileVersion>
-		<Version>3.0.3</Version>
+		<AssemblyVersion>3.0.4</AssemblyVersion>
+		<FileVersion>3.0.4</FileVersion>
+		<Version>3.0.4</Version>
 		<PackageIcon>logo-375x375.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<SignAssembly>False</SignAssembly>

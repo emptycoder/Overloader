@@ -20,14 +20,14 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 		{
 			body.WhiteSpace()
 				.NestedIncrease();
-			WriteExpressionBody(body, props.Store.MethodSyntax.ExpressionBody, props.Template.ToDisplayString(), replacements);
+			WriteExpressionBody(body, props.Store.MethodSyntax.ExpressionBody, props.TemplatesStr, replacements);
 			body.NestedDecrease()
 				.AppendAsConstant(";", 1);
 		}
 		else if (props.Store.MethodSyntax.Body is not null)
 		{
 			body.BreakLine();
-			WriteChildren(body, props.Store.MethodSyntax.Body, props.Template.ToDisplayString(), replacements);
+			WriteChildren(body, props.Store.MethodSyntax.Body, props.TemplatesStr, replacements);
 		}
 		else
 		{
@@ -38,7 +38,7 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 	private static void WriteExpressionBody(
 		SourceBuilder sb,
 		ArrowExpressionClauseSyntax syntaxNode,
-		string templateStr,
+		string[] templatesStr,
 		Span<(string, string)> replacements)
 	{
 		sb.TrimAppend(syntaxNode.ArrowToken.ToString())
@@ -46,19 +46,19 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 		var node = syntaxNode.Expression;
 		var triviaList = node.GetLeadingTrivia();
 		var buffer = ArrayPool<(string, string)>.Shared.Rent(triviaList.Count);
-		string? changeLine = ParseTrivia(triviaList, buffer, templateStr, out var localReplacements);
+		string? changeLine = ParseTrivia(triviaList, buffer, templatesStr, out var localReplacements);
 		if (changeLine is not null)
 		{
 			sb.Append(changeLine, 1);
 		}
 		else if (localReplacements.IsEmpty)
 		{
-			WriteChildren(sb, node, templateStr, replacements);
+			WriteChildren(sb, node, templatesStr, replacements);
 		}
 		else
 		{
 			using var statementSb = sb.GetDependentInstance();
-			WriteChildren(statementSb, node, templateStr, replacements);
+			WriteChildren(statementSb, node, templatesStr, replacements);
 			string statementStr = statementSb.ToString();
 			foreach ((string key, string value) in localReplacements)
 				statementStr = statementStr.Replace(key, value);
@@ -72,7 +72,7 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 	private static void WriteChildren(
 		SourceBuilder sb,
 		SyntaxNodeOrToken syntaxNode,
-		string templateStr,
+		string[] templatesStr,
 		Span<(string VarName, string ConcatedVars)> replacements)
 	{
 		foreach (var nodeOrToken in syntaxNode.ChildNodesAndTokens())
@@ -136,19 +136,19 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 				{
 					var triviaList = node.GetLeadingTrivia();
 					var buffer = ArrayPool<(string, string)>.Shared.Rent(triviaList.Count);
-					string? changeLine = ParseTrivia(triviaList, buffer, templateStr, out var localReplacements);
+					string? changeLine = ParseTrivia(triviaList, buffer, templatesStr, out var localReplacements);
 					if (changeLine is not null)
 					{
 						sb.Append(changeLine, 1);
 					}
 					else if (localReplacements.IsEmpty)
 					{
-						WriteChildren(sb, node, templateStr, replacements);
+						WriteChildren(sb, node, templatesStr, replacements);
 					}
 					else
 					{
 						using var statementSb = sb.GetDependentInstance();
-						WriteChildren(statementSb, node, templateStr, replacements);
+						WriteChildren(statementSb, node, templatesStr, replacements);
 						string statementStr = statementSb.ToString();
 						foreach ((string key, string value) in localReplacements)
 							statementStr = statementStr.Replace(key, value);
@@ -160,14 +160,17 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 					break;
 				}
 				default:
-					WriteChildren(sb, node, templateStr, replacements);
+					WriteChildren(sb, node, templatesStr, replacements);
 					break;
 			}
 		}
 	}
 
-	private static string? ParseTrivia(SyntaxTriviaList triviaList, (string, string)[] buffer,
-		string templateStr, out Span<(string, string)> replacements)
+	private static string? ParseTrivia(
+		SyntaxTriviaList triviaList,
+		(string, string)[] buffer,
+		string[] templatesStr,
+		out Span<(string, string)> replacements)
 	{
 		int size = 0;
 		string? changeLine = default;
@@ -178,22 +181,20 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 			{
 				case SyntaxKind.SingleLineCommentTrivia:
 					string strTrivia = syntaxTrivia.ToString();
-					var strTriviaSpan = strTrivia.AsSpan();
-					int separatorIndex = strTrivia.LastIndexOf(':');
-
-					if (separatorIndex != -1)
-					{
-						if (templateStr is null) continue;
-						if (!strTriviaSpan.Slice(separatorIndex + 1).TryToFindMatch(templateStr.AsSpan(), ",")) continue;
-						strTriviaSpan = strTriviaSpan.Slice(0, separatorIndex);
-					}
+					byte templateIndex;
+					string templateStr;
+					ReadOnlySpan<char> strTriviaSpan;
 
 					switch (strTrivia[2])
 					{
 						// Replace operator
 						case '#':
+							templateIndex = char.IsNumber(strTrivia[3])? Convert.ToByte(strTrivia[3]) : (byte) 0;
+							if (templatesStr is null) break;
+							templateStr = templatesStr[templateIndex];
+							if (!CheckTemplate(strTrivia, templateStr, out strTriviaSpan)) continue;
+							
 							var kv = strTriviaSpan.SplitAsKV("->");
-							if (templateStr is null) break;
 							if (kv.Key.IndexOf("${T}", StringComparison.Ordinal) != -1)
 								kv.Key = kv.Key.Replace("${T}", templateStr);
 							if (kv.Value.IndexOf("${T}", StringComparison.Ordinal) != -1)
@@ -202,8 +203,13 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 							break;
 						// Change line operator
 						case '$':
+							templateIndex = char.IsNumber(strTrivia[3])? Convert.ToByte(strTrivia[3]) : (byte) 0;
+							if (templatesStr is null) break;
+							templateStr = templatesStr[templateIndex];
+							if (!CheckTemplate(strTrivia, templateStr, out strTriviaSpan)) continue;
+							
 							var newStatement = strTriviaSpan.Slice(3).Trim();
-							if (newStatement.IndexOf("${T}".AsSpan()) != -1 && templateStr is null) break;
+							if (newStatement.IndexOf("${T}".AsSpan()) != -1) break;
 							if (changeLine is not null)
 								throw new ArgumentException("Cannot use two 'replace line' ('//$') on one syntax node.");
 							changeLine = newStatement.ToString().Replace("${T}", templateStr);
@@ -216,5 +222,19 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 
 		replacements = buffer.AsSpan(0, size);
 		return changeLine;
+
+		bool CheckTemplate(string strTrivia, string templateStr, out ReadOnlySpan<char> strTriviaSpan)
+		{
+			strTriviaSpan = strTrivia.AsSpan();
+			int separatorIndex = strTrivia.LastIndexOf(':');
+
+			if (separatorIndex != -1)
+			{
+				if (!strTriviaSpan.Slice(separatorIndex + 1).TryToFindMatch(templateStr.AsSpan(), ",".AsSpan())) return false;
+				strTriviaSpan = strTriviaSpan.Slice(0, separatorIndex);
+			}
+
+			return true;
+		}
 	}
 }

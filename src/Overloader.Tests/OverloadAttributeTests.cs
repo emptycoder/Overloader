@@ -160,7 +160,7 @@ internal record struct Vector2<T>
 			{
 				static void Main(string[] args) { } 
 				
-				[{{nameof(ChangeModifier)}}("public", "private", typeof(float))]
+				[{{nameof(ChangeModifier)}}("public", "private", templateTypeFor: typeof(float))]
 				public static void Test<T>(T test) {}
 			}
 		""";

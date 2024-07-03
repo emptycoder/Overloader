@@ -23,6 +23,7 @@ public static class MethodBodyExtensions
 				string[] decompositionParams = EmptySourceBuilder.Instance
 					.AppendFormatterParam(
 						props,
+						mappedParam.TemplateIndex,
 						mappedParam.Type,
 						parameter.Identifier.ValueText)
 					.PickResult(parameter);

@@ -145,7 +145,7 @@ internal partial class Program
 	static void Main(string[] args) {{ }}
 
 	public static void {nameof(TSpecifyTOverloadTest)}1(
-		[{nameof(Integrity)}][{TAttribute.TagName}(typeof(int), typeof(float))] Vector3<double> vec,
+		[{nameof(Integrity)}][{TAttribute.TagName}(newType: typeof(int), forType: typeof(float))] Vector3<double> vec,
 		Vector3<double> vec1) {{ }}
 }}
 

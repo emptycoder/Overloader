@@ -59,7 +59,7 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 						var transitionLink = transition.Links[linkIndex];
 						var paramType = props.SetDeepestType(
 							transitionLink.TemplateType,
-							props.Template,
+							props.Templates[mappedParam.TemplateIndex],
 							transitionLink.TemplateType).PickResult(parameter);
 
 						if (paramType is {IsValueType: true, SpecialType: SpecialType.System_ValueType})
@@ -97,10 +97,10 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 					}
 					else
 					{
-						var templateType = formatterParam.Param.GetType(props.Template);
+						var templateType = formatterParam.Param.GetType(props.Templates[mappedParam.TemplateIndex]);
 						var paramType = props.SetDeepestTypeWithTemplateFilling(
 								templateType,
-								props.Template)
+								props.Templates[mappedParam.TemplateIndex])
 							.PickResult(parameter);
 
 						head

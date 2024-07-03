@@ -26,8 +26,8 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{nameof(TSpecify)}(new[] {{ typeof(double) }}, ""Vector3"")]
+[{nameof(TOverload)}(new[] {{ typeof(float) }})]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -67,8 +67,8 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{nameof(TSpecify)}(new[] {{ typeof(double) }}, ""Vector3"")]
+[{nameof(TOverload)}(new[] {{ typeof(float) }})]
 internal partial class TestClass{index}
 {{
 	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}

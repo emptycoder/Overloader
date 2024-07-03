@@ -9,7 +9,7 @@ namespace Overloader.Entities;
 
 public interface IGeneratorProps
 {
-	public ITypeSymbol? Template { get; }
+	public ITypeSymbol[] Templates { get; }
 	public Compilation Compilation { get; }
 }
 
@@ -19,7 +19,7 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 
 	private readonly Dictionary<ITypeSymbol, FormatterModel> _formatters;
 	private readonly Dictionary<ITypeSymbol, FormatterModel> _overloadFormatters;
-	public readonly bool IsTSpecified;
+	public readonly bool IsDefaultOverload;
 
 	public SourceProductionContext Context;
 	public CandidateDto StartEntry;
@@ -29,17 +29,18 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 		Compilation compilation,
 		CandidateDto startEntry,
 		Dictionary<ITypeSymbol, FormatterModel>? formatters,
-		bool isTSpecified,
+		bool isDefaultOverload,
 		string className,
-		ITypeSymbol template,
+		ITypeSymbol[] templates,
 		Dictionary<ITypeSymbol, FormatterModel>? overloadFormatters)
 	{
 		Context = context;
 		Compilation = compilation;
 		StartEntry = startEntry;
-		IsTSpecified = isTSpecified;
+		IsDefaultOverload = isDefaultOverload;
 		ClassName = className;
-		Template = template;
+		Templates = templates;
+		TemplatesStr = templates.Select(template => template.ToDisplayString()).ToArray();
 		_formatters = formatters ?? Empty;
 		_overloadFormatters = overloadFormatters ?? Empty;
 
@@ -83,7 +84,8 @@ public record GeneratorProperties : IGeneratorProps, IDisposable
 
 	void IDisposable.Dispose() => Builder.Dispose();
 	public Compilation Compilation { get; }
-	public ITypeSymbol Template { get; }
+	public ITypeSymbol[] Templates { get; }
+	public string[] TemplatesStr { get; }
 
 	public bool TryGetFormatter(ITypeSymbol type, out FormatterModel formatter) =>
 		_overloadFormatters.TryGetValue(type, out formatter) ||

@@ -47,7 +47,7 @@ public static class FormatterExtensions
 		this Dictionary<string, FormatterModel> globalFormatters,
 		Dictionary<string, FormattersBundleModel> formattersBundles,
 		string[]? formattersToUse,
-		SyntaxNode errorSyntax)
+		Location location)
 	{
 		if (formattersToUse is null) return null;
 
@@ -67,13 +67,13 @@ public static class FormatterExtensions
 		{
 			if (!globalFormatters.TryGetValue(formatterIdentifier, out var formatter))
 				throw new ArgumentException($"Can't find formatter with identifier '{formatterIdentifier}'.")
-					.WithLocation(errorSyntax);
+					.WithLocation(location);
 
 			foreach (var formatterType in formatter.Types)
 			{
 				if (formatters.TryGetValue(formatterType, out var sameTypeFormatter))
 					throw new ArgumentException($"Type has been already overridden by '{sameTypeFormatter.Identifier}' formatter.")
-						.WithLocation(errorSyntax);
+						.WithLocation(location);
 				formatters.Add(formatterType, formatter);
 			}
 		}

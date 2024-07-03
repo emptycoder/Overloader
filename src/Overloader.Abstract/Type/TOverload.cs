@@ -8,5 +8,15 @@ namespace Overloader;
 	AllowMultiple = true)]
 public class TOverload : Attribute
 {
-	public TOverload(Type? type = null, string? nameRegex = null, string? regexReplace = null, params string[] formatters) { }
+	public TOverload(
+		Type type,
+		string? nameRegex = null,
+		string? regexReplace = null,
+		params string[] formatters) { }
+	
+	public TOverload(
+		Type[] types,
+		string? nameRegex = null,
+		string? regexReplace = null,
+		params string[] formatters) { }
 }

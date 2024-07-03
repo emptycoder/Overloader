@@ -1,10 +1,10 @@
 ﻿namespace Overloader.Tests.Attributes.Method;
 
 [TestFixture]
-public class IgnoreAllowAttributeTests
+public class SkipModeAttributeTests
 {
 	[Test]
-	public void BlackListModeTest()
+	public void InvertedModeTest()
 	{
 		const string programCs = @$"
 using Overloader;
@@ -13,14 +13,14 @@ namespace TestProject;
 
 [{nameof(TSpecify)}(typeof(double))]
 [{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
-[{nameof(BlackListMode)}]
+[{nameof(InvertedMode)}]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""private"", typeof(float))]
+	[{nameof(ChangeModifier)}(""public"", ""private"", templateTypeFor: typeof(float))]
 	[{nameof(ChangeModifier)}(""private"", ""protected"")]
-	public static void {nameof(BlackListModeTest)}() {{ }}
+	public static void {nameof(InvertedModeTest)}() {{ }}
 }}
 ";
 
@@ -43,7 +43,7 @@ internal class Program
 		$"{nameof(IgnoreAllowForTest)}4",
 		$"{nameof(IgnoreAllowForTest)}5",
 		$"{nameof(IgnoreAllowForTest)}7")]
-	public void IgnoreAllowForTest(bool isBlackList, params string[] expectedMethodNames)
+	public void IgnoreAllowForTest(bool isInvertedMode, params string[] expectedMethodNames)
 	{
 		string programCs =
 			@$"
@@ -53,39 +53,40 @@ namespace TestProject;
 
 [{nameof(TSpecify)}(typeof(double))]
 [{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
-{(isBlackList ? $"[{nameof(BlackListMode)}]" : string.Empty)}
+{(isInvertedMode ? $"[{nameof(InvertedMode)}]" : string.Empty)}
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
 	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(IgnoreFor)}]
+	[{nameof(SkipMode)}(true)]
 	public static void {nameof(IgnoreAllowForTest)}1() {{ }}
 
 	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(IgnoreFor)}(typeof(float))]
+	[{nameof(SkipMode)}(true, templateTypeFor: typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}2() {{ }}
 
 	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(IgnoreFor)}(typeof(double))]
+	[{nameof(SkipMode)}(true, templateTypeFor: typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}3() {{ }}
 
 	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(AllowFor)}]
+	[{nameof(SkipMode)}(false)]
 	public static void {nameof(IgnoreAllowForTest)}4() {{ }}
 
 	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(AllowFor)}(typeof(float))]
+	[{nameof(SkipMode)}(false, templateTypeFor: typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}5() {{ }}
 
 	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(AllowFor)}(typeof(double))]
+	[{nameof(SkipMode)}(true)]
+	[{nameof(SkipMode)}(false, templateTypeFor: typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}6() {{ }}
 
 	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(AllowFor)}(typeof(double))]
-	[{nameof(AllowFor)}(typeof(float))]
-	[{nameof(AllowFor)}(typeof(uint))]
+	[{nameof(SkipMode)}(false, templateTypeFor: typeof(double))]
+	[{nameof(SkipMode)}(false, templateTypeFor: typeof(float))]
+	[{nameof(SkipMode)}(false, templateTypeFor: typeof(uint))]
 	public static void {nameof(IgnoreAllowForTest)}7() {{ }}
 }}
 ";

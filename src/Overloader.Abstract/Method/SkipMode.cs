@@ -2,10 +2,11 @@
 namespace Overloader;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-public class ChangeName : Attribute
+public class SkipMode : Attribute
 {
-	public ChangeName(
-		string newName,
+	public SkipMode(
+		bool shouldBeSkipped,
 		byte templateIndexFor = 0,
-		Type? templateTypeFor = null) { }
+		Type? templateTypeFor = null,
+		string? reason = null) { }
 }

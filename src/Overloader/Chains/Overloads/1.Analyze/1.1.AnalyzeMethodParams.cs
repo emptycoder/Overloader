@@ -26,7 +26,7 @@ public sealed class AnalyzeMethodParams : IChainMember
 			bool shouldBeReplaced = ParameterDto.TryGetParameterDtoByTemplate(parameters[index], props, out var paramDto);
 			var parameterAction = shouldBeReplaced switch
 			{
-				true when paramDto.Attribute.ArgumentList is {Arguments.Count: >= 1} => RequiredReplacement.UserType,
+				true when paramDto.Attribute!.NewType is not null => RequiredReplacement.UserType,
 				true when parameterType is INamedTypeSymbol {IsGenericType: true} =>
 					props.TryGetFormatter(parameterType.GetClearType(), out var formatter)
 						? paramDto.HasForceOverloadIntegrity || !formatter.Params.Any()
@@ -44,8 +44,8 @@ public sealed class AnalyzeMethodParams : IChainMember
 			var newParameterType = parameterAction switch
 			{
 				RequiredReplacement.None => default,
-				RequiredReplacement.Template => props.Template,
-				RequiredReplacement.UserType => paramDto.Attribute.ArgumentList!.Arguments[0].GetType(props.Compilation),
+				RequiredReplacement.Template => props.Templates[paramDto.Attribute!.TemplateIndex],
+				RequiredReplacement.UserType => paramDto.Attribute!.NewType,
 				RequiredReplacement.Formatter => default,
 				RequiredReplacement.FormatterIntegrity => default,
 				_ => throw new ArgumentOutOfRangeException()
@@ -53,6 +53,7 @@ public sealed class AnalyzeMethodParams : IChainMember
 
 			bool isCombineWith = paramDto.CombineWith is not null;
 			props.Store.OverloadMap[index] = new ParameterData(
+				paramDto.Attribute?.TemplateIndex ?? 0,
 				parameterAction,
 				newParameterType,
 				paramDto.ModifierChangers,

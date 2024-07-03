@@ -130,6 +130,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 				string[] decompositionParams = head
 					.AppendFormatterParam(
 						props,
+						mappedParam.TemplateIndex,
 						mappedParam.Type,
 						paramName)
 					.PickResult(parameter);

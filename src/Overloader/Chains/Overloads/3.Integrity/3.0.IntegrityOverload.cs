@@ -11,7 +11,7 @@ public sealed class IntegrityOverload : BodyMethodsOverloader, IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.IsTSpecified)
+		if (props.IsDefaultOverload)
 			return ChainAction.NextMember;
 
 		WriteMethodOverload(props);

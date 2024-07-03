@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities;
 using Overloader.Exceptions;
 
 namespace Overloader.Utils;
@@ -93,8 +92,7 @@ public static class SyntaxNodeExtensions
 
 	public static ITypeSymbol GetType(this ParameterSyntax type, Compilation compilation) =>
 		GetType(type.Type!, compilation);
-
-	private static Dictionary<SyntaxTree, SemanticModel> _cache = new();
+	
 	public static ITypeSymbol GetType(this CSharpSyntaxNode syntaxNode, Compilation compilation)
 	{
 		if (syntaxNode is TypeOfExpressionSyntax typeOfExpressionSyntax)
@@ -104,24 +102,10 @@ public static class SyntaxNodeExtensions
 			syntaxNode = refTypeSyntax.Type;
 
 		var syntaxTree = syntaxNode.SyntaxTree;
-		// ReSharper disable once InconsistentlySynchronizedField
-		if (!_cache.TryGetValue(syntaxTree, out var semanticModel))
-		{
-			lock (_cache)
-			{
-				if (!_cache.TryGetValue(syntaxTree, out semanticModel))
-				{
-					semanticModel = compilation.GetSemanticModel(syntaxTree);
-				}
-			}
-		}
-		
+		var semanticModel = compilation.GetSemanticModel(syntaxTree);
 		return semanticModel.GetTypeInfo(syntaxNode).Type ?? throw new ArgumentException(
 			$"Type not found or {syntaxNode.ToFullString()} isn't type.").WithLocation(syntaxNode);
 	}
-
-	public static bool EqualsToTemplate<T>(this AttributeArgumentSyntax arg, T props) where T : IGeneratorProps =>
-		SymbolEqualityComparer.Default.Equals(arg.GetType(props.Compilation), props.Template);
 
 	public static string GetStringValue(this SyntaxNode syntaxNode, Compilation compilation)
 	{

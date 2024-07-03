@@ -19,7 +19,7 @@ public class ChangeNameTests
 				[{{nameof(ChangeName)}}("ChangedName")]
 				public static void TestMethod() {}
 				
-				[{{nameof(ChangeName)}}("ChangedNameForType", typeof(float))]
+				[{{nameof(ChangeName)}}("ChangedNameForType", templateTypeFor: typeof(float))]
 				public static void TestForTypeMethod() {}
 			}
 			

@@ -4,4 +4,4 @@ namespace Overloader;
                 | AttributeTargets.Struct
                 | AttributeTargets.Interface,
 	AllowMultiple = true)]
-public class BlackListMode : Attribute { }
+public class InvertedMode : Attribute { }

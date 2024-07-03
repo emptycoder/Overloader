@@ -14,11 +14,10 @@ public static class SourceBuilderExtensions
 		nameof(Formatter),
 		nameof(FormattersBundle),
 		/* Method */
-		nameof(AllowFor),
+		nameof(SkipMode),
 		nameof(ChangeModifier),
 		nameof(ChangeName),
 		nameof(ForceChanged),
-		nameof(IgnoreFor),
 		/* Parameter */
 		nameof(CombineWith),
 		nameof(Integrity),
@@ -26,7 +25,7 @@ public static class SourceBuilderExtensions
 		nameof(Ref),
 		TAttribute.TagName,
 		/* Type */
-		nameof(BlackListMode),
+		nameof(InvertedMode),
 		nameof(IgnoreTransitions),
 		nameof(RemoveBody),
 		nameof(TOverload),

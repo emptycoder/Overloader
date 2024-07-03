@@ -78,7 +78,11 @@ public sealed partial class OverloadsGenerator : IIncrementalGenerator
 			foreach (var candidate in candidates.Select(candidate => candidate!.Value))
 			{
 				string candidateClassName = candidate.Syntax.Identifier.ValueText;
-				var formattersSample = formatters.GetFormattersSample(formattersBundles, candidate.FormattersToUse, candidate.Syntax);
+				var location = candidate.Syntax.GetLocation();
+				var formattersSample = formatters.GetFormattersSample(
+					formattersBundles,
+					candidate.TSpecifyDto.FormattersToUse,
+					location);
 
 				var formatterOverloadProps = new GeneratorProperties(
 					context,
@@ -87,7 +91,7 @@ public sealed partial class OverloadsGenerator : IIncrementalGenerator
 					formattersSample,
 					true,
 					candidateClassName,
-					candidate.DefaultType!.GetType(compilation),
+					candidate.TSpecifyDto.DefaultTypeSyntaxes.Select(typeSyntax => typeSyntax.GetType(compilation)).ToArray(),
 					null);
 #if !DEBUG || ForceTasks
 				tasks.Add(Task.Factory.StartNew(OverloadCreation, formatterOverloadProps));
@@ -103,9 +107,9 @@ public sealed partial class OverloadsGenerator : IIncrementalGenerator
 						candidate,
 						formattersSample,
 						false,
-						overloadDto.ClassName,
-						overloadDto.TypeSyntax.GetType(compilation),
-						formatters.GetFormattersSample(formattersBundles, overloadDto.FormattersToUse, overloadDto.TypeSyntax)
+						overloadDto.OverloadClassName,
+						overloadDto.TypeSyntaxes.Select(typeSyntax => typeSyntax.GetType(compilation)).ToArray(),
+						formatters.GetFormattersSample(formattersBundles, overloadDto.FormattersToUse, location)
 					);
 
 #if !DEBUG || ForceTasks

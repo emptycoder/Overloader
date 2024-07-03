@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Overloader.Entities;
+using Overloader.Entities.Attributes;
 using Overloader.Enums;
-using Overloader.Exceptions;
 using Overloader.Utils;
 
 namespace Overloader.Chains.Overloads;
@@ -25,109 +25,68 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 			string attrName = attribute.Name.GetName();
 			switch (attrName)
 			{
-				case nameof(IgnoreFor) when attribute.ArgumentList is null or {Arguments.Count: < 1}:
-					return ChainAction.Break;
-				case nameof(IgnoreFor):
-				{
-					foreach (var arg in attribute.ArgumentList.Arguments)
-						if (arg.EqualsToTemplate(props))
-							return ChainAction.Break;
+				case nameof(SkipMode):
+					var skipDto = SkipModeDto.Parse(attribute, props.Compilation);
+					if (skipDto.TemplateTypeFor is null || SymbolEqualityComparer.Default.Equals(skipDto.TemplateTypeFor, props.Templates[skipDto.TemplateIndexFor]))
+					{
+						if (isAllowForAttrSet && !props.Store.SkipMember) continue;
+						
+						props.Store.SkipMember = skipDto.ShouldBeSkipped;
+						if (skipDto.ShouldBeSkipped) continue;
+						isAllowForAttrSet = true;
+					}
 					break;
-				}
-				case nameof(AllowFor) when attribute.ArgumentList is null or {Arguments.Count: < 1}:
-					props.Store.SkipMember = false;
-					continue;
-				case nameof(AllowFor):
-				{
-					foreach (var arg in attribute.ArgumentList.Arguments)
-						if (arg.EqualsToTemplate(props))
-						{
-							isAllowForAttrSet = true;
-							props.Store.SkipMember = false;
-							break;
-						}
-
-					if (!isAllowForAttrSet)
-						props.Store.SkipMember = true;
-					break;
-				}
 				case TAttribute.TagName:
-				{
 					var returnTypeSymbol = props.Store.MethodSyntax.ReturnType.GetType(props.Compilation);
 					var returnTypeSymbolRoot = returnTypeSymbol.GetClearType();
-					switch (attribute.ArgumentList?.Arguments.Count ?? 0)
+					var tAttrDto = TAttributeDto.Parse(attribute, props.Compilation);
+
+					if (SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])
+					    || (tAttrDto.ForType is null && tAttrDto.NewType is not null))
 					{
-						case 1:
-						case 2 when attribute.ArgumentList!.Arguments[1].EqualsToTemplate(props):
-							props.Store.MethodData.ReturnType = attribute.ArgumentList!.Arguments[0].GetType(props.Compilation);
-							props.Store.IsSmthChanged = true;
-							break;
-						case 2:
-							break;
-						case 0 when props.TryGetFormatter(returnTypeSymbolRoot, out var formatter):
-							var @params = new ITypeSymbol[formatter.GenericParams.Length];
-
-							for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
-								@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(props.Template);
-
-							props.Store.MethodData.ReturnType = returnTypeSymbol.ConstructWithClearType(
-								returnTypeSymbolRoot
-									.OriginalDefinition
-									.Construct(@params),
-								props.Compilation);
-							props.Store.IsSmthChanged = true;
-							break;
-						case 0:
-							props.Store.MethodData.ReturnType = props.Template;
-							props.Store.IsSmthChanged = true;
-							break;
-						default:
-							throw new ArgumentException($"Unexpected count of arguments in {TAttribute.TagName}.")
-								.WithLocation(attribute);
+						props.Store.MethodData.ReturnType = tAttrDto.NewType;
+						props.Store.IsSmthChanged = true;
 					}
+					else if (props.TryGetFormatter(returnTypeSymbolRoot, out var formatter))
+					{
+						var @params = new ITypeSymbol[formatter.GenericParams.Length];
 
+						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
+							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(props.Templates[tAttrDto.TemplateIndex]);
+
+						props.Store.MethodData.ReturnType = returnTypeSymbol.ConstructWithClearType(
+							returnTypeSymbolRoot
+								.OriginalDefinition
+								.Construct(@params),
+							props.Compilation);
+						props.Store.IsSmthChanged = true;
+					}
+					else
+					{
+						props.Store.MethodData.ReturnType = props.Templates[tAttrDto.TemplateIndex];
+					}
 					break;
-				}
-				case nameof(ChangeModifier) when (attribute.ArgumentList?.Arguments.Count ?? 0) <= 1:
-					throw new ArgumentException($"Unexpected count of arguments in {nameof(ChangeModifier)}.")
-						.WithLocation(attribute);
 				case nameof(ChangeModifier):
-				{
-					var arguments = attribute.ArgumentList!.Arguments;
-					if (arguments.Count == 3 && !arguments[2].EqualsToTemplate(props)) continue;
-
-					string modifier = arguments[0].Expression.GetInnerText();
-					string newModifier = arguments[1].Expression.GetInnerText();
+					var changeModifierDto = ChangeModifierDto.Parse(attribute, props.Compilation);
+					if (changeModifierDto.TemplateTypeFor is not null
+					    && !SymbolEqualityComparer.Default.Equals(changeModifierDto.TemplateTypeFor, props.Templates[changeModifierDto.TemplateIndexFor])) continue;
 
 					for (int index = 0; index < props.Store.MethodData.MethodModifiers.Length; index++)
 					{
-						if (!props.Store.MethodData.MethodModifiers[index].Equals(modifier)) continue;
+						if (!props.Store.MethodData.MethodModifiers[index].Equals(changeModifierDto.Modifier)) continue;
 
-						props.Store.MethodData.MethodModifiers[index] = newModifier;
+						props.Store.MethodData.MethodModifiers[index] = changeModifierDto.NewModifier;
 						props.Store.IsSmthChanged = true;
 						break;
 					}
-
 					break;
-				}
-				case nameof(ChangeName) when !props.IsTSpecified:
-					switch (attribute.ArgumentList?.Arguments.Count ?? 0)
-					{
-						case 1:
-							props.Store.MethodData.MethodName = attribute.ArgumentList!.Arguments[0].Expression.GetVariableName();
-							props.Store.IsSmthChanged = true;
-							break;
-						case 2 when attribute.ArgumentList!.Arguments[1].EqualsToTemplate(props):
-							props.Store.MethodData.MethodName = attribute.ArgumentList!.Arguments[0].Expression.GetVariableName();
-							props.Store.IsSmthChanged = true;
-							break;
-						case 2:
-							break;
-						default:
-							throw new ArgumentException($"Unexpected count of arguments in {nameof(ChangeName)}.")
-								.WithLocation(attribute);
-					}
-
+				case nameof(ChangeName) when !props.IsDefaultOverload:
+					var changeNameDto = ChangeNameDto.Parse(attribute, props.Compilation);
+					if (changeNameDto.TemplateTypeFor is not null
+					    && !SymbolEqualityComparer.Default.Equals(changeNameDto.TemplateTypeFor, props.Templates[changeNameDto.TemplateIndexFor])) continue;
+					
+					props.Store.MethodData.MethodName = changeNameDto.NewName;
+					props.Store.IsSmthChanged = true;
 					break;
 				case nameof(ForceChanged):
 					props.Store.IsSmthChanged = true;
