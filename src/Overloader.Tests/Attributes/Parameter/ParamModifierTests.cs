@@ -9,7 +9,7 @@ public class ParamModifierTests
 		const string programCs = $$"""
 			using Overloader;
 
-			[assembly: {{nameof(Formatter)}}(
+			[assembly: {{Formatter.TagName}}(
 				"Vector3",
 				typeof(TestProject.Vector3<>),
 				new object[] {"T"},
@@ -35,7 +35,7 @@ public class ParamModifierTests
 						"Y", "Y"
 					}
 				})]
-			[assembly: {{nameof(Formatter)}}(
+			[assembly: {{Formatter.TagName}}(
 				"Vector2",
 				typeof(TestProject.Vector2<>),
 				new object[] {"T"},
@@ -52,16 +52,16 @@ public class ParamModifierTests
 				static void Main(string[] args) { }
 			}
 
-			[{{nameof(TSpecify)}}(typeof(double), "Vector3", "Vector2")]
-			[{{nameof(TOverload)}}(typeof(float))]
+			[{{TSpecify.TagName}}(typeof(double), "Vector3", "Vector2")]
+			[{{TOverload.TagName}}(typeof(float))]
 			public static partial class TestClass
 			{
 				[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-				public static void TestMethod1([{{nameof(Integrity)}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
+				public static void TestMethod1([{{Integrity.TagName}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
 			  	[return: {{TAttribute.TagName}}]
 			  	public static double TestMethod2(
-			  		[{{TAttribute.TagName}}] [{{nameof(Modifier)}}("ref", "in", typeof(Vector2<>))] this in Vector3<double> vec,
-			  		[{{TAttribute.TagName}}] [{{nameof(CombineWith)}}("vec")] [{{nameof(Modifier)}}("in", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
+			  		[{{TAttribute.TagName}}] [{{Modifier.TagName}}("ref", "in", typeof(Vector2<>))] this in Vector3<double> vec,
+			  		[{{TAttribute.TagName}}] [{{CombineWith.TagName}}("vec")] [{{Modifier.TagName}}("in", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
 			  	public static void TestMethod3(Vector3<double> vec, [{{TAttribute.TagName}}] double vec1) { }
 			}
 

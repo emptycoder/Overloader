@@ -13,8 +13,8 @@ public class IntegrityTests
 
 			namespace TestProject;
 
-			[{{nameof(TSpecify)}}(typeof(double))]
-			[{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			[{{TSpecify.TagName}}(typeof(double))]
+			[{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			internal partial class Program
 			{
 				static void Main(string[] args) { }

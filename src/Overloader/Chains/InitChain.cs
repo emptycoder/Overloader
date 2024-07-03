@@ -15,14 +15,14 @@ internal class InitChain : IChainMember
 		var sb = props.Builder;
 		switch (props.IsDefaultOverload)
 		{
-			case true when props.StartEntry.IgnoreTransitions:
+			case true when props.StartEntry.IsTransitionsIgnored:
 			case true when !props.StartEntry.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword):
 				return ChainAction.Break;
 		}
 
 		var entrySyntax = props.StartEntry.Syntax;
 		if (entrySyntax.AttributeLists.Any(attrList => attrList.Attributes.Any(attr =>
-			    attr.Name.GetName() == nameof(RemoveBody))))
+			    attr.Name.GetName() == RemoveBody.TagName)))
 			props.Store.ShouldRemoveBody = true;
 
 		sb.AppendUsings(entrySyntax.GetTopParent())

@@ -26,7 +26,7 @@ public record TOverloadDto(
 					formattersToUse[index] = args[argIndex].Expression.GetInnerText();
 				break;
 			case 2:
-				throw new ArgumentException($"Need to present regex replacement parameter for {nameof(TOverload)}.")
+				throw new ArgumentException($"Need to present regex replacement parameter for {TOverload.TagName}.")
 					.WithLocation(attribute);
 			case >= 3:
 				switch (args[1].Expression)
@@ -50,7 +50,7 @@ public record TOverloadDto(
 					formattersToUse[index] = args[argIndex].Expression.GetInnerText();
 				break;
 			default:
-				throw new ArgumentException($"Unexpected count of args for {nameof(TOverload)}.")
+				throw new ArgumentException($"Unexpected count of args for {TOverload.TagName}.")
 					.WithLocation(attribute);
 		}
 

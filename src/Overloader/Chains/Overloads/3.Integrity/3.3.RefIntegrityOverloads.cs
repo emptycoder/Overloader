@@ -32,7 +32,7 @@ public sealed class RefIntegrityOverloads : ArrowMethodOverloader, IChainMember
 			foreach (var attributeList in parameter.AttributeLists)
 			foreach (var attribute in attributeList.Attributes)
 			{
-				if (attribute.Name.GetName() is not nameof(Ref)) continue;
+				if (attribute.Name.GetName() is not Ref.TagName) continue;
 				maxIndexesCount[index] = 1;
 			}
 		}

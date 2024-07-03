@@ -11,15 +11,15 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double))]
-[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
-[{nameof(InvertedMode)}]
+[{TSpecify.TagName}(typeof(double))]
+[{TOverload.TagName}(typeof(float), ""Program"", ""Program1"")]
+[{InvertedMode.TagName}]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""private"", templateTypeFor: typeof(float))]
-	[{nameof(ChangeModifier)}(""private"", ""protected"")]
+	[{ChangeModifier.TagName}(""public"", ""private"", templateTypeFor: typeof(float))]
+	[{ChangeModifier.TagName}(""private"", ""protected"")]
 	public static void {nameof(InvertedModeTest)}() {{ }}
 }}
 ";
@@ -51,42 +51,42 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double))]
-[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
-{(isInvertedMode ? $"[{nameof(InvertedMode)}]" : string.Empty)}
+[{TSpecify.TagName}(typeof(double))]
+[{TOverload.TagName}(typeof(float), ""Program"", ""Program1"")]
+{(isInvertedMode ? $"[{InvertedMode.TagName}]" : string.Empty)}
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(SkipMode)}(true)]
+	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{SkipMode.TagName}(true)]
 	public static void {nameof(IgnoreAllowForTest)}1() {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(SkipMode)}(true, templateTypeFor: typeof(float))]
+	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{SkipMode.TagName}(true, templateTypeFor: typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}2() {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(SkipMode)}(true, templateTypeFor: typeof(double))]
+	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{SkipMode.TagName}(true, templateTypeFor: typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}3() {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(SkipMode)}(false)]
+	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{SkipMode.TagName}(false)]
 	public static void {nameof(IgnoreAllowForTest)}4() {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(SkipMode)}(false, templateTypeFor: typeof(float))]
+	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{SkipMode.TagName}(false, templateTypeFor: typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}5() {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(SkipMode)}(true)]
-	[{nameof(SkipMode)}(false, templateTypeFor: typeof(double))]
+	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{SkipMode.TagName}(true)]
+	[{SkipMode.TagName}(false, templateTypeFor: typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}6() {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""public"")]
-	[{nameof(SkipMode)}(false, templateTypeFor: typeof(double))]
-	[{nameof(SkipMode)}(false, templateTypeFor: typeof(float))]
-	[{nameof(SkipMode)}(false, templateTypeFor: typeof(uint))]
+	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{SkipMode.TagName}(false, templateTypeFor: typeof(double))]
+	[{SkipMode.TagName}(false, templateTypeFor: typeof(float))]
+	[{SkipMode.TagName}(false, templateTypeFor: typeof(uint))]
 	public static void {nameof(IgnoreAllowForTest)}7() {{ }}
 }}
 ";

@@ -14,7 +14,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.StartEntry.IgnoreTransitions
+		if (props.StartEntry.IsTransitionsIgnored
 		    || props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;
 

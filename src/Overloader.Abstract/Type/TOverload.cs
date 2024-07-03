@@ -8,6 +8,8 @@ namespace Overloader;
 	AllowMultiple = true)]
 public class TOverload : Attribute
 {
+	public const string TagName = nameof(TOverload);
+	
 	public TOverload(
 		Type type,
 		string? nameRegex = null,

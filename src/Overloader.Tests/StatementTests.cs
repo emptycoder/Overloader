@@ -20,13 +20,13 @@ public class StatementTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double))]
-			  [{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{nameof(ChangeModifier)}}("public", "public")]
+			  	[{{ChangeModifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ReplaceOperationTest)}}()
 			  	{
 			  		{{comment}}
@@ -64,13 +64,13 @@ public class StatementTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double))]
-			  [{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{nameof(ChangeModifier)}}("public", "public")]
+			  	[{{ChangeModifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ReplaceOperationTest)}}()
 			  	{
 			  		{{comment}}
@@ -115,13 +115,13 @@ public class StatementTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double))]
-			  [{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{nameof(ChangeModifier)}}("public", "public")]
+			  	[{{ChangeModifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ChangeLineOperationTest)}}()
 			  	{
 			  		{{comment}}
@@ -163,13 +163,13 @@ public class StatementTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double))]
-			  [{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{nameof(ChangeModifier)}}("public", "public")]
+			  	[{{ChangeModifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ChangeLineOperationTest)}}() =>
 			  		{{comment}}
 			  		"DEFAULT";
@@ -204,13 +204,13 @@ public class StatementTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double))]
-			  [{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{nameof(ChangeModifier)}}("public", "public")]
+			  	[{{ChangeModifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ArrowTokenSingleLineProblemTest)}}() => "DEFAULT";
 			  }
 
@@ -241,7 +241,7 @@ public class StatementTests
 
 			  using {{nameof(Overloader)}};
 
-			  [assembly: {{nameof(Formatter)}}(
+			  [assembly: {{Formatter.TagName}}(
 			  			"Vector3",
 			  			typeof(TestProject.Vector3<>),
 			  			new object[] {"T"},
@@ -258,20 +258,20 @@ public class StatementTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double), "Vector3")]
-			  [{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			  [{{TSpecify.TagName}}(typeof(double), "Vector3")]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
 			  }
 
-			  [{{nameof(TSpecify)}}(typeof(double), "Vector3")]
-			  [{{nameof(TOverload)}}(typeof(float), "3D", "3F")]
+			  [{{TSpecify.TagName}}(typeof(double), "Vector3")]
+			  [{{TOverload.TagName}}(typeof(float), "3D", "3F")]
 			  public static class Vec3DExt
 			  {
 			  	[return: {{TAttribute.TagName}}]
 			  	public static double AngleCos(
-			  		[{{nameof(Integrity)}}][{{TAttribute.TagName}}] this ref Vector3<double> current,
+			  		[{{Integrity.TagName}}][{{TAttribute.TagName}}] this ref Vector3<double> current,
 			  		[{{TAttribute.TagName}}] in Vector3<double> vector)
 			  	{
 			  		// TEST
@@ -280,7 +280,7 @@ public class StatementTests
 			  
 			  	[return: {{TAttribute.TagName}}]
 			  	public static double Angle(
-			  		[{{nameof(Integrity)}}][{{TAttribute.TagName}}] this ref Vector3<double> current,
+			  		[{{Integrity.TagName}}][{{TAttribute.TagName}}] this ref Vector3<double> current,
 			  		[{{TAttribute.TagName}}] in Vector3<double> vector)
 			  	{
 			  		return AngleCos(ref current, in vector);
@@ -318,8 +318,8 @@ public class StatementTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double))]
-			  [{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
@@ -356,8 +356,8 @@ public class StatementTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double))]
-			  [{{nameof(TOverload)}}(typeof(float), "Program", "Program1")]
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
@@ -401,7 +401,7 @@ public class StatementTests
 			  
 			  	// Plugs
 			  	private static double Sqrt(double val) => val;
-			  	[{{nameof(ChangeModifier)}}("private", "private")]
+			  	[{{ChangeModifier.TagName}}("private", "private")]
 			  	private static float Sqrt(float val) => val;
 			  }
 

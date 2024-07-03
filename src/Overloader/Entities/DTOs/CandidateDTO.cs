@@ -11,35 +11,32 @@ public record struct CandidateDto(
 	TSpecifyDto TSpecifyDto,
 	List<TOverloadDto> OverloadTypes,
 	bool IsInvertedMode,
-	bool IgnoreTransitions)
+	bool IsTransitionsIgnored)
 {
 	public static bool TryParse(GeneratorSyntaxContext context, out CandidateDto? candidateDto)
 	{
 		var declarationSyntax = (TypeDeclarationSyntax) context.Node;
 		TSpecifyDto? tSpecifyDto = null;
-		var ignoreTransitions = false;
-		var isBlackListMode = false;
+		bool ignoreTransitions = false;
+		bool isBlackListMode = false;
 		var overloadTypes = new LazyList<TOverloadDto>();
-		
+
 		foreach (var attributeList in declarationSyntax.AttributeLists)
 		foreach (var attribute in attributeList.Attributes)
 		{
 			switch (attribute.Name.GetName())
 			{
-				case nameof(TOverload)
-					when attribute.ArgumentList is not null:
-				{
+				case TOverload.TagName when attribute.ArgumentList is not null:
 					string className = declarationSyntax.Identifier.ValueText;
 					overloadTypes.Value.Add(TOverloadDto.Parse(className, attribute));
 					break;
-				}
-				case nameof(IgnoreTransitions):
+				case IgnoreTransitions.TagName:
 					ignoreTransitions = true;
 					break;
-				case nameof(InvertedMode):
+				case InvertedMode.TagName:
 					isBlackListMode = true;
 					break;
-				case nameof(TSpecify):
+				case TSpecify.TagName:
 					tSpecifyDto = TSpecifyDto.Parse(attribute);
 					continue;
 			}

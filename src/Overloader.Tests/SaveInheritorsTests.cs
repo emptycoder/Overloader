@@ -11,8 +11,8 @@ public class SaveInheritorsTests
 
 			namespace TestProject;
 
-			[{{nameof(TSpecify)}}(typeof(double))]
-			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")]
+			[{{TSpecify.TagName}}(typeof(double))]
+			[{{TOverload.TagName}}(typeof(float), "Test", "Test1")]
 			public class Test : ITest { } 
 			public interface ITest { }
 			

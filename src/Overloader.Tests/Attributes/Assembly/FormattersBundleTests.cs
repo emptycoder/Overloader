@@ -11,12 +11,12 @@ public class FormattersBundleTests
 
 			  using Overloader;
 
-			  [assembly: {{nameof(FormattersBundle)}}(
+			  [assembly: {{FormattersBundle.TagName}}(
 			  			"VectorBundle",
 			  			"Vector3",
 			  			"Vector2")]
 
-			  [assembly: {{nameof(Formatter)}}(
+			  [assembly: {{Formatter.TagName}}(
 			  			"Vector3",
 			  			typeof(TestProject.Vector3<>),
 			  			new object[] {"T"},
@@ -26,7 +26,7 @@ public class FormattersBundleTests
 			  				"Y", "T",
 			  				"Z", "T"
 			  			})]
-			  [assembly: {{nameof(Formatter)}}(
+			  [assembly: {{Formatter.TagName}}(
 			  			"Vector2",
 			  			typeof(TestProject.Vector2<>),
 			  			new object[] {"T"},
@@ -43,13 +43,13 @@ public class FormattersBundleTests
 			  	static void Main(string[] args) { }
 			  }
 
-			  [{{nameof(TSpecify)}}(typeof(double), "VectorBundle")]
-			  [{{nameof(TOverload)}}(typeof(float))]
+			  [{{TSpecify.TagName}}(typeof(double), "VectorBundle")]
+			  [{{TOverload.TagName}}(typeof(float))]
 			  public static partial class TestClass
 			  {
 			  	[return: {{TAttribute.TagName}}]
 			  	public static double TestMethod1(
-			  		[{{TAttribute.TagName}}] [{{nameof(Integrity)}}] this Vector3<double> vec,
+			  		[{{TAttribute.TagName}}] [{{Integrity.TagName}}] this Vector3<double> vec,
 			  		[{{TAttribute.TagName}}] in Vector2<double> vec1,
 			  		[{{TAttribute.TagName}}] Vector3<double> vec2) => default!;
 			  }

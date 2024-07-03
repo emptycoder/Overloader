@@ -9,7 +9,7 @@ public class InterfaceTransitionTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -36,7 +36,7 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector2"",
 			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
@@ -53,16 +53,16 @@ internal partial class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"", ""Vector2"")]
-[{nameof(TOverload)}(typeof(float))]
-[{nameof(RemoveBody)}]
+[{TSpecify.TagName}(typeof(double), ""Vector3"", ""Vector2"")]
+[{TOverload.TagName}(typeof(float))]
+[{RemoveBody.TagName}]
 internal partial interface ITest
 {{
-	public void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1);
+	public void TestMethod1([{Integrity.TagName}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1);
 	[return: {TAttribute.TagName}]
 	public double TestMethod2(
 		[{TAttribute.TagName}] Vector3<double> vec,
-		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1);
+		[{TAttribute.TagName}][{CombineWith.TagName}(""vec"")] Vector3<double> vec1);
 	public void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1);
 }}
 

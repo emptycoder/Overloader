@@ -11,7 +11,7 @@ public class CastTransitionTests
 		string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -38,7 +38,7 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector2"",
 			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
@@ -50,20 +50,20 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"", ""Vector2"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"", ""Vector2"")]
+[{TOverload.TagName}(typeof(float))]
 internal partial class Program
 {{
 	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var0}}.X, Y = ${{Var0}}.Y }}"";
 
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{Integrity.TagName}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
 	[return: {TAttribute.TagName}]
 	public static double TestMethod2(
 		[{TAttribute.TagName}] Vector3<double> vec,
-		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1)
+		[{TAttribute.TagName}][{CombineWith.TagName}(""vec"")] Vector3<double> vec1)
 	{{
 		Test(vec);
 		//# ""double"" -> ""${{T}}""
@@ -150,7 +150,7 @@ internal record struct Vector2<T>
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3D"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -193,7 +193,7 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3F"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -220,7 +220,7 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector2"",
 			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
@@ -232,18 +232,18 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3D"", ""Vector2"")]
-[{nameof(TOverload)}(typeof(float), formatters: ""Vector3F"")]
+[{TSpecify.TagName}(typeof(double), ""Vector3D"", ""Vector2"")]
+[{TOverload.TagName}(typeof(float), formatters: ""Vector3F"")]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec0, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{Integrity.TagName}][{TAttribute.TagName}] Vector3<double> vec0, Vector3<double> vec1) {{ }}
 
 	[return: {TAttribute.TagName}]
 	public static double TestMethod2(
-		[{TAttribute.TagName}][{nameof(Integrity)}] ref Vector3<double> vec0,
-		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec0"")] Vector3<double> vec1)
+		[{TAttribute.TagName}][{Integrity.TagName}] ref Vector3<double> vec0,
+		[{TAttribute.TagName}][{CombineWith.TagName}(""vec0"")] Vector3<double> vec1)
 	{{
 		return vec0.X;
 	}}
@@ -313,7 +313,7 @@ internal record struct Vector2<T>
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3D"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -330,7 +330,7 @@ using Overloader;
 				""vector3"",
 				""new TestProject.Vector3<double>() {{ X = (double) ${{Var0}}.X, Y = (double) ${{Var0}}.Y }}""
 			}})]
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3F"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -350,14 +350,14 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3D"")]
-[{nameof(TOverload)}(typeof(float), formatters: ""Vector3F"")]
+[{TSpecify.TagName}(typeof(double), ""Vector3D"")]
+[{TOverload.TagName}(typeof(float), formatters: ""Vector3F"")]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
 	public static void TestMethod1(
-		[{TAttribute.TagName}] [{nameof(Integrity)}] ref Vector3<double> vec0,
+		[{TAttribute.TagName}] [{Integrity.TagName}] ref Vector3<double> vec0,
 		[{TAttribute.TagName}] Vector3<double> vec1) {{ }}
 }}
 

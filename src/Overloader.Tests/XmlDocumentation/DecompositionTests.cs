@@ -12,7 +12,7 @@ public class DecompositionTests
 			$$"""
 			  using Overloader;
 
-			  [assembly: {{nameof(Formatter)}}(
+			  [assembly: {{Formatter.TagName}}(
 			           "Vector3",
 			           typeof(TestProject.Vector3<>),
 			           new object[] {"T"},
@@ -32,7 +32,7 @@ public class DecompositionTests
 			                   "Y", "Y"
 			               }
 			           })]
-			  [assembly: {{nameof(Formatter)}}(
+			  [assembly: {{Formatter.TagName}}(
 			           "Vector2",
 			           typeof(TestProject.Vector2<>),
 			           new object[] {"T"},
@@ -44,8 +44,8 @@ public class DecompositionTests
 
 			  namespace TestProject;
 
-			  [{{nameof(TSpecify)}}(typeof(double), "Vector3", "Vector2")]
-			  [{{nameof(TOverload)}}(typeof(float))]
+			  [{{TSpecify.TagName}}(typeof(double), "Vector3", "Vector2")]
+			  [{{TOverload.TagName}}(typeof(float))]
 			  internal partial class Program
 			  {
 			   static void Main(string[] args) { }
@@ -55,7 +55,7 @@ public class DecompositionTests
 			    /// </summary>
 			    /// <param name="vec">description of param 0</param>
 			    /// <param name="vec1">description of param 1</param>
-			   public static void TestMethod1([{{nameof(Integrity)}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
+			   public static void TestMethod1([{{Integrity.TagName}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
 			  
 			    /// jkjsdkjfjsk<summary>
 			    /// Summary
@@ -66,7 +66,7 @@ public class DecompositionTests
 			   [return: {{TAttribute.TagName}}]
 			   public static double TestMethod2(
 			       [{{TAttribute.TagName}}] Vector3<double> vec,
-			       [{{TAttribute.TagName}}][{{nameof(CombineWith)}}("vec")] Vector3<double> vec1)
+			       [{{TAttribute.TagName}}][{{CombineWith.TagName}}("vec")] Vector3<double> vec1)
 			   {
 			       Test(vec);
 			       //# "double" -> "${T}"

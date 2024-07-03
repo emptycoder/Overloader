@@ -7,5 +7,6 @@ namespace Overloader;
 public class TAttribute : Attribute
 {
 	public const string TagName = "T";
+	
 	public TAttribute(byte templateIndex = 0, Type? newType = null, Type? forType = null) { }
 }

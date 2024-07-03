@@ -23,8 +23,8 @@ internal class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{nameof(TSpecify)}(typeof(double))]
-[{nameof(TOverload)}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
+[{TSpecify.TagName}(typeof(double))]
+[{TOverload.TagName}(typeof(float), ""{regex}"", ""{regexReplacement}"")]
 {accessModifier} static class {className} {{ }}
 ";
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
@@ -53,7 +53,7 @@ internal class Program
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -79,7 +79,7 @@ using Overloader;
 					""Y"", ""Y""
 				}}
 			}})]
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector2"",
 			typeof(TestProject.Vector2<>),
 			new object[] {{""T""}},
@@ -91,8 +91,8 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double))]
-[{nameof(TOverload)}(typeof(float), ""Program"", ""Test"", ""Vector3"", ""Vector2"")]
+[{TSpecify.TagName}(typeof(double))]
+[{TOverload.TagName}(typeof(float), ""Program"", ""Test"", ""Vector3"", ""Vector2"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -154,13 +154,13 @@ internal record struct Vector2<T>
 
 			namespace TestProject;
 
-			[{{nameof(TSpecify)}}(typeof(double))]
-			[{{nameof(TOverload)}}(typeof(float), "Program", "Program1")] 
+			[{{TSpecify.TagName}}(typeof(double))]
+			[{{TOverload.TagName}}(typeof(float), "Program", "Program1")] 
 			internal class Program
 			{
 				static void Main(string[] args) { } 
 				
-				[{{nameof(ChangeModifier)}}("public", "private", templateTypeFor: typeof(float))]
+				[{{ChangeModifier.TagName}}("public", "private", templateTypeFor: typeof(float))]
 				public static void Test<T>(T test) {}
 			}
 		""";
@@ -183,11 +183,11 @@ internal record struct Vector2<T>
 				public void TestMethod<T>(T test) where T: class;
 			}
 			
-			[{{nameof(TSpecify)}}(typeof(double))]
-			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")] 
+			[{{TSpecify.TagName}}(typeof(double))]
+			[{{TOverload.TagName}}(typeof(float), "Test", "Test1")] 
 			public class Test : ITest
 			{
-				[{{nameof(ForceChanged)}}]
+				[{{ForceChanged.TagName}}]
 				public void TestMethod<T>(T test) where T: class {}
 			}
 			
@@ -210,8 +210,8 @@ internal record struct Vector2<T>
 
 			namespace TestProject;
 			
-			[{{nameof(TSpecify)}}(typeof(double))]
-			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")] 
+			[{{TSpecify.TagName}}(typeof(double))]
+			[{{TOverload.TagName}}(typeof(float), "Test", "Test1")] 
 			public partial class Test
 			{
 				public void TestMethod([T] Vector2<double> test) {}
@@ -236,7 +236,7 @@ internal record struct Vector2<T>
 		const string programCs = $$"""
 			using Overloader;
 
-			[assembly: {{nameof(Formatter)}}(
+			[assembly: {{Formatter.TagName}}(
 				"Vector3",
 				typeof(TestProject.Vector3<>),
 				new object[] { "T" },
@@ -244,8 +244,8 @@ internal record struct Vector2<T>
 
 			namespace TestProject;
 			
-			[{{nameof(TSpecify)}}(typeof(double), "Vector3")]
-			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")] 
+			[{{TSpecify.TagName}}(typeof(double), "Vector3")]
+			[{{TOverload.TagName}}(typeof(float), "Test", "Test1")] 
 			public partial class Test
 			{
 				public void TestMethod([{{TAttribute.TagName}}] Vector3<Vector2<double>> test) {}

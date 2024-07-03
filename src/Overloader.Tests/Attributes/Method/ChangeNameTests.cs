@@ -12,14 +12,14 @@ public class ChangeNameTests
 
 			namespace TestProject;
 
-			[{{nameof(TSpecify)}}(typeof(double))]
-			[{{nameof(TOverload)}}(typeof(float), "Test", "Test1")]
+			[{{TSpecify.TagName}}(typeof(double))]
+			[{{TOverload.TagName}}(typeof(float), "Test", "Test1")]
 			public partial class Test
 			{
-				[{{nameof(ChangeName)}}("ChangedName")]
+				[{{ChangeName.TagName}}("ChangedName")]
 				public static void TestMethod() {}
 				
-				[{{nameof(ChangeName)}}("ChangedNameForType", templateTypeFor: typeof(float))]
+				[{{ChangeName.TagName}}("ChangedNameForType", templateTypeFor: typeof(float))]
 				public static void TestForTypeMethod() {}
 			}
 			

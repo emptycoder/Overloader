@@ -4,4 +4,7 @@ namespace Overloader;
                 | AttributeTargets.Struct
                 | AttributeTargets.Interface,
 	AllowMultiple = true)]
-public class InvertedMode : Attribute { }
+public class InvertedMode : Attribute
+{
+	public const string TagName = nameof(InvertedMode);
+}

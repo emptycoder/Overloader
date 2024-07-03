@@ -32,12 +32,12 @@ public class FormatterTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}({DefaultVector3Formatter})]
+[assembly: {Formatter.TagName}({DefaultVector3Formatter})]
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"")]
+[{TOverload.TagName}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -88,12 +88,12 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-[assembly: {nameof(Formatter)}({Vector3WithoutParams})]
+[assembly: {Formatter.TagName}({Vector3WithoutParams})]
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"")]
+[{TOverload.TagName}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -126,12 +126,12 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-[assembly: {nameof(Formatter)}({Vector3WithoutParams})]
+[assembly: {Formatter.TagName}({Vector3WithoutParams})]
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"")]
+[{TOverload.TagName}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
@@ -163,7 +163,7 @@ internal struct Vector3<T>
 using System;
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -176,8 +176,8 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"")]
+[{TOverload.TagName}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}

@@ -8,6 +8,8 @@ namespace Overloader;
 	AllowMultiple = true)]
 public class TSpecify : Attribute
 {
+	public const string TagName = nameof(TSpecify);
+	
 	public TSpecify(Type templateType, params string[] formatters) { }
 	
 	public TSpecify(Type[] templateTypes, params string[] formatters) { }

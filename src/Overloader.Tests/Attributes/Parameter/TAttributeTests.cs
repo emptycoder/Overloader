@@ -11,7 +11,7 @@ public class TAttributeTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -28,14 +28,14 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"")]
+[{TOverload.TagName}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
 	public static void {nameof(TSpecifyTOverloadTest)}1(
-		[{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec,
+		[{Integrity.TagName}][{TAttribute.TagName}] Vector3<double> vec,
 		Vector3<double> vec1) {{ }}
 
 	[return: {TAttribute.TagName}]
@@ -55,7 +55,7 @@ internal partial class Program
 	}}
 
 	[return: {TAttribute.TagName}]
-	public static Vector3<double>[] {nameof(TSpecifyTOverloadTest)}3([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double>[] vec)
+	public static Vector3<double>[] {nameof(TSpecifyTOverloadTest)}3([{Integrity.TagName}][{TAttribute.TagName}] Vector3<double>[] vec)
 	{{
 		// Check that auto integrity works
 		var test = vec[0].X + vec[1].X;
@@ -121,7 +121,7 @@ internal struct Vector3<T>
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -138,14 +138,14 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"")]
+[{TOverload.TagName}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
 	public static void {nameof(TSpecifyTOverloadTest)}1(
-		[{nameof(Integrity)}][{TAttribute.TagName}(newType: typeof(int), forType: typeof(float))] Vector3<double> vec,
+		[{Integrity.TagName}][{TAttribute.TagName}(newType: typeof(int), forType: typeof(float))] Vector3<double> vec,
 		Vector3<double> vec1) {{ }}
 }}
 

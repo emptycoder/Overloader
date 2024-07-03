@@ -11,15 +11,15 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double))]
-[{nameof(TOverload)}(typeof(float), ""Program"", ""Program1"")]
+[{TSpecify.TagName}(typeof(double))]
+[{TOverload.TagName}(typeof(float), ""Program"", ""Program1"")]
 internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{nameof(ChangeModifier)}(""public"", ""private"", templateTypeFor: typeof(float))]
-	[{nameof(ChangeModifier)}(""public"", ""internal"", templateTypeFor: typeof(double))]
-	[{nameof(ChangeModifier)}(""private"", ""protected"")]
+	[{ChangeModifier.TagName}(""public"", ""private"", templateTypeFor: typeof(float))]
+	[{ChangeModifier.TagName}(""public"", ""internal"", templateTypeFor: typeof(double))]
+	[{ChangeModifier.TagName}(""private"", ""protected"")]
 	public static void {nameof(BaseTest)}() {{ }}
 }}
 ";

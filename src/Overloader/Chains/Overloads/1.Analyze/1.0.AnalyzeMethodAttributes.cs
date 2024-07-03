@@ -25,7 +25,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 			string attrName = attribute.Name.GetName();
 			switch (attrName)
 			{
-				case nameof(SkipMode):
+				case SkipMode.TagName:
 					var skipDto = SkipModeDto.Parse(attribute, props.Compilation);
 					if (skipDto.TemplateTypeFor is null || SymbolEqualityComparer.Default.Equals(skipDto.TemplateTypeFor, props.Templates[skipDto.TemplateIndexFor]))
 					{
@@ -66,7 +66,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 						props.Store.MethodData.ReturnType = props.Templates[tAttrDto.TemplateIndex];
 					}
 					break;
-				case nameof(ChangeModifier):
+				case ChangeModifier.TagName:
 					var changeModifierDto = ChangeModifierDto.Parse(attribute, props.Compilation);
 					if (changeModifierDto.TemplateTypeFor is not null
 					    && !SymbolEqualityComparer.Default.Equals(changeModifierDto.TemplateTypeFor, props.Templates[changeModifierDto.TemplateIndexFor])) continue;
@@ -80,7 +80,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 						break;
 					}
 					break;
-				case nameof(ChangeName) when !props.IsDefaultOverload:
+				case ChangeName.TagName when !props.IsDefaultOverload:
 					var changeNameDto = ChangeNameDto.Parse(attribute, props.Compilation);
 					if (changeNameDto.TemplateTypeFor is not null
 					    && !SymbolEqualityComparer.Default.Equals(changeNameDto.TemplateTypeFor, props.Templates[changeNameDto.TemplateIndexFor])) continue;
@@ -88,7 +88,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 					props.Store.MethodData.MethodName = changeNameDto.NewName;
 					props.Store.IsSmthChanged = true;
 					break;
-				case nameof(ForceChanged):
+				case ForceChanged.TagName:
 					props.Store.IsSmthChanged = true;
 					break;
 			}

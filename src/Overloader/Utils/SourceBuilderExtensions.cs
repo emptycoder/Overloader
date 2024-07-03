@@ -11,25 +11,25 @@ public static class SourceBuilderExtensions
 	private static readonly HashSet<string> AttributesToRemove = new()
 	{
 		/* Assembly */
-		nameof(Formatter),
-		nameof(FormattersBundle),
+		Formatter.TagName,
+		FormattersBundle.TagName,
 		/* Method */
-		nameof(SkipMode),
-		nameof(ChangeModifier),
-		nameof(ChangeName),
-		nameof(ForceChanged),
+		SkipMode.TagName,
+		ChangeModifier.TagName,
+		ChangeName.TagName,
+		ForceChanged.TagName,
 		/* Parameter */
-		nameof(CombineWith),
-		nameof(Integrity),
-		nameof(Modifier),
-		nameof(Ref),
+		CombineWith.TagName,
+		Integrity.TagName,
+		Modifier.TagName,
+		Ref.TagName,
 		TAttribute.TagName,
 		/* Type */
-		nameof(InvertedMode),
-		nameof(IgnoreTransitions),
-		nameof(RemoveBody),
-		nameof(TOverload),
-		nameof(TSpecify)
+		InvertedMode.TagName,
+		IgnoreTransitions.TagName,
+		RemoveBody.TagName,
+		TOverload.TagName,
+		TSpecify.TagName
 	};
 	
 	public static SourceBuilder AppendUsings(this SourceBuilder sb, SyntaxNode syntax)
@@ -113,7 +113,7 @@ public static class SourceBuilderExtensions
 				    && !SymbolEqualityComparer.Default.Equals(originalType, typeSymbol)) continue;
 				if (isReplaced)
 					throw new ArgumentException(
-							$"Modifier has already been replaced by another {nameof(Modifier)}.")
+							$"Modifier has already been replaced by another {Modifier.TagName}.")
 						.WithLocation(parameter);
 
 				isReplaced = true;

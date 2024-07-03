@@ -26,7 +26,7 @@ public sealed record CastModel(
 						nameof(ParamModifier.Ref) => "ref",
 						nameof(ParamModifier.Out) => "out",
 						nameof(ParamModifier.None) => string.Empty,
-						_ => throw new ArgumentException($"Can't parse {nameof(Modifier)}: {modifierExpression.Name}.")
+						_ => throw new ArgumentException($"Can't parse {Modifier.TagName}: {modifierExpression.Name}.")
 							.WithLocation(expressions[argIndex])
 					};
 					argIndex++;

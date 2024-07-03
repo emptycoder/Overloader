@@ -11,7 +11,7 @@ public class CombineWithTests
 using System;
 using Overloader;
 
-[assembly:{nameof(Formatter)}(
+[assembly:{Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -24,15 +24,15 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"")]
+[{TOverload.TagName}(typeof(float))]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
 	public static void {nameof(BaseTest)}(
 		[{TAttribute.TagName}] Vector3<double> vec,
-		[{TAttribute.TagName}][{nameof(CombineWith)}(""vec"")] Vector3<double> vec1) {{ }}
+		[{TAttribute.TagName}][{CombineWith.TagName}(""vec"")] Vector3<double> vec1) {{ }}
 }}
 
 internal struct Vector3<T>

@@ -9,7 +9,7 @@ public class RefTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -27,23 +27,23 @@ internal partial class Program
 	static void Main(string[] args) {{ }}
 }}
 
-[{nameof(TSpecify)}(typeof(double), ""Vector3"")]
-[{nameof(TOverload)}(typeof(float))]
+[{TSpecify.TagName}(typeof(double), ""Vector3"")]
+[{TOverload.TagName}(typeof(float))]
 public static partial class TestClass
 {{
 	[return: {TAttribute.TagName}]
 	public static double TestMethod1(
-		[{TAttribute.TagName}] [{nameof(Integrity)}] [{nameof(Ref)}] this Vector3<double> vec,
-		[{TAttribute.TagName}] [{nameof(Integrity)}] [{nameof(Ref)}] in Vector3<double> vec1,
-		[{TAttribute.TagName}] [{nameof(Integrity)}] Vector3<double> vec2,
+		[{TAttribute.TagName}] [{Integrity.TagName}] [{Ref.TagName}] this Vector3<double> vec,
+		[{TAttribute.TagName}] [{Integrity.TagName}] [{Ref.TagName}] in Vector3<double> vec1,
+		[{TAttribute.TagName}] [{Integrity.TagName}] Vector3<double> vec2,
 		Vector3<double> vec3,
-		[{TAttribute.TagName}] [{nameof(Ref)}] [{nameof(CombineWith)}(""vec1"")] Vector3<double> vec4,
+		[{TAttribute.TagName}] [{Ref.TagName}] [{CombineWith.TagName}(""vec1"")] Vector3<double> vec4,
 		Vector3<double> vec5) => default!;
 
 	[return: {TAttribute.TagName}]
 	public static ref int TestMethod2(
 		[{TAttribute.TagName}] this ref int value,
-		[{TAttribute.TagName}] [{nameof(Ref)}] [{nameof(Integrity)}] Vector3<double> vec2) => ref value;
+		[{TAttribute.TagName}] [{Ref.TagName}] [{Integrity.TagName}] Vector3<double> vec2) => ref value;
 }}
 
 public struct Vector3<T>

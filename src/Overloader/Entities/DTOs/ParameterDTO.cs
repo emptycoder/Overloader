@@ -28,7 +28,7 @@ public struct ParameterDto
 			string attrName = attribute.Name.GetName();
 			switch (attrName)
 			{
-				case nameof(Integrity):
+				case Integrity.TagName:
 					parameterDto.HasForceOverloadIntegrity = true;
 					continue;
 				case nameof(Overloader.CombineWith) when attribute.ArgumentList is {Arguments: var args}:
@@ -45,7 +45,7 @@ public struct ParameterDto
 						parameterDto.Attribute = tAttrDto;
 					}
 					continue;
-				case nameof(Modifier) when attribute.ArgumentList is {Arguments: var args}:
+				case Modifier.TagName when attribute.ArgumentList is {Arguments: var args}:
 					int argsCount = args.Count;
 					if (args[0].Expression is not LiteralExpressionSyntax modifierExpression
 					    || !modifierExpression.IsKind(SyntaxKind.StringLiteralExpression))

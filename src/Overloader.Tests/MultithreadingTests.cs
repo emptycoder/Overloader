@@ -9,7 +9,7 @@ public class MultithreadingTests
 		const string programCs = @$"
 using Overloader;
 
-[assembly: {nameof(Formatter)}(
+[assembly: {Formatter.TagName}(
 			""Vector3"",
 			typeof(TestProject.Vector3<>),
 			new object[] {{""T""}},
@@ -26,13 +26,13 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(new[] {{ typeof(double) }}, ""Vector3"")]
-[{nameof(TOverload)}(new[] {{ typeof(float) }})]
+[{TSpecify.TagName}(new[] {{ typeof(double) }}, ""Vector3"")]
+[{TOverload.TagName}(new[] {{ typeof(float) }})]
 internal partial class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{Integrity.TagName}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
 	[return: {TAttribute.TagName}]
 	public static double TestMethod2([{TAttribute.TagName}] Vector3<double> vec, [{TAttribute.TagName}] Vector3<double> vec1)
@@ -67,11 +67,11 @@ using Overloader;
 
 namespace TestProject;
 
-[{nameof(TSpecify)}(new[] {{ typeof(double) }}, ""Vector3"")]
-[{nameof(TOverload)}(new[] {{ typeof(float) }})]
+[{TSpecify.TagName}(new[] {{ typeof(double) }}, ""Vector3"")]
+[{TOverload.TagName}(new[] {{ typeof(float) }})]
 internal partial class TestClass{index}
 {{
-	public static void TestMethod1([{nameof(Integrity)}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+	public static void TestMethod1([{Integrity.TagName}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
 
 	[return: {TAttribute.TagName}]
 	public static double TestMethod2([{TAttribute.TagName}] Vector3<double> vec, [{TAttribute.TagName}] Vector3<double> vec1)

@@ -15,7 +15,7 @@ public sealed class CastTransitionOverloads : TransitionCastOverloader, IChainMe
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
-		if (props.StartEntry.IgnoreTransitions)
+		if (props.StartEntry.IsTransitionsIgnored)
 			return ChainAction.NextMember;
 
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;

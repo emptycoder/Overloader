@@ -12,11 +12,11 @@ public static class FormatterExtensions
 		var dict = new Dictionary<string, FormatterModel>();
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
-			if (formatterSyntax.Name.GetName() is not nameof(Formatter)) continue;
+			if (formatterSyntax.Name.GetName() is not Formatter.TagName) continue;
 
 			var formatter = FormatterModel.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formatter.Identifier))
-				throw new ArgumentException($"{nameof(Formatter)} with identifier '{formatter.Identifier}' has been already exist.")
+				throw new ArgumentException($"{Formatter.TagName} with identifier '{formatter.Identifier}' has been already exist.")
 					.WithLocation(formatterSyntax);
 
 			dict.Add(formatter.Identifier, formatter);
@@ -30,11 +30,11 @@ public static class FormatterExtensions
 		var dict = new Dictionary<string, FormattersBundleModel>();
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
-			if (formatterSyntax.Name.GetName() is not nameof(FormattersBundle)) continue;
+			if (formatterSyntax.Name.GetName() is not FormattersBundle.TagName) continue;
 
 			var formattersBundle = FormattersBundleModel.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formattersBundle.Identifier))
-				throw new ArgumentException($"{nameof(FormattersBundle)} with identifier '{formattersBundle.Identifier}' has been already exist.")
+				throw new ArgumentException($"{FormattersBundle.TagName} with identifier '{formattersBundle.Identifier}' has been already exist.")
 					.WithLocation(formatterSyntax);
 
 			dict.Add(formattersBundle.Identifier, formattersBundle);
