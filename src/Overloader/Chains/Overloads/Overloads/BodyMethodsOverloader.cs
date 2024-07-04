@@ -209,7 +209,6 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 							if (!CheckTemplate(strTrivia, templateStr, out strTriviaSpan)) continue;
 							
 							var newStatement = strTriviaSpan.Slice(endPrefixIndex).Trim();
-							if (newStatement.IndexOf("${T}".AsSpan()) != -1) break;
 							if (changeLine is not null)
 								throw new ArgumentException("Cannot use two 'replace line' ('//$') on one syntax node.");
 							changeLine = newStatement.ToString().Replace("${T}", templateStr);

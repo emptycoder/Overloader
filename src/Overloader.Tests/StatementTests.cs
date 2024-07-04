@@ -149,10 +149,10 @@ public class StatementTests
 	}
 
 	[TestCase("//$ \"EXPECTED\"", ExpectedResult = "EXPECTED")]
-	[TestCase("//$ \"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
+	[TestCase("//$ \"EXPECTED\" : short", ExpectedResult = "EXPECTED")]
 	[TestCase("//$ \"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
 	[TestCase($"{SomeKindOfComment}//$ \"EXPECTED\"", ExpectedResult = "EXPECTED")]
-	[TestCase($"{SomeKindOfComment}//$ \"EXPECTED\" : float", ExpectedResult = "EXPECTED")]
+	[TestCase($"{SomeKindOfComment}//$ \"EXPECTED\" : short", ExpectedResult = "EXPECTED")]
 	[TestCase($"{SomeKindOfComment}//$ \"EXPECTED\" : double", ExpectedResult = "DEFAULT")]
 	public string ArrowTokenStatementsTest(string comment)
 	{
@@ -164,7 +164,7 @@ public class StatementTests
 			  namespace TestProject;
 
 			  [{{TSpecify.TagName}}(typeof(double))]
-			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
+			  [{{TOverload.TagName}}(typeof(short), "Program", "Program1")]
 			  internal class Program
 			  {
 			  	static void Main(string[] args) { }
@@ -173,6 +173,14 @@ public class StatementTests
 			  	public static string {{nameof(ChangeLineOperationTest)}}() =>
 			  		{{comment}}
 			  		"DEFAULT";
+			  		
+			    [return: {{TAttribute.TagName}}]
+			    public static double Lerp(
+			        [{{TAttribute.TagName}}] double a,
+			        [{{TAttribute.TagName}}] double b,
+			        [{{TAttribute.TagName}}] double t) =>
+			        //$ (${T}) ((a * b) + t) : short, ushort
+			        (a * b) + t;
 			  }
 
 			  """;

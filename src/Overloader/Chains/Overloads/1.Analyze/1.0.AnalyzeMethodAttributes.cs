@@ -40,9 +40,11 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 					var returnTypeSymbol = props.Store.MethodSyntax.ReturnType.GetType(props.Compilation);
 					var returnTypeSymbolRoot = returnTypeSymbol.GetClearType();
 					var tAttrDto = TAttributeDto.Parse(attribute, props.Compilation);
+					
+					if (tAttrDto.ForType is not null
+					    && !SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])) continue;
 
-					if (SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])
-					    || (tAttrDto.ForType is null && tAttrDto.NewType is not null))
+					if (tAttrDto.NewType is not null)
 					{
 						props.Store.MethodData.ReturnType = tAttrDto.NewType;
 						props.Store.IsSmthChanged = true;
