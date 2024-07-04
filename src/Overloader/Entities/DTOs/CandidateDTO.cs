@@ -49,14 +49,6 @@ public record struct CandidateDto(
 			return false;
 		}
 
-		var expectedLength = tSpecifyDto.DefaultTypeSyntaxes.Length;
-		foreach (var overloadDto in overloadTypes.Value)
-		{
-			if (overloadDto.TypeSyntaxes.Length != expectedLength)
-				throw new ArgumentException($"{TOverload.TagName} has a different count of template arguments than the {TSpecify.TagName}")
-					.WithLocation(declarationSyntax);
-		}
-
 		candidateDto = new CandidateDto(
 			declarationSyntax,
 			tSpecifyDto,

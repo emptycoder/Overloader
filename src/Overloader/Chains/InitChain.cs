@@ -12,6 +12,14 @@ internal class InitChain : IChainMember
 {
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
+		var expectedLength = props.StartEntry.TSpecifyDto.DefaultTypeSyntaxes.Length;
+		foreach (var overloadDto in props.StartEntry.OverloadTypes)
+		{
+			if (overloadDto.TypeSyntaxes.Length != expectedLength)
+				throw new ArgumentException($"{TOverload.TagName} has a different count of template arguments than the {TSpecify.TagName}")
+					.WithLocation(props.StartEntry.Syntax);
+		}
+		
 		var sb = props.Builder;
 		switch (props.IsDefaultOverload)
 		{
