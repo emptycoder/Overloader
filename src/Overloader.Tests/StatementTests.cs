@@ -399,7 +399,7 @@ public class StatementTests
 			  		return double.PositiveInfinity;
 			  	}
 			  
-			  	// Plugs
+			  	// Stubs
 			  	private static double Sqrt(double val) => val;
 			  	[{{ChangeModifier.TagName}}("private", "private")]
 			  	private static float Sqrt(float val) => val;

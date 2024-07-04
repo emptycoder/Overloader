@@ -14,7 +14,7 @@ public static class MethodBodyExtensions
 		GeneratorProperties props,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.OverloadMap[paramIndex];
+		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 		switch (mappedParam.ReplacementType)
 		{

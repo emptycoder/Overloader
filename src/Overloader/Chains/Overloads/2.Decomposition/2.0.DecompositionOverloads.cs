@@ -28,7 +28,7 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 		{
 			indexes[index] = -1;
 			var parameter = parameters[index];
-			var mappedParam = props.Store.OverloadMap[index];
+			var mappedParam = props.Store.MethodData.Parameters[index];
 			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter) continue;
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out _))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")
@@ -86,7 +86,7 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.OverloadMap[paramIndex];
+		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ReplacementType)
@@ -120,7 +120,7 @@ public sealed class DecompositionOverloads : BodyMethodsOverloader, IChainMember
 				return;
 			default:
 				throw new ArgumentException($"Can't find case for '{mappedParam.ReplacementType}' parameter action.")
-					.Unreachable()
+					.NotExpected()
 					.WithLocation(parameter);
 		}
 

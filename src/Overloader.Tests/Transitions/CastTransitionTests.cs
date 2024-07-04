@@ -8,89 +8,92 @@ public class CastTransitionTests
 	[TestCase("$\"{TestProject.Program.CastInBlock}\"", TestName = "String interpolation castInBlock")]
 	public void BaseTest(string castInBlock)
 	{
-		string programCs = @$"
-using Overloader;
+		string programCs =
+			$$"""
 
-[assembly: {Formatter.TagName}(
-			""Vector3"",
-			typeof(TestProject.Vector3<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T"",
-				""Z"", ""T""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(TestProject.Vector2<>),
-				""vector2"",
-				{castInBlock}
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
-				typeof(TestProject.Vector2<>),
-				new object[]
-				{{
-					""X"", ""X"",
-					""Y"", ""Y""
-				}}
-			}})]
-[assembly: {Formatter.TagName}(
-			""Vector2"",
-			typeof(TestProject.Vector2<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T""
-			}})]
+			  using Overloader;
 
-namespace TestProject;
+			  [assembly: {{Formatter.TagName}}(
+			  			"Vector3",
+			  			typeof(TestProject.Vector3<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T",
+			  				"Z", "T"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Cast)}},
+			  				typeof(TestProject.Vector2<>),
+			  				"vector2",
+			  				{{castInBlock}}
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Decomposition)}},
+			  				typeof(TestProject.Vector2<>),
+			  				new object[]
+			  				{
+			  					"X", "X",
+			  					"Y", "Y"
+			  				}
+			  			})]
+			  [assembly: {{Formatter.TagName}}(
+			  			"Vector2",
+			  			typeof(TestProject.Vector2<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T"
+			  			})]
 
-[{TSpecify.TagName}(typeof(double), ""Vector3"", ""Vector2"")]
-[{TOverload.TagName}(typeof(float))]
-internal partial class Program
-{{
-	public const string CastInBlock = ""new TestProject.Vector3<${{T}}>() {{ X = ${{Var0}}.X, Y = ${{Var0}}.Y }}"";
+			  namespace TestProject;
 
-	static void Main(string[] args) {{ }}
+			  [{{TSpecify.TagName}}(typeof(double), "Vector3", "Vector2")]
+			  [{{TOverload.TagName}}(typeof(float))]
+			  internal partial class Program
+			  {
+			  	public const string CastInBlock = "new TestProject.Vector3<${T}>() { X = ${Var0}.X, Y = ${Var0}.Y }";
+			  
+			  	static void Main(string[] args) { }
+			  
+			  	public static void TestMethod1([{{Integrity.TagName}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
+			  
+			  	[return: {{TAttribute.TagName}}]
+			  	public static double TestMethod2(
+			  		[{{TAttribute.TagName}}] Vector3<double> vec,
+			  		[{{TAttribute.TagName}}][{{CombineWith.TagName}}("vec")] Vector3<double> vec1)
+			  	{
+			  		Test(vec);
+			  		//# "double" -> "${T}"
+			  		return (double) (vec.X + vec1.X + vec.Y + vec1.Y + vec.Z + vec1.Z);
+			  	}
+			  
+			  	private static void Test(Vector3<double> vec123) {}
+			  	private static void Test(Vector3<float> vec123) {}
+			  	private static void Test(double x, double y, double z) {}
+			  	private static void Test(float x, float y, float z) {}
+			  
+			  	public static void TestMethod3(Vector3<double> vec, [{{TAttribute.TagName}}] double vec1) { }
+			  }
 
-	public static void TestMethod1([{Integrity.TagName}][{TAttribute.TagName}] Vector3<double> vec, Vector3<double> vec1) {{ }}
+			  internal struct Vector3<T>
+			  {
+			  	public T X;
+			  	public T Y { get; set; }
+			  	internal T Z { get; private set; }
+			  }
 
-	[return: {TAttribute.TagName}]
-	public static double TestMethod2(
-		[{TAttribute.TagName}] Vector3<double> vec,
-		[{TAttribute.TagName}][{CombineWith.TagName}(""vec"")] Vector3<double> vec1)
-	{{
-		Test(vec);
-		//# ""double"" -> ""${{T}}""
-		return (double) (vec.X + vec1.X + vec.Y + vec1.Y + vec.Z + vec1.Z);
-	}}
+			  internal record struct Vector2<T>
+			  {
+			  	public T X;
+			  	public T Y;
+			  }
 
-	private static void Test(Vector3<double> vec123) {{}}
-	private static void Test(Vector3<float> vec123) {{}}
-	private static void Test(double x, double y, double z) {{}}
-	private static void Test(float x, float y, float z) {{}}
-
-	public static void TestMethod3(Vector3<double> vec, [{TAttribute.TagName}] double vec1) {{ }}
-}}
-
-internal struct Vector3<T>
-{{
-	public T X;
-	public T Y {{ get; set; }}
-	internal T Z {{ get; private set; }}
-}}
-
-internal record struct Vector2<T>
-{{
-	public T X;
-	public T Y;
-}}
-";
+			  """;
 
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
@@ -147,123 +150,126 @@ internal record struct Vector2<T>
 	[Test]
 	public void RefIgnoringTest()
 	{
-		const string programCs = @$"
-using Overloader;
+		const string programCs =
+			$$"""
 
-[assembly: {Formatter.TagName}(
-			""Vector3D"",
-			typeof(TestProject.Vector3<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T"",
-				""Z"", ""T""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(TestProject.Vector2<float>),
-				""vector2"",
-				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(TestProject.Vector3<long>),
-				""vector3"",
-				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(long),
-				""x"",
-				typeof(long),
-				""y"",
-				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}, Y = (${{T}}) ${{Var1}} }}""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
-				typeof(TestProject.Vector2<>),
-				new object[]
-				{{
-					""X"", ""X"",
-					""Y"", ""Y""
-				}}
-			}})]
-[assembly: {Formatter.TagName}(
-			""Vector3F"",
-			typeof(TestProject.Vector3<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T"",
-				""Z"", ""T""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(TestProject.Vector2<double>),
-				""vector2"",
-				""new TestProject.Vector3<${{T}}>() {{ X = (${{T}}) ${{Var0}}.X, Y = (${{T}}) ${{Var0}}.Y }}""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Decomposition)},
-				typeof(TestProject.Vector2<>),
-				new object[]
-				{{
-					""X"", ""X"",
-					""Y"", ""Y""
-				}}
-			}})]
-[assembly: {Formatter.TagName}(
-			""Vector2"",
-			typeof(TestProject.Vector2<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T""
-			}})]
+			  using Overloader;
 
-namespace TestProject;
+			  [assembly: {{Formatter.TagName}}(
+			  			"Vector3D",
+			  			typeof(TestProject.Vector3<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T",
+			  				"Z", "T"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Cast)}},
+			  				typeof(TestProject.Vector2<float>),
+			  				"vector2",
+			  				"new TestProject.Vector3<${T}>() { X = (${T}) ${Var0}.X, Y = (${T}) ${Var0}.Y }"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Cast)}},
+			  				typeof(TestProject.Vector3<long>),
+			  				"vector3",
+			  				"new TestProject.Vector3<${T}>() { X = (${T}) ${Var0}.X, Y = (${T}) ${Var0}.Y }"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Cast)}},
+			  				typeof(long),
+			  				"x",
+			  				typeof(long),
+			  				"y",
+			  				"new TestProject.Vector3<${T}>() { X = (${T}) ${Var0}, Y = (${T}) ${Var1} }"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Decomposition)}},
+			  				typeof(TestProject.Vector2<>),
+			  				new object[]
+			  				{
+			  					"X", "X",
+			  					"Y", "Y"
+			  				}
+			  			})]
+			  [assembly: {{Formatter.TagName}}(
+			  			"Vector3F",
+			  			typeof(TestProject.Vector3<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T",
+			  				"Z", "T"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Cast)}},
+			  				typeof(TestProject.Vector2<double>),
+			  				"vector2",
+			  				"new TestProject.Vector3<${T}>() { X = (${T}) ${Var0}.X, Y = (${T}) ${Var0}.Y }"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Decomposition)}},
+			  				typeof(TestProject.Vector2<>),
+			  				new object[]
+			  				{
+			  					"X", "X",
+			  					"Y", "Y"
+			  				}
+			  			})]
+			  [assembly: {{Formatter.TagName}}(
+			  			"Vector2",
+			  			typeof(TestProject.Vector2<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T"
+			  			})]
 
-[{TSpecify.TagName}(typeof(double), ""Vector3D"", ""Vector2"")]
-[{TOverload.TagName}(typeof(float), formatters: ""Vector3F"")]
-internal partial class Program
-{{
-	static void Main(string[] args) {{ }}
+			  namespace TestProject;
 
-	public static void TestMethod1([{Integrity.TagName}][{TAttribute.TagName}] Vector3<double> vec0, Vector3<double> vec1) {{ }}
+			  [{{TSpecify.TagName}}(typeof(double), "Vector3D", "Vector2")]
+			  [{{TOverload.TagName}}(typeof(float), formatters: "Vector3F")]
+			  internal partial class Program
+			  {
+			  	static void Main(string[] args) { }
+			  
+			  	public static void TestMethod1([{{Integrity.TagName}}][{{TAttribute.TagName}}] Vector3<double> vec0, Vector3<double> vec1) { }
+			  
+			  	[return: {{TAttribute.TagName}}]
+			  	public static double TestMethod2(
+			  		[{{TAttribute.TagName}}][{{Integrity.TagName}}] ref Vector3<double> vec0,
+			  		[{{TAttribute.TagName}}][{{CombineWith.TagName}}("vec0")] Vector3<double> vec1)
+			  	{
+			  		return vec0.X;
+			  	}
+			  
+			  	public static void TestMethod3(Vector3<double> vec0, [{{TAttribute.TagName}}] double vec1) { }
+			  }
 
-	[return: {TAttribute.TagName}]
-	public static double TestMethod2(
-		[{TAttribute.TagName}][{Integrity.TagName}] ref Vector3<double> vec0,
-		[{TAttribute.TagName}][{CombineWith.TagName}(""vec0"")] Vector3<double> vec1)
-	{{
-		return vec0.X;
-	}}
+			  internal struct Vector3<T>
+			  {
+			  	public T X;
+			  	public T Y { get; set; }
+			  	internal T Z { get; private set; }
+			  }
 
-	public static void TestMethod3(Vector3<double> vec0, [{TAttribute.TagName}] double vec1) {{ }}
-}}
+			  internal record struct Vector2<T>
+			  {
+			  	public T X;
+			  	public T Y;
+			  }
 
-internal struct Vector3<T>
-{{
-	public T X;
-	public T Y {{ get; set; }}
-	internal T Z {{ get; private set; }}
-}}
-
-internal record struct Vector2<T>
-{{
-	public T X;
-	public T Y;
-}}
-";
+			  """;
 
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);
@@ -310,64 +316,67 @@ internal record struct Vector2<T>
 	[Test]
 	public void GetFormattersWithSpecifiedGenericsTest()
 	{
-		const string programCs = @$"
-using Overloader;
+		const string programCs =
+			$$"""
 
-[assembly: {Formatter.TagName}(
-			""Vector3D"",
-			typeof(TestProject.Vector3<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T"",
-				""Z"", ""T""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(TestProject.Vector3<float>),
-				""vector3"",
-				""new TestProject.Vector3<double>() {{ X = (double) ${{Var0}}.X, Y = (double) ${{Var0}}.Y }}""
-			}})]
-[assembly: {Formatter.TagName}(
-			""Vector3F"",
-			typeof(TestProject.Vector3<>),
-			new object[] {{""T""}},
-			new object[]
-			{{
-				""X"", ""T"",
-				""Y"", ""T"",
-				""Z"", ""T""
-			}},
-			new object[]
-			{{
-				{nameof(TransitionType)}.{nameof(TransitionType.Cast)},
-				typeof(TestProject.Vector3<double>),
-				""vector3"",
-				""new TestProject.Vector3<float>() {{ X = (float) ${{Var0}}.X, Y = (float) ${{Var0}}.Y }}""
-			}})]
+			  using Overloader;
 
-namespace TestProject;
+			  [assembly: {{Formatter.TagName}}(
+			  			"Vector3D",
+			  			typeof(TestProject.Vector3<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T",
+			  				"Z", "T"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Cast)}},
+			  				typeof(TestProject.Vector3<float>),
+			  				"vector3",
+			  				"new TestProject.Vector3<double>() { X = (double) ${Var0}.X, Y = (double) ${Var0}.Y }"
+			  			})]
+			  [assembly: {{Formatter.TagName}}(
+			  			"Vector3F",
+			  			typeof(TestProject.Vector3<>),
+			  			new object[] {"T"},
+			  			new object[]
+			  			{
+			  				"X", "T",
+			  				"Y", "T",
+			  				"Z", "T"
+			  			},
+			  			new object[]
+			  			{
+			  				{{nameof(TransitionType)}}.{{nameof(TransitionType.Cast)}},
+			  				typeof(TestProject.Vector3<double>),
+			  				"vector3",
+			  				"new TestProject.Vector3<float>() { X = (float) ${Var0}.X, Y = (float) ${Var0}.Y }"
+			  			})]
 
-[{TSpecify.TagName}(typeof(double), ""Vector3D"")]
-[{TOverload.TagName}(typeof(float), formatters: ""Vector3F"")]
-internal partial class Program
-{{
-	static void Main(string[] args) {{ }}
+			  namespace TestProject;
 
-	public static void TestMethod1(
-		[{TAttribute.TagName}] [{Integrity.TagName}] ref Vector3<double> vec0,
-		[{TAttribute.TagName}] Vector3<double> vec1) {{ }}
-}}
+			  [{{TSpecify.TagName}}(typeof(double), "Vector3D")]
+			  [{{TOverload.TagName}}(typeof(float), formatters: "Vector3F")]
+			  internal partial class Program
+			  {
+			  	static void Main(string[] args) { }
+			  
+			  	public static void TestMethod1(
+			  		[{{TAttribute.TagName}}] [{{Integrity.TagName}}] ref Vector3<double> vec0,
+			  		[{{TAttribute.TagName}}] Vector3<double> vec1) { }
+			  }
 
-internal struct Vector3<T>
-{{
-	public T X;
-	public T Y {{ get; set; }}
-	internal T Z {{ get; private set; }}
-}}
-";
+			  internal struct Vector3<T>
+			  {
+			  	public T X;
+			  	public T Y { get; set; }
+			  	internal T Z { get; private set; }
+			  }
+
+			  """;
 
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);

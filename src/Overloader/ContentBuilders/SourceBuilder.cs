@@ -127,7 +127,7 @@ public abstract class SourceBuilder : IDisposable
 	{
 		if (_nestedLevel == 0)
 			throw new Exception("Minimum nested level has been reached")
-				.Unreachable();
+				.NotExpected();
 
 		_nestedLevel--;
 		if (withSyntax.HasValue)

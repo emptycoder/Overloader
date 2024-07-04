@@ -2,9 +2,10 @@ using Microsoft.CodeAnalysis;
 
 namespace Overloader.Entities;
 
-public struct MethodData
+public record struct MethodData
 {
+	public ParameterData[] Parameters;
 	public string[]? MethodModifiers;
 	public ITypeSymbol? ReturnType;
-	public string MethodName;
+	public string? MethodName;
 }

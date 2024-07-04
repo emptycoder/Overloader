@@ -27,7 +27,7 @@ public sealed class CombinedRefIntegrityOverloads : ArrowMethodOverloader, IChai
 			var parameter = parameters[index];
 			indexes[index] = -1;
 
-			if (!props.Store.OverloadMap[index].IsCombineNotExists
+			if (!props.Store.MethodData.Parameters[index].IsCombineNotExists
 			    || parameter.Modifiers.Any(modifier =>
 				    modifier.IsKind(SyntaxKind.InKeyword)
 				    || modifier.IsKind(SyntaxKind.RefKeyword)
@@ -68,7 +68,7 @@ public sealed class CombinedRefIntegrityOverloads : ArrowMethodOverloader, IChai
 		SourceBuilder body,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.OverloadMap[paramIndex];
+		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
 		if (mappedParam.IsCombineNotExists)
 			head.AppendAsConstant(",")
 				.WhiteSpace();
@@ -85,7 +85,7 @@ public sealed class CombinedRefIntegrityOverloads : ArrowMethodOverloader, IChai
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.OverloadMap[paramIndex];
+		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
 		var parameter = parameters[paramIndex];
 
@@ -109,7 +109,7 @@ public sealed class CombinedRefIntegrityOverloads : ArrowMethodOverloader, IChai
 					head.AppendIntegrityParam(props, mappedParam, parameter);
 					break;
 				default:
-					throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[paramIndex]} parameterAction.")
+					throw new ArgumentException($"Can't find case for {props.Store.MethodData.Parameters[paramIndex]} parameterAction.")
 						.WithLocation(props.Store.MethodSyntax);
 			}
 

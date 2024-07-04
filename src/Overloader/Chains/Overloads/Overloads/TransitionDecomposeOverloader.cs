@@ -20,7 +20,7 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.OverloadMap[paramIndex];
+		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ReplacementType)
@@ -41,7 +41,7 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 			case RequiredReplacement.Formatter:
 				if (!props.TryGetFormatter(parameter.GetType(props.Compilation), out var formatter))
 					throw new ArgumentException("Formatters changed after analyzing stage.")
-						.Unreachable()
+						.NotExpected()
 						.WithLocation(parameter);
 
 				DecomposeModel? transition = null;
@@ -126,7 +126,7 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 				return;
 			default:
 				throw new ArgumentException($"Can't find case for {mappedParam.ReplacementType} parameterAction.")
-					.Unreachable()
+					.NotExpected()
 					.WithLocation(parameter);
 		}
 

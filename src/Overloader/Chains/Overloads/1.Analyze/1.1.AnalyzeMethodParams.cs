@@ -14,7 +14,7 @@ public sealed class AnalyzeMethodParams : IChainMember
 		props.Store.CombineParametersCount = 0;
 
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
-		props.Store.OverloadMap = new ParameterData[parameters.Count];
+		props.Store.MethodData.Parameters = new ParameterData[parameters.Count];
 
 		for (int index = 0; index < parameters.Count; index++)
 		{
@@ -52,7 +52,7 @@ public sealed class AnalyzeMethodParams : IChainMember
 			} ?? parameterType;
 
 			bool isCombineWith = paramDto.CombineWith is not null;
-			props.Store.OverloadMap[index] = new ParameterData(
+			props.Store.MethodData.Parameters[index] = new ParameterData(
 				paramDto.Attribute?.TemplateIndex ?? 0,
 				parameterAction,
 				newParameterType,

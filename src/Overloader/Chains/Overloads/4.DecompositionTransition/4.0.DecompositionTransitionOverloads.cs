@@ -23,7 +23,7 @@ public sealed class DecompositionTransitionOverloads : TransitionDecomposeOverlo
 		{
 			// transitionIndexes[index] = -1;
 			var parameter = parameters[index];
-			var mappedParam = props.Store.OverloadMap[index];
+			var mappedParam = props.Store.MethodData.Parameters[index];
 			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter) continue;
 			if (!props.TryGetFormatter(parameter.GetType(props.Compilation).GetClearType(), out var formatter))
 				throw new ArgumentException($"Formatter not found for {parameter.Identifier.ToString()}")

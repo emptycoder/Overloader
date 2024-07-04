@@ -189,8 +189,8 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 					{
 						// Replace operator
 						case '#':
-							templateIndex = char.IsNumber(strTrivia[3])? Convert.ToByte(strTrivia[3]) : (byte) 0;
-							if (templatesStr is null) break;
+							templateIndex = ParseByteFromStr(strTrivia, 3, out _);
+							if (templatesStr is null || templateIndex > templatesStr.Length) break;
 							templateStr = templatesStr[templateIndex];
 							if (!CheckTemplate(strTrivia, templateStr, out strTriviaSpan)) continue;
 							
@@ -203,12 +203,12 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 							break;
 						// Change line operator
 						case '$':
-							templateIndex = char.IsNumber(strTrivia[3])? Convert.ToByte(strTrivia[3]) : (byte) 0;
-							if (templatesStr is null) break;
+							templateIndex = ParseByteFromStr(strTrivia, 3, out int endPrefixIndex);
+							if (templatesStr is null || templateIndex > templatesStr.Length) break;
 							templateStr = templatesStr[templateIndex];
 							if (!CheckTemplate(strTrivia, templateStr, out strTriviaSpan)) continue;
 							
-							var newStatement = strTriviaSpan.Slice(3).Trim();
+							var newStatement = strTriviaSpan.Slice(endPrefixIndex).Trim();
 							if (newStatement.IndexOf("${T}".AsSpan()) != -1) break;
 							if (changeLine is not null)
 								throw new ArgumentException("Cannot use two 'replace line' ('//$') on one syntax node.");
@@ -222,6 +222,17 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 
 		replacements = buffer.AsSpan(0, size);
 		return changeLine;
+
+		byte ParseByteFromStr(string strTrivia, int startIndex, out int index)
+		{
+			index = startIndex;
+			while (char.IsDigit(strTrivia[index]))
+			{
+				index++;
+			}
+
+			return index == startIndex ? (byte) 0 : byte.Parse(strTrivia.Substring(startIndex, index - startIndex));
+		}
 
 		bool CheckTemplate(string strTrivia, string templateStr, out ReadOnlySpan<char> strTriviaSpan)
 		{

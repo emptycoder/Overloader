@@ -69,7 +69,7 @@ public sealed class MainRefIntegrityOverload : BodyMethodsOverloader, IChainMemb
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.OverloadMap[paramIndex];
+		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 		if (indexes[paramIndex] == 1)
 			parameter = parameter.WithModifiers(parameter.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.RefKeyword)));
@@ -88,8 +88,8 @@ public sealed class MainRefIntegrityOverload : BodyMethodsOverloader, IChainMemb
 				head.AppendIntegrityParam(props, mappedParam, parameter);
 				break;
 			default:
-				throw new ArgumentException($"Can't find case for {props.Store.OverloadMap[paramIndex]} parameterAction.")
-					.Unreachable()
+				throw new ArgumentException($"Can't find case for {props.Store.MethodData.Parameters[paramIndex]} parameterAction.")
+					.NotExpected()
 					.WithLocation(props.Store.MethodSyntax);
 		}
 	}

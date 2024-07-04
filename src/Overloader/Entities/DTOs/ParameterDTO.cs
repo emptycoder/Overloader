@@ -20,7 +20,7 @@ public struct ParameterDto
 	{
 		parameterDto = new ParameterDto
 		{
-			ModifierChangers = new List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)>(0)
+			ModifierChangers = []
 		};
 		foreach (var attrList in syntaxNode.AttributeLists)
 		foreach (var attribute in attrList.Attributes)

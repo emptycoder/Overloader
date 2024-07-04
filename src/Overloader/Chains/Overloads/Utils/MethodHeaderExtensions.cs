@@ -18,7 +18,7 @@ public static class MethodHeaderExtensions
 			.AppendRefReturnValues(syntax.ReturnType)
 			.TrimAppend(data.ReturnType?.ToDisplayString() ?? syntax.ReturnType.ToFullString())
 			.WhiteSpace()
-			.TrimAppend(data.MethodName)
+			.TrimAppend(data.MethodName ?? throw new NotSupportedException("Method name should be declared"))
 			.TrimAppend(syntax.TypeParameterList?.ToString() ?? string.Empty);
 
 	public static SourceBuilder AppendParameter(
