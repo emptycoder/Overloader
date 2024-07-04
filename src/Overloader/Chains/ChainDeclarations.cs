@@ -10,7 +10,7 @@ public static class ChainDeclarations
 	public static readonly IChainMember Main = new InitChain();
 
 	public static readonly IChainMember[] MethodWorkers =
-	{
+	[
 		/* 1. Analyze stage */
 		/* 1.0 */ new AnalyzeMethodAttributes(),
 		/* 1.1 */ new AnalyzeMethodParams(),
@@ -35,7 +35,7 @@ public static class ChainDeclarations
 		/* 7. Cast for integrity transition stage */
 		/* 7.0 */ new CastForITOverloads(),
 		/* 7.1 */ new CombinedCastForITOverloads()
-	};
+	];
 }
 
 public interface IChainMember

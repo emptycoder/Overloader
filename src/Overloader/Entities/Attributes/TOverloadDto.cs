@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
@@ -14,7 +13,7 @@ public record TOverloadDto(
 {
 	public static TOverloadDto Parse(string className, AttributeSyntax attribute)
 	{
-		var args = attribute.ArgumentList?.Arguments ?? new SeparatedSyntaxList<AttributeArgumentSyntax>();
+		var args = attribute.ArgumentList?.Arguments ?? [];
 		string[]? formattersToUse = null;
 		switch (args.Count)
 		{
@@ -69,13 +68,24 @@ public record TOverloadDto(
 				}
 				break;
 			case TypeOfExpressionSyntax typeOfSyntax:
-				templateTypes = new[] { typeOfSyntax.Type };
+				templateTypes = [typeOfSyntax.Type];
+				break;
+			case CollectionExpressionSyntax { Elements: { Count: >= 1 } collectionExpressions }:
+				templateTypes = new TypeSyntax[collectionExpressions.Count];
+				for (int index = 0; index < collectionExpressions.Count; index++)
+				{
+					if (collectionExpressions[index] is not ExpressionElementSyntax { Expression: TypeOfExpressionSyntax typeSyntax })
+						throw new ArgumentException($"Expression isn't {nameof(TypeOfExpressionSyntax)}.")
+							.WithLocation(attribute);
+				
+					templateTypes[index] = typeSyntax.Type;
+				}
 				break;
 			default:
 				throw new ArgumentException("Template types isn't specified for overload.")
 					.WithLocation(attribute);
 		}
 
-		return new TOverloadDto(className, templateTypes, formattersToUse ?? Array.Empty<string>());
+		return new TOverloadDto(className, templateTypes, formattersToUse ?? []);
 	}
 }

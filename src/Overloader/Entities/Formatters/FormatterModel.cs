@@ -52,7 +52,7 @@ public sealed record FormatterModel(
 			case TypeOfExpressionSyntax:
 				type = args[1].Expression.GetType(compilation);
 				if (type.GetClearType().IsUnboundGenericType) type = type.OriginalDefinition;
-				types = new[] {type};
+				types = [type];
 				break;
 			default:
 				throw new ArgumentException($"{args[1].Expression.ToString()} isn't allowed. Should be Type or [ Type0, Type1 ].");
@@ -119,7 +119,7 @@ public sealed record FormatterModel(
 	private static IParamValue[] ParseParams(InitializerExpressionSyntax? initializer, Compilation compilation)
 	{
 		if (initializer is null || initializer.Expressions.Count == 0)
-			return Array.Empty<IParamValue>();
+			return [];
 
 		var @params = new IParamValue[initializer.Expressions.Count];
 		for (int index = 0; index < @params.Length; index++)
@@ -131,7 +131,7 @@ public sealed record FormatterModel(
 	private static (string, IParamValue)[] ParseParamsWithNames(InitializerExpressionSyntax? initializer, Compilation compilation)
 	{
 		if (initializer is null || initializer.Expressions.Count == 0)
-			return Array.Empty<(string, IParamValue)>();
+			return [];
 
 		if (initializer.Expressions.Count % 2 != 0)
 			throw new ArgumentException($"Problem with count of expressions for named array in {initializer}.")

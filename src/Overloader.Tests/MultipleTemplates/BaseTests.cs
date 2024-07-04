@@ -3,6 +3,7 @@ namespace Overloader.Tests.MultipleTemplates;
 [TestFixture]
 public class BaseTests
 {
+	[TestCase("[ typeof(float) ]")]
 	[TestCase("new[] { typeof(float) }")]
 	[TestCase("typeof(float)")]
 	public void CheckThatParametersCountAreTheSameForOverloadAndSpecifyTest(string overloadTypes)
@@ -14,7 +15,7 @@ public class BaseTests
 
 			  namespace TestProject;
 
-			  [{{TSpecify.TagName}}(new[] { typeof(double), typeof(int) })]
+			  [{{TSpecify.TagName}}([ typeof(double), typeof(int) ])]
 			  [{{TOverload.TagName}}({{overloadTypes}}, "Program", "Program1")]
 			  internal class Program
 			  {

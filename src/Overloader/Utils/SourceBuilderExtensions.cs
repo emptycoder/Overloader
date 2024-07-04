@@ -8,9 +8,8 @@ namespace Overloader.Utils;
 
 public static class SourceBuilderExtensions
 {
-	private static readonly HashSet<string> AttributesToRemove = new()
-	{
-		/* Assembly */
+	private static readonly HashSet<string> AttributesToRemove =
+	[
 		Formatter.TagName,
 		FormattersBundle.TagName,
 		/* Method */
@@ -30,7 +29,7 @@ public static class SourceBuilderExtensions
 		RemoveBody.TagName,
 		TOverload.TagName,
 		TSpecify.TagName
-	};
+	];
 	
 	public static SourceBuilder AppendUsings(this SourceBuilder sb, SyntaxNode syntax)
 	{

@@ -11,14 +11,16 @@ public record CompilationResult(
 )
 {
 	public ImmutableArray<Diagnostic> CompilationErrors =>
-		CompilationDiagnostics
-			.Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
-			.ToImmutableArray();
+		[
+			..CompilationDiagnostics
+				.Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
+		];
 
 	public ImmutableArray<Diagnostic> GenerationErrors =>
-		GenerationDiagnostics
-			.Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
-			.ToImmutableArray();
+		[
+			..GenerationDiagnostics
+				.Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
+		];
 
 	public bool Success => Assembly is not null;
 }

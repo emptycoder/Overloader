@@ -31,7 +31,18 @@ public record TSpecifyDto(
 				}
 				break;
 			case TypeOfExpressionSyntax typeOfSyntax:
-				templateTypes = new[] { typeOfSyntax.Type };
+				templateTypes = [typeOfSyntax.Type];
+				break;
+			case CollectionExpressionSyntax { Elements: { Count: >= 1 } collectionExpressions }:
+				templateTypes = new TypeSyntax[collectionExpressions.Count];
+				for (int index = 0; index < collectionExpressions.Count; index++)
+				{
+					if (collectionExpressions[index] is not ExpressionElementSyntax { Expression: TypeOfExpressionSyntax typeSyntax })
+						throw new ArgumentException($"Expression isn't {nameof(TypeOfExpressionSyntax)}.")
+							.WithLocation(attribute);
+				
+					templateTypes[index] = typeSyntax.Type;
+				}
 				break;
 			default:
 				throw new ArgumentException("Template types isn't specified for overload.")
@@ -39,7 +50,7 @@ public record TSpecifyDto(
 		}
 
 		int count = args.Count - headerInfoIndexEnd;
-		var formattersToUse = count == 0 ? Array.Empty<string>() : new string[count];
+		var formattersToUse = count == 0 ? [] : new string[count];
 		for (int argIndex = headerInfoIndexEnd, formatterIndex = 0; argIndex < args.Count; argIndex++, formatterIndex++)
 		{
 			if (args[argIndex].Expression is not LiteralExpressionSyntax literalSyntax)
