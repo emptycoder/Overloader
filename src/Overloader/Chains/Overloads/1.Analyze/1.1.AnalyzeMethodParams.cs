@@ -51,14 +51,14 @@ public sealed class AnalyzeMethodParams : IChainMember
 				_ => throw new ArgumentOutOfRangeException()
 			} ?? parameterType;
 
-			bool isCombineWith = paramDto.CombineWith is not null;
+			bool isCombineWith = paramDto.CombineWithParameter is not null;
 			props.Store.MethodData.Parameters[index] = new ParameterData(
 				paramDto.Attribute?.TemplateIndex ?? 0,
 				parameterAction,
 				newParameterType,
 				paramDto.ModifierChangers,
 				isCombineWith
-					? (byte) parameters.IndexOf(param => param.Identifier.ValueText == paramDto.CombineWith)
+					? (byte) parameters.IndexOf(param => param.Identifier.ValueText == paramDto.CombineWithParameter)
 					: Byte.MaxValue);
 
 			props.Store.CombineParametersCount += *(byte*) &isCombineWith;

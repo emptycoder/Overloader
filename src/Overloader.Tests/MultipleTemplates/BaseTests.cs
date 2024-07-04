@@ -21,7 +21,7 @@ public class BaseTests
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{ChangeModifier.TagName}}("public", "public")]
+			  	[{{ForceChanged.TagName}}()]
 			  	public static string {{nameof(CheckThatParametersCountAreTheSameForOverloadAndSpecifyTest)}}() => "DEFAULT";
 			  }
 
@@ -35,5 +35,34 @@ public class BaseTests
 		{
 			Assert.That(diagnostic.Id, Is.EqualTo("OE0001"));
 		}
+	}
+	
+	[Test]
+	public void CheckThatArgumentOutOfRangeNotShownWhenIndexationWrongSpecified()
+	{
+		string programCs = 
+			$$"""
+
+			  using {{nameof(Overloader)}};
+
+			  namespace TestProject;
+
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
+			  internal class Program
+			  {
+			  	static void Main(string[] args) { }
+			  
+			  	public static string {{nameof(CheckThatArgumentOutOfRangeNotShownWhenIndexationWrongSpecified)}}(
+			  	    [{{TAttribute.TagName}}(1)] double test) =>
+			  	    //$1 "EXPECTED"
+			  	    "DEFAULT";
+			  }
+
+			  """;
+		
+		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
+		Assert.That(result.CompilationErrors, Is.Empty);
+		Assert.That(result.GenerationDiagnostics, Is.Empty);
 	}
 }

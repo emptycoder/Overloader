@@ -11,7 +11,7 @@ public struct ParameterDto
 {
 	public TAttributeDto? Attribute;
 	public bool HasForceOverloadIntegrity;
-	public string? CombineWith;
+	public string? CombineWithParameter;
 	public List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)> ModifierChangers;
 
 	public static bool TryGetParameterDtoByTemplate(ParameterSyntax syntaxNode,
@@ -31,16 +31,17 @@ public struct ParameterDto
 				case Integrity.TagName:
 					parameterDto.HasForceOverloadIntegrity = true;
 					continue;
-				case nameof(Overloader.CombineWith) when attribute.ArgumentList is {Arguments: var args}:
+				case CombineWith.TagName when attribute.ArgumentList is {Arguments: var args}:
 					if (args.Count != 1)
 						throw new ArgumentException("Not allowed with arguments count != 1.")
 							.WithLocation(syntaxNode);
-					parameterDto.CombineWith = args[0].Expression.GetVariableName();
+					parameterDto.CombineWithParameter = args[0].Expression.GetVariableName();
 					continue;
 				case TAttribute.TagName:
 					var tAttrDto = TAttributeDto.Parse(attribute, props.Compilation);
-					if (SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])
-					    || tAttrDto.ForType is null)
+					if (tAttrDto.TemplateIndex < props.Templates.Length
+					    && (SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])
+							|| tAttrDto.ForType is null))
 					{
 						parameterDto.Attribute = tAttrDto;
 					}
