@@ -39,9 +39,12 @@ public struct ParameterDto
 					continue;
 				case TAttribute.TagName:
 					var tAttrDto = TAttributeDto.Parse(attribute, props.Compilation);
-					if (tAttrDto.TemplateIndex < props.Templates.Length
-					    && (SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])
-							|| tAttrDto.ForType is null))
+					if (tAttrDto.TemplateIndex >= props.Templates.Length)
+						throw new ArgumentException("Template index for parameter is out of bounds")
+							.WithLocation(attribute);
+					
+					if (SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])
+							|| tAttrDto.ForType is null)
 					{
 						parameterDto.Attribute = tAttrDto;
 					}

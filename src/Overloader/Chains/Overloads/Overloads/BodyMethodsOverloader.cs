@@ -107,7 +107,7 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 						break;
 					}
 
-					// Don't need go deep to get name, because that's case can't be supported
+					// Don't need to go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
 					if (varName.FindInReplacements(replacements) == -1) goto default;
 					sb.Append(varName)
@@ -120,7 +120,7 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 						break;
 					}
 
-					// Don't need go deep to get name, because that's case can't be supported
+					// Don't need to go deep to get name, because that's case can't be supported
 					varName = syntax.Expression.ToString();
 					if (varName.FindInReplacements(replacements) == -1) goto default;
 					sb.Append(varName)
@@ -190,7 +190,7 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 						// Replace operator
 						case '#':
 							templateIndex = ParseByteFromStr(strTrivia, 3, out _);
-							if (templatesStr is null || templateIndex > templatesStr.Length) break;
+							if (templatesStr is null || templateIndex >= templatesStr.Length) break;
 							templateStr = templatesStr[templateIndex];
 							if (!CheckTemplate(strTrivia, templateStr, out strTriviaSpan)) continue;
 							
@@ -204,7 +204,7 @@ public abstract class BodyMethodsOverloader : MethodOverloader
 						// Change line operator
 						case '$':
 							templateIndex = ParseByteFromStr(strTrivia, 3, out int endPrefixIndex);
-							if (templatesStr is null || templateIndex > templatesStr.Length) break;
+							if (templatesStr is null || templateIndex >= templatesStr.Length) break;
 							templateStr = templatesStr[templateIndex];
 							if (!CheckTemplate(strTrivia, templateStr, out strTriviaSpan)) continue;
 							
