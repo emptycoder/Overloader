@@ -1,8 +1,8 @@
 using Overloader.Chains.Overloads.Utils;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
-using Overloader.Entities.Formatters;
-using Overloader.Entities.Formatters.Transitions;
+using Overloader.Entities.DTOs.Attributes.Formatters;
+using Overloader.Entities.DTOs.Attributes.Formatters.Transitions;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -11,7 +11,7 @@ namespace Overloader.Chains.Overloads.Overloads;
 
 public abstract class TransitionCastOverloader : ArrowMethodOverloader
 {
-	protected abstract CastModel GetCastModel(FormatterModel formatter, int transitionIndex);
+	protected abstract CastTransitionDto GetCastModel(FormatterDto formatter, int transitionIndex);
 
 	protected override void WriteParameter(
 		GeneratorProperties props,

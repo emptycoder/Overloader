@@ -3,13 +3,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Entities.Formatters.Transitions;
+namespace Overloader.Entities.DTOs.Attributes.Formatters.Transitions;
 
-public sealed record DecomposeLinkModel(
+public sealed record DecomposeLinkTransitionDto(
 	ITypeSymbol TemplateType,
 	Dictionary<string, string> ParamsMap)
 {
-	public static DecomposeLinkModel Parse(
+	public static DecomposeLinkTransitionDto Parse(
 		ExpressionSyntax type,
 		ExpressionSyntax mapParams,
 		Compilation compilation)
@@ -30,6 +30,6 @@ public sealed record DecomposeLinkModel(
 		for (int index = 0; index < expressions.Count; index++)
 			paramsMap.Add(expressions[index++].GetVariableName(), expressions[index].GetVariableName());
 
-		return new DecomposeLinkModel(type.GetType(compilation), paramsMap);
+		return new DecomposeLinkTransitionDto(type.GetType(compilation), paramsMap);
 	}
 }

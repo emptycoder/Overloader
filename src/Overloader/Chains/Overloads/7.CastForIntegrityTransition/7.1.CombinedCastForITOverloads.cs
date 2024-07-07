@@ -3,8 +3,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Overloader.Chains.Overloads.Overloads;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
-using Overloader.Entities.Formatters;
-using Overloader.Entities.Formatters.Transitions;
+using Overloader.Entities.DTOs.Attributes.Formatters;
+using Overloader.Entities.DTOs.Attributes.Formatters.Transitions;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -83,8 +83,8 @@ public sealed class CombinedCastForITOverloads : TransitionCastOverloader, IChai
 			.WhiteSpace();
 	}
 
-	protected override CastModel GetCastModel(
-		FormatterModel formatter,
+	protected override CastTransitionDto GetCastModel(
+		FormatterDto formatter,
 		int transitionIndex) =>
 		formatter.CastsForIntegrity[transitionIndex];
 

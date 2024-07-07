@@ -1,8 +1,8 @@
 using Microsoft.CodeAnalysis;
 
-namespace Overloader.Entities.Formatters.Transitions;
+namespace Overloader.Entities.DTOs.Attributes.Formatters.Transitions;
 
-public record struct ParamModel
+public record struct ParamDto
 {
 	public string Name { get; init; }
 	public string Modifier { get; init; }

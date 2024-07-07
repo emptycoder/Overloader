@@ -12,14 +12,28 @@ public record ChangeNameDto(
 {
 	public static ChangeNameDto Parse(AttributeSyntax attribute, Compilation compilation)
 	{
-		var args = attribute.ArgumentList?.Arguments ?? new SeparatedSyntaxList<AttributeArgumentSyntax>();
-		if (args.Count < 1)
-			throw new ArgumentException("Not enough arguments were specified")
-				.WithLocation(attribute);
-
-		string newName = args[0].Expression.GetVariableName();
-		(byte templateIndexFor, var templateTypeFor) = attribute.ParseTemplateFor(compilation, 1);
-
+		string newName;
+		byte templateIndexFor = 0;
+		ITypeSymbol? templateTypeFor = null;
+		
+		var args = attribute.ArgumentList?.Arguments ?? [];
+		switch (args.Count)
+		{
+			case 1:
+				newName = args[0].Expression.GetVariableName();
+				break;
+			case 2 when args[1].NameColon is {Name.Identifier.ValueText: "templateTypeFor"}:
+				templateTypeFor = args[1].Expression.GetType(compilation);
+				goto case 1;
+			case 4:
+				templateIndexFor = byte.Parse(args[2].GetText().ToString());
+				templateTypeFor = args[3].Expression.GetType(compilation);
+				goto case 1;
+			default:
+				throw new ArgumentException("Wrong count of arguments were specified")
+					.WithLocation(attribute);
+		}
+		
 		return new ChangeNameDto(newName, templateIndexFor, templateTypeFor);
 	}
 }

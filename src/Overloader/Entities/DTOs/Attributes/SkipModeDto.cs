@@ -13,18 +13,32 @@ public record SkipModeDto(
 {
 	public static SkipModeDto Parse(AttributeSyntax attribute, Compilation compilation)
 	{
-		var args = attribute.ArgumentList?.Arguments ?? [];
-		if (args.Count < 1)
-			throw new ArgumentException("Not enough arguments were specified")
-				.WithLocation(attribute);
-
-		if (args[0].Expression is not LiteralExpressionSyntax literalSyntax
-		    || literalSyntax.Kind() is not (SyntaxKind.TrueLiteralExpression or SyntaxKind.FalseLiteralExpression))
-			throw new ArgumentException("True or False should be specified")
-				.WithLocation(attribute);
+		bool shouldBeSkipped;
+		byte templateIndexFor = 0;
+		ITypeSymbol? templateTypeFor = null;
 		
-		bool shouldBeSkipped = literalSyntax.IsKind(SyntaxKind.TrueLiteralExpression);
-		(byte templateIndexFor, var templateTypeFor) = attribute.ParseTemplateFor(compilation, 1);
+		var args = attribute.ArgumentList?.Arguments ?? [];
+		switch (args.Count)
+		{
+			case 1:
+				if (args[0].Expression is not LiteralExpressionSyntax literalSyntax
+				    || literalSyntax.Kind() is not (SyntaxKind.TrueLiteralExpression or SyntaxKind.FalseLiteralExpression))
+					throw new ArgumentException("True or False should be specified")
+						.WithLocation(attribute);
+		
+				shouldBeSkipped = literalSyntax.IsKind(SyntaxKind.TrueLiteralExpression);
+				break;
+			case 2 when args[1].NameColon is {Name.Identifier.ValueText: "templateTypeFor"}:
+				templateTypeFor = args[1].Expression.GetType(compilation);
+				goto case 1;
+			case 4:
+				templateIndexFor = byte.Parse(args[2].GetText().ToString());
+				templateTypeFor = args[3].Expression.GetType(compilation);
+				goto case 1;
+			default:
+				throw new ArgumentException("Wrong count of arguments were specified")
+					.WithLocation(attribute);
+		}
 		
 		return new SkipModeDto(shouldBeSkipped, templateIndexFor, templateTypeFor);
 	}

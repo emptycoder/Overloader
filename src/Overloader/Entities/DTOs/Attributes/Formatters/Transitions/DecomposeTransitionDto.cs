@@ -2,10 +2,10 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 
-namespace Overloader.Entities.Formatters.Transitions;
+namespace Overloader.Entities.DTOs.Attributes.Formatters.Transitions;
 
-public sealed record DecomposeModel(
-	DecomposeLinkModel[] Links)
+public sealed record DecomposeTransitionDto(
+	DecomposeLinkTransitionDto[] Links)
 {
 	public bool TryToFindReplacement(string paramName, out string? result, out int transitionIndex)
 	{
@@ -19,7 +19,7 @@ public sealed record DecomposeModel(
 		return false;
 	}
 
-	public static DecomposeModel Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
+	public static DecomposeTransitionDto Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
 	{
 		try
 		{
@@ -28,14 +28,14 @@ public sealed record DecomposeModel(
 				throw new ArgumentException("Not [type]/[map params].")
 					.WithLocation(expressions[1]);
 
-			var transitionLinks = new DecomposeLinkModel[argsCount / 2];
+			var transitionLinks = new DecomposeLinkTransitionDto[argsCount / 2];
 			for (int expressionIndex = 1, transitionIndex = 0; transitionIndex < transitionLinks.Length; transitionIndex++)
-				transitionLinks[transitionIndex] = DecomposeLinkModel.Parse(
+				transitionLinks[transitionIndex] = DecomposeLinkTransitionDto.Parse(
 					expressions[expressionIndex++],
 					expressions[expressionIndex++],
 					compilation);
 
-			return new DecomposeModel(transitionLinks);
+			return new DecomposeTransitionDto(transitionLinks);
 		}
 		catch (Exception ex)
 		{

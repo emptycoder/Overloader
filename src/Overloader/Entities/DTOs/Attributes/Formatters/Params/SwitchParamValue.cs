@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Overloader.Entities.Formatters.Params;
+namespace Overloader.Entities.DTOs.Attributes.Formatters.Params;
 
 public sealed class SwitchParamValue : IParamValue
 {

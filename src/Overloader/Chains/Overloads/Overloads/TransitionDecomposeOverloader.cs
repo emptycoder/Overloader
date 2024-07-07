@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis;
 using Overloader.Chains.Overloads.Utils;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
-using Overloader.Entities.Formatters.Transitions;
+using Overloader.Entities.DTOs.Attributes.Formatters.Transitions;
 using Overloader.Enums;
 using Overloader.Exceptions;
 using Overloader.Utils;
@@ -44,7 +44,7 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 						.NotExpected()
 						.WithLocation(parameter);
 
-				DecomposeModel? transition = null;
+				DecomposeTransitionDto? transition = null;
 				int transitionIndex = indexes[paramIndex];
 				if (transitionIndex >= formatter.Decompositions.Count)
 				{

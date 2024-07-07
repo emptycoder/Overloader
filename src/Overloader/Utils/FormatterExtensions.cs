@@ -1,20 +1,20 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Overloader.Entities.Formatters;
+using Overloader.Entities.DTOs.Attributes.Formatters;
 using Overloader.Exceptions;
 
 namespace Overloader.Utils;
 
 public static class FormatterExtensions
 {
-	public static Dictionary<string, FormatterModel> GetFormatters(this IEnumerable<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	public static Dictionary<string, FormatterDto> GetFormatters(this IEnumerable<AttributeSyntax> attributeSyntaxes, Compilation compilation)
 	{
-		var dict = new Dictionary<string, FormatterModel>();
+		var dict = new Dictionary<string, FormatterDto>();
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
 			if (formatterSyntax.Name.GetName() is not Formatter.TagName) continue;
 
-			var formatter = FormatterModel.Parse(formatterSyntax, compilation);
+			var formatter = FormatterDto.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formatter.Identifier))
 				throw new ArgumentException($"{Formatter.TagName} with identifier '{formatter.Identifier}' has been already exist.")
 					.WithLocation(formatterSyntax);
@@ -25,14 +25,14 @@ public static class FormatterExtensions
 		return dict;
 	}
 
-	public static Dictionary<string, FormattersBundleModel> GetBundles(this IEnumerable<AttributeSyntax> attributeSyntaxes, Compilation compilation)
+	public static Dictionary<string, FormattersBundleDto> GetBundles(this IEnumerable<AttributeSyntax> attributeSyntaxes, Compilation compilation)
 	{
-		var dict = new Dictionary<string, FormattersBundleModel>();
+		var dict = new Dictionary<string, FormattersBundleDto>();
 		foreach (var formatterSyntax in attributeSyntaxes)
 		{
 			if (formatterSyntax.Name.GetName() is not FormattersBundle.TagName) continue;
 
-			var formattersBundle = FormattersBundleModel.Parse(formatterSyntax, compilation);
+			var formattersBundle = FormattersBundleDto.Parse(formatterSyntax, compilation);
 			if (dict.ContainsKey(formattersBundle.Identifier))
 				throw new ArgumentException($"{FormattersBundle.TagName} with identifier '{formattersBundle.Identifier}' has been already exist.")
 					.WithLocation(formatterSyntax);
@@ -43,15 +43,15 @@ public static class FormatterExtensions
 		return dict;
 	}
 
-	public static Dictionary<ITypeSymbol, FormatterModel>? GetFormattersSample(
-		this Dictionary<string, FormatterModel> globalFormatters,
-		Dictionary<string, FormattersBundleModel> formattersBundles,
+	public static Dictionary<ITypeSymbol, FormatterDto>? GetFormattersSample(
+		this Dictionary<string, FormatterDto> globalFormatters,
+		Dictionary<string, FormattersBundleDto> formattersBundles,
 		string[]? formattersToUse,
 		Location location)
 	{
 		if (formattersToUse is null) return null;
 
-		var formatters = new Dictionary<ITypeSymbol, FormatterModel>(formattersToUse.Length, SymbolEqualityComparer.Default);
+		var formatters = new Dictionary<ITypeSymbol, FormatterDto>(formattersToUse.Length, SymbolEqualityComparer.Default);
 		foreach (string identifier in formattersToUse)
 		{
 			if (formattersBundles.TryGetValue(identifier, out var bundle))

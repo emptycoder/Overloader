@@ -3,17 +3,17 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Entities.Formatters.Transitions;
+namespace Overloader.Entities.DTOs.Attributes.Formatters.Transitions;
 
-public sealed record CastModel(
-	ParamModel[] Types,
+public sealed record CastTransitionDto(
+	ParamDto[] Types,
 	string CastCodeTemplate)
 {
-	public static CastModel Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
+	public static CastTransitionDto Parse(in SeparatedSyntaxList<ExpressionSyntax> expressions, Compilation compilation)
 	{
 		try
 		{
-			var templates = new List<ParamModel>();
+			var templates = new List<ParamDto>();
 			int argIndex = 1;
 			for (; argIndex < expressions.Count - 2; argIndex++)
 			{
@@ -37,7 +37,7 @@ public sealed record CastModel(
 						.WithLocation(expressions[argIndex]);
 
 				var type = expressions[argIndex].GetType(compilation);
-				templates.Add(new ParamModel
+				templates.Add(new ParamDto
 				{
 					Name = expressions[++argIndex].GetStringValue(compilation),
 					Modifier = modifierStr,
@@ -47,9 +47,9 @@ public sealed record CastModel(
 			}
 
 			if (argIndex != expressions.Count - 1)
-				throw new ArgumentException($"Structure of {nameof(CastModel)} was broken.");
+				throw new ArgumentException($"Structure of {nameof(CastTransitionDto)} was broken.");
 
-			return new CastModel(
+			return new CastTransitionDto(
 				templates.ToArray(),
 				expressions[argIndex].GetStringValue(compilation));
 		}

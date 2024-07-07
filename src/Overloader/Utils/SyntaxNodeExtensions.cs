@@ -7,33 +7,6 @@ namespace Overloader.Utils;
 
 public static class SyntaxNodeExtensions
 {
-	public static (byte templateIndexFor, ITypeSymbol? templateTypeFor) ParseTemplateFor(
-		this AttributeSyntax attribute,
-		Compilation compilation,
-		int requiredArgsCount)
-	{
-		byte templateIndexFor = 0;
-		ITypeSymbol? templateTypeFor = null;
-		var args = attribute.ArgumentList?.Arguments ?? [];
-		switch (args.Count - requiredArgsCount)
-		{
-			case 0:
-				break;
-			case 1 when args[requiredArgsCount].NameColon is {Name.Identifier.ValueText: "templateTypeFor"}:
-				templateTypeFor = args[requiredArgsCount].Expression.GetType(compilation);
-				break;
-			case 2:
-				templateIndexFor = byte.Parse(args[requiredArgsCount].GetText().ToString());
-				templateTypeFor = args[requiredArgsCount + 1].Expression.GetType(compilation);
-				break;
-			default:
-				throw new ArgumentException("Wrong count of arguments were specified")
-					.WithLocation(attribute);
-		}
-
-		return (templateIndexFor, templateTypeFor);
-	}
-	
 	public static string? GetNamespace(this SyntaxNode syntax)
 	{
 		// If we don't have a namespace at all we'll return an empty string
