@@ -150,7 +150,7 @@ public class TAttributeTests
 			  	static void Main(string[] args) { }
 			  
 			  	public static void {{nameof(TSpecifyTOverloadTest)}}1(
-			  		[{{Integrity.TagName}}][{{TAttribute.TagName}}(newType: typeof(int), forType: typeof(float))] Vector3<double> vec,
+			  		[{{Integrity.TagName}}][{{TAttribute.TagName}}(newType: typeof(int), templateTypeFor: typeof(float))] Vector3<double> vec,
 			  		Vector3<double> vec1) { }
 			  }
 

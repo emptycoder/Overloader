@@ -60,8 +60,8 @@ public class ParamModifierTests
 				public static void TestMethod1([{{Integrity.TagName}}][{{TAttribute.TagName}}] Vector3<double> vec, Vector3<double> vec1) { }
 			  	[return: {{TAttribute.TagName}}]
 			  	public static double TestMethod2(
-			  		[{{TAttribute.TagName}}] [{{Modifier.TagName}}("ref", "in", typeof(Vector2<>))] this in Vector3<double> vec,
-			  		[{{TAttribute.TagName}}] [{{CombineWith.TagName}}("vec")] [{{Modifier.TagName}}("in", null, typeof(Vector2<>))] Vector3<double> vec1) => default!;
+			  		[{{TAttribute.TagName}}] [{{Modifier.TagName}}("ref", "in", 0, typeof(Vector2<>))] this in Vector3<double> vec,
+			  		[{{TAttribute.TagName}}] [{{CombineWith.TagName}}("vec")] [{{Modifier.TagName}}("in", null, templateTypeFor: typeof(Vector2<>))] Vector3<double> vec1) => default!;
 			  	public static void TestMethod3(Vector3<double> vec, [{{TAttribute.TagName}}] double vec1) { }
 			}
 

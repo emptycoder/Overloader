@@ -1,10 +1,14 @@
 // ReSharper disable UnusedParameter.Local
 namespace Overloader;
 
-[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter, AllowMultiple = true)]
 public class Modifier : Attribute
 {
 	public const string TagName = nameof(Modifier);
 	
-	public Modifier(string modifier, string? insteadOf = null, Type? formatterType = null) { }
+	public Modifier(
+		string modifier,
+		string? insteadOf = null,
+		byte templateIndexFor = 0,
+		Type? templateTypeFor = null) { }
 }

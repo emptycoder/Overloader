@@ -1,28 +1,31 @@
 ﻿namespace Overloader.Tests.Attributes.Method;
 
 [TestFixture]
-public class ChangeModifierTests
+public class ModifierTests
 {
 	[Test]
 	public void BaseTest()
 	{
-		const string programCs = @$"
-using Overloader;
+		const string programCs = 
+			$$"""
 
-namespace TestProject;
+			  using Overloader;
 
-[{TSpecify.TagName}(typeof(double))]
-[{TOverload.TagName}(typeof(float), ""Program"", ""Program1"")]
-internal class Program
-{{
-	static void Main(string[] args) {{ }}
+			  namespace TestProject;
 
-	[{ChangeModifier.TagName}(""public"", ""private"", templateTypeFor: typeof(float))]
-	[{ChangeModifier.TagName}(""public"", ""internal"", templateTypeFor: typeof(double))]
-	[{ChangeModifier.TagName}(""private"", ""protected"")]
-	public static void {nameof(BaseTest)}() {{ }}
-}}
-";
+			  [{{TSpecify.TagName}}(typeof(double))]
+			  [{{TOverload.TagName}}(typeof(float), "Program", "Program1")]
+			  internal class Program
+			  {
+			  	static void Main(string[] args) { }
+			  
+			  	[{{Modifier.TagName}}("private", "public", templateTypeFor: typeof(float))]
+			  	[{{Modifier.TagName}}("internal", "public", templateTypeFor: typeof(double))]
+			  	[{{Modifier.TagName}}("protected", "private")]
+			  	public static void {{nameof(BaseTest)}}() { }
+			  }
+
+			  """;
 
 		var result = GenRunner<OverloadsGenerator>.ToSyntaxTrees(programCs);
 		Assert.That(result.CompilationErrors, Is.Empty);

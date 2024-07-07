@@ -31,7 +31,7 @@ public static class MethodHeaderExtensions
 			.ConstructWithClearType(mappedParam.Type, compilation);
 
 		return sb.AppendAttributes(parameter.AttributeLists, " ")
-			.AppendAndBuildModifiers(mappedParam, parameter, newType, " ")
+			.AppendAndBuildModifiers(mappedParam, parameter, " ")
 			.TrimAppend(newType.ToDisplayString())
 			.WhiteSpace()
 			.TrimAppend(parameter.Identifier.ToString());

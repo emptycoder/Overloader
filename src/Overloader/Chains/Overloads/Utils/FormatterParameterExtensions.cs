@@ -65,7 +65,7 @@ public static class FormatterParameterExtensions
 		var template = props.Templates[mappedParam.TemplateIndex];
 		var newType = props.SetDeepestType(mappedParam.Type, template, template).PickResult(parameter);
 		return sb.AppendAttributes(parameter.AttributeLists, " ")
-			.AppendAndBuildModifiers(mappedParam, parameter, newType, " ")
+			.AppendAndBuildModifiers(mappedParam, parameter, " ")
 			.TrimAppend(newType.ToDisplayString())
 			.WhiteSpace()
 			.TrimAppend(parameter.Identifier.ToFullString());

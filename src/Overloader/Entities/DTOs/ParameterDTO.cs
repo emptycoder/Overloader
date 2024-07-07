@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Entities.Attributes;
 using Overloader.Exceptions;
@@ -12,7 +11,7 @@ public struct ParameterDto
 	public TAttributeDto? Attribute;
 	public bool HasForceOverloadIntegrity;
 	public string? CombineWithParameter;
-	public List<(string Modifier, string? InsteadOf, ITypeSymbol? FormatterType)> ModifierChangers;
+	public List<ModifierDto> ModifierChangers;
 
 	public static bool TryGetParameterDtoByTemplate(ParameterSyntax syntaxNode,
 		IGeneratorProps props,
@@ -43,48 +42,18 @@ public struct ParameterDto
 						throw new ArgumentException("Template index for parameter is out of bounds")
 							.WithLocation(attribute);
 					
-					if (SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])
-							|| tAttrDto.ForType is null)
+					if (SymbolEqualityComparer.Default.Equals(tAttrDto.TemplateTypeFor, props.Templates[tAttrDto.TemplateIndex])
+							|| tAttrDto.TemplateTypeFor is null)
 					{
 						parameterDto.Attribute = tAttrDto;
 					}
 					continue;
-				case Modifier.TagName when attribute.ArgumentList is {Arguments: var args}:
-					int argsCount = args.Count;
-					if (args[0].Expression is not LiteralExpressionSyntax modifierExpression
-					    || !modifierExpression.IsKind(SyntaxKind.StringLiteralExpression))
-						throw new ArgumentException("Allowed only string literal.")
-							.WithLocation(args[0].Expression);
+				case Modifier.TagName:
+					var modifierDto = ModifierDto.Parse(attribute, props.Compilation);
+					if (modifierDto.TemplateTypeFor is not null
+					    && !SymbolEqualityComparer.Default.Equals(modifierDto.TemplateTypeFor, props.Templates[modifierDto.TemplateIndexFor])) continue;
 
-					if (argsCount == 1)
-						parameterDto.ModifierChangers.Add((modifierExpression.GetVariableName(), null, null));
-
-					if (args[1].Expression is not LiteralExpressionSyntax insteadOfExpression)
-						throw new ArgumentException("Allowed only string or null literals.")
-							.WithLocation(args[0].Expression);
-
-					string? insteadOf = insteadOfExpression.Kind() switch
-					{
-						SyntaxKind.StringLiteralExpression => insteadOfExpression.GetVariableName(),
-						SyntaxKind.NullLiteralExpression => null,
-						_ => throw new ArgumentException($"Literal ({insteadOfExpression}) not allowed")
-							.WithLocation(insteadOfExpression)
-					};
-
-					if (argsCount == 2)
-						parameterDto.ModifierChangers.Add((
-							modifierExpression.GetVariableName(),
-							insteadOf,
-							null));
-
-					var type = args[2].Expression.GetType(props.Compilation);
-					var namedTypeSymbol = type.GetClearType();
-					if (namedTypeSymbol.IsUnboundGenericType) type = type.OriginalDefinition;
-
-					parameterDto.ModifierChangers.Add((
-						modifierExpression.GetVariableName(),
-						insteadOf,
-						type));
+					parameterDto.ModifierChangers.Add(modifierDto);
 					continue;
 			}
 		}

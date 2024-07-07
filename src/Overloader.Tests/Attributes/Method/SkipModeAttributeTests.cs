@@ -18,8 +18,8 @@ internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{ChangeModifier.TagName}(""public"", ""private"", templateTypeFor: typeof(float))]
-	[{ChangeModifier.TagName}(""private"", ""protected"")]
+	[{Modifier.TagName}(""public"", ""private"", templateTypeFor: typeof(float))]
+	[{Modifier.TagName}(""private"", ""protected"")]
 	public static void {nameof(InvertedModeTest)}() {{ }}
 }}
 ";
@@ -58,32 +58,32 @@ internal class Program
 {{
 	static void Main(string[] args) {{ }}
 
-	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{Modifier.TagName}(""public"", ""public"")]
 	[{SkipMode.TagName}(true)]
 	public static void {nameof(IgnoreAllowForTest)}1() {{ }}
 
-	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{Modifier.TagName}(""public"", ""public"")]
 	[{SkipMode.TagName}(true, templateTypeFor: typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}2() {{ }}
 
-	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{Modifier.TagName}(""public"", ""public"")]
 	[{SkipMode.TagName}(true, templateTypeFor: typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}3() {{ }}
 
-	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{Modifier.TagName}(""public"", ""public"")]
 	[{SkipMode.TagName}(false)]
 	public static void {nameof(IgnoreAllowForTest)}4() {{ }}
 
-	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{Modifier.TagName}(""public"", ""public"")]
 	[{SkipMode.TagName}(false, templateTypeFor: typeof(float))]
 	public static void {nameof(IgnoreAllowForTest)}5() {{ }}
 
-	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{Modifier.TagName}(""public"", ""public"")]
 	[{SkipMode.TagName}(true)]
 	[{SkipMode.TagName}(false, templateTypeFor: typeof(double))]
 	public static void {nameof(IgnoreAllowForTest)}6() {{ }}
 
-	[{ChangeModifier.TagName}(""public"", ""public"")]
+	[{Modifier.TagName}(""public"", ""public"")]
 	[{SkipMode.TagName}(false, templateTypeFor: typeof(double))]
 	[{SkipMode.TagName}(false, templateTypeFor: typeof(float))]
 	[{SkipMode.TagName}(false, templateTypeFor: typeof(uint))]

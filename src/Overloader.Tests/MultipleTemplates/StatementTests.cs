@@ -26,7 +26,7 @@ public class StatementTests
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{ChangeModifier.TagName}}("public", "public")]
+			  	[{{Modifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ReplaceOperationTest)}}()
 			  	{
 			  		{{comment}}
@@ -70,7 +70,7 @@ public class StatementTests
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{ChangeModifier.TagName}}("public", "public")]
+			  	[{{Modifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ReplaceOperationTest)}}()
 			  	{
 			  		{{comment}}
@@ -121,7 +121,7 @@ public class StatementTests
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{ChangeModifier.TagName}}("public", "public")]
+			  	[{{Modifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ChangeLineOperationTest)}}()
 			  	{
 			  		{{comment}}
@@ -169,7 +169,7 @@ public class StatementTests
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{ChangeModifier.TagName}}("public", "public")]
+			  	[{{Modifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ChangeLineOperationTest)}}() =>
 			  		{{comment}}
 			  		"DEFAULT";
@@ -210,7 +210,7 @@ public class StatementTests
 			  {
 			  	static void Main(string[] args) { }
 			  
-			  	[{{ChangeModifier.TagName}}("public", "public")]
+			  	[{{Modifier.TagName}}("public", "public")]
 			  	public static string {{nameof(ArrowTokenSingleLineProblemTest)}}() => "DEFAULT";
 			  }
 

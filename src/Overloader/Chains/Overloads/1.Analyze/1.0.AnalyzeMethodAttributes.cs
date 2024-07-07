@@ -41,8 +41,8 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 					var returnTypeSymbolRoot = returnTypeSymbol.GetClearType();
 					var tAttrDto = TAttributeDto.Parse(attribute, props.Compilation);
 					
-					if (tAttrDto.ForType is not null
-					    && !SymbolEqualityComparer.Default.Equals(tAttrDto.ForType, props.Templates[tAttrDto.TemplateIndex])) continue;
+					if (tAttrDto.TemplateTypeFor is not null
+					    && !SymbolEqualityComparer.Default.Equals(tAttrDto.TemplateTypeFor, props.Templates[tAttrDto.TemplateIndex])) continue;
 
 					if (tAttrDto.NewType is not null)
 					{
@@ -68,16 +68,16 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 						props.Store.MethodData.ReturnType = props.Templates[tAttrDto.TemplateIndex];
 					}
 					break;
-				case ChangeModifier.TagName:
-					var changeModifierDto = ChangeModifierDto.Parse(attribute, props.Compilation);
-					if (changeModifierDto.TemplateTypeFor is not null
-					    && !SymbolEqualityComparer.Default.Equals(changeModifierDto.TemplateTypeFor, props.Templates[changeModifierDto.TemplateIndexFor])) continue;
+				case Modifier.TagName:
+					var modifierDto = ModifierDto.Parse(attribute, props.Compilation);
+					if (modifierDto.TemplateTypeFor is not null
+					    && !SymbolEqualityComparer.Default.Equals(modifierDto.TemplateTypeFor, props.Templates[modifierDto.TemplateIndexFor])) continue;
 
 					for (int index = 0; index < props.Store.MethodData.MethodModifiers.Length; index++)
 					{
-						if (!props.Store.MethodData.MethodModifiers[index].Equals(changeModifierDto.Modifier)) continue;
+						if (modifierDto.InsteadOf is not null && !props.Store.MethodData.MethodModifiers[index].Equals(modifierDto.InsteadOf)) continue;
 
-						props.Store.MethodData.MethodModifiers[index] = changeModifierDto.NewModifier;
+						props.Store.MethodData.MethodModifiers[index] = modifierDto.Modifier;
 						props.Store.IsSmthChanged = true;
 						break;
 					}

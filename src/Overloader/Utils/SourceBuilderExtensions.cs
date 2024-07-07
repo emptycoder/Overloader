@@ -14,7 +14,6 @@ public static class SourceBuilderExtensions
 		FormattersBundle.TagName,
 		/* Method */
 		SkipMode.TagName,
-		ChangeModifier.TagName,
 		ChangeName.TagName,
 		ForceChanged.TagName,
 		/* Parameter */
@@ -94,29 +93,23 @@ public static class SourceBuilderExtensions
 		this SourceBuilder builder,
 		ParameterData parameterData,
 		ParameterSyntax parameter,
-		ITypeSymbol newParamType,
 		string separator)
 	{
-		var clearType = newParamType.GetClearType();
-		var originalType = clearType.OriginalDefinition;
 		foreach (var modifier in parameter.Modifiers)
 		{
 			bool isReplaced = false;
 			string modifierText = modifier.Text;
-			foreach ((string? modifierStr, string? insteadOf, var typeSymbol) in parameterData.ModifierChangers)
+			foreach (var modifierDto in parameterData.ModifierChangers)
 			{
-				if (insteadOf is null) continue;
-				if (modifierText != insteadOf) continue;
-				if (typeSymbol is not null
-				    && !SymbolEqualityComparer.Default.Equals(clearType, typeSymbol)
-				    && !SymbolEqualityComparer.Default.Equals(originalType, typeSymbol)) continue;
+				if (modifierDto.InsteadOf is null) continue;
+				if (modifierText != modifierDto.InsteadOf) continue;
 				if (isReplaced)
 					throw new ArgumentException(
 							$"Modifier has already been replaced by another {Modifier.TagName}.")
 						.WithLocation(parameter);
 
 				isReplaced = true;
-				builder.TrimAppend(modifierStr)
+				builder.TrimAppend(modifierDto.Modifier)
 					.WhiteSpace();
 			}
 
@@ -125,14 +118,12 @@ public static class SourceBuilderExtensions
 					.WhiteSpace();
 		}
 
-		foreach ((string? modifierStr, string? insteadOf, var typeSymbol) in parameterData.ModifierChangers)
+		foreach (var modifierDto in parameterData.ModifierChangers)
 		{
-			if (insteadOf is not null) continue;
-			if (typeSymbol is null
-			    || SymbolEqualityComparer.Default.Equals(clearType, typeSymbol)
-			    || SymbolEqualityComparer.Default.Equals(originalType, typeSymbol))
-				builder.TrimAppend(modifierStr)
-					.AppendAsConstant(separator);
+			if (modifierDto.InsteadOf is not null) continue;
+			
+			builder.TrimAppend(modifierDto.Modifier)
+				.AppendAsConstant(separator);
 		}
 
 		return builder;
