@@ -77,7 +77,7 @@ public readonly struct ResultOrException<TResult>
 	}
 #nullable enable
 
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		if (ReferenceEquals(null, obj))
 			return false;

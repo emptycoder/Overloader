@@ -28,7 +28,7 @@ public sealed class CombinedCastForITOverloads : TransitionCastOverloader, IChai
 		for (int index = 0; index < parameters.Count; index++)
 		{
 			var parameter = parameters[index];
-			var mappedParam = props.Store.MethodData.Parameters![index];
+			var mappedParam = props.Store.MethodDataDto.Parameters![index];
 			if (mappedParam.ReplacementType is not RequiredReplacement.FormatterIntegrity)
 				continue;
 			if (!mappedParam.IsCombineNotExists)
@@ -75,7 +75,7 @@ public sealed class CombinedCastForITOverloads : TransitionCastOverloader, IChai
 		SourceBuilder body,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		if (mappedParam.IsCombineNotExists)
 			head.AppendAsConstant(",")
 				.WhiteSpace();
@@ -97,7 +97,7 @@ public sealed class CombinedCastForITOverloads : TransitionCastOverloader, IChai
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		if (mappedParam.IsCombineNotExists)
 			base.WriteParameter(
 				props,

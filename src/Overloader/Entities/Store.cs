@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Overloader.Entities.DTOs;
 
 namespace Overloader.Entities;
 
@@ -8,7 +9,7 @@ public sealed class Store
 	public byte CombineParametersCount;
 	public bool IsSmthChanged;
 	public MethodDeclarationSyntax MethodSyntax;
-	public MethodData MethodData;
+	public MethodDataDto MethodDataDto;
 	public bool ShouldRemoveBody;
 	public bool SkipMember;
 	public XmlDocumentation XmlDocumentation;

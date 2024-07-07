@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.Exceptions;
 using Overloader.Utils;
 
-namespace Overloader.Entities.Attributes;
+namespace Overloader.Entities.DTOs.Attributes;
 
 public record TAttributeDto(
 	byte TemplateIndex,

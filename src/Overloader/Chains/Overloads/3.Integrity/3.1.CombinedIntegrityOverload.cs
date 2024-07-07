@@ -26,7 +26,7 @@ public sealed class CombinedIntegrityOverload : ArrowMethodOverloader, IChainMem
 		SourceBuilder body,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		if (mappedParam.IsCombineNotExists)
 			head.AppendAsConstant(",")
 				.WhiteSpace();
@@ -43,7 +43,7 @@ public sealed class CombinedIntegrityOverload : ArrowMethodOverloader, IChainMem
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 
 		if (!mappedParam.IsCombineNotExists)

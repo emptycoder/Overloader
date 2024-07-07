@@ -14,7 +14,7 @@ public sealed class AnalyzeMethodParams : IChainMember
 		props.Store.CombineParametersCount = 0;
 
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;
-		props.Store.MethodData.Parameters = new ParameterData[parameters.Count];
+		props.Store.MethodDataDto.Parameters = new ParameterDataDto[parameters.Count];
 
 		for (int index = 0; index < parameters.Count; index++)
 		{
@@ -52,7 +52,7 @@ public sealed class AnalyzeMethodParams : IChainMember
 			} ?? parameterType;
 
 			bool isCombineWith = paramDto.CombineWithParameter is not null;
-			props.Store.MethodData.Parameters[index] = new ParameterData(
+			props.Store.MethodDataDto.Parameters[index] = new ParameterDataDto(
 				paramDto.Attribute?.TemplateIndex ?? 0,
 				parameterAction,
 				newParameterType,

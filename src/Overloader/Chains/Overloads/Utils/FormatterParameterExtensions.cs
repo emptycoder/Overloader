@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
+using Overloader.Entities.DTOs;
 using Overloader.Utils;
 
 namespace Overloader.Chains.Overloads.Utils;
@@ -59,7 +60,7 @@ public static class FormatterParameterExtensions
 	public static SourceBuilder AppendIntegrityParam(
 		this SourceBuilder sb,
 		GeneratorProperties props,
-		ParameterData mappedParam,
+		ParameterDataDto mappedParam,
 		ParameterSyntax parameter)
 	{
 		var template = props.Templates[mappedParam.TemplateIndex];

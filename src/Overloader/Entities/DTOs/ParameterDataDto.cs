@@ -1,10 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
-using Overloader.Entities.Attributes;
+using Overloader.Entities.DTOs.Attributes;
 using Overloader.Enums;
 
-namespace Overloader.Entities;
+namespace Overloader.Entities.DTOs;
 
-public sealed record ParameterData(
+public sealed record ParameterDataDto(
 	byte TemplateIndex,
 	RequiredReplacement ReplacementType,
 	ITypeSymbol Type,

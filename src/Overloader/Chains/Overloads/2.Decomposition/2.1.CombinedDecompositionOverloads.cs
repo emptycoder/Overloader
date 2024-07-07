@@ -18,7 +18,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 		    || props.Store.CombineParametersCount == 0)
 			return ChainAction.NextMember;
 
-		if (!props.Store.MethodData.Parameters.Any(param =>
+		if (!props.Store.MethodDataDto.Parameters.Any(param =>
 			    param.ReplacementType is RequiredReplacement.Formatter
 			    && param.IsCombineNotExists))
 			return ChainAction.NextMember;
@@ -33,7 +33,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 		{
 			indexes[index] = -1;
 			var parameter = parameters[index];
-			var mappedParam = props.Store.MethodData.Parameters[index];
+			var mappedParam = props.Store.MethodDataDto.Parameters[index];
 			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter) continue;
 			if (!mappedParam.IsCombineNotExists)
 			{
@@ -78,7 +78,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 		SourceBuilder body,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		if (mappedParam.IsCombineNotExists)
 			head.AppendAsConstant(",")
 				.WhiteSpace();
@@ -95,7 +95,7 @@ public sealed class CombinedDecompositionOverloads : ArrowMethodOverloader, ICha
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 
 		if (!mappedParam.IsCombineNotExists)

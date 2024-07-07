@@ -27,7 +27,7 @@ public sealed class CastTransitionOverloads : TransitionCastOverloader, IChainMe
 		{
 			transitionIndexes[index] = -1;
 			var parameter = parameters[index];
-			var mappedParam = props.Store.MethodData.Parameters[index];
+			var mappedParam = props.Store.MethodDataDto.Parameters[index];
 			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter
 			    and not RequiredReplacement.FormatterIntegrity)
 				continue;

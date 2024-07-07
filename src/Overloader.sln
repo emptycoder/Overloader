@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overloader", "Overloader\Ov
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overloader.Tests", "Overloader.Tests\Overloader.Tests.csproj", "{212BDF2D-DC1D-405B-ACA1-76E3E18EA109}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overloader.Abstract", "Overloader.Abstract\Overloader.Abstract.csproj", "{E4AB8BC0-AA44-4AEF-9AAD-5C7DE651E6FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overloader.Attributes", "Overloader.Attributes\Overloader.Attributes.csproj", "{E4AB8BC0-AA44-4AEF-9AAD-5C7DE651E6FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

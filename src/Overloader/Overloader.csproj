@@ -32,7 +32,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Overloader.Abstract\Overloader.Abstract.csproj" PrivateAssets="All"/>
+		<ProjectReference Include="..\Overloader.Attributes\Overloader.Attributes.csproj" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -47,7 +47,7 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.7.0" />
 		<!-- Package the generator in the analyzer directory of the nuget package -->
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-		<None Include="$(OutputPath)\$(AssemblyName).Abstract.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false"/>
+		<None Include="$(OutputPath)\$(AssemblyName).Attributes.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false"/>
 	</ItemGroup>
 
 	<ItemGroup>

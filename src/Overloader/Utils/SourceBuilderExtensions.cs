@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Overloader.ContentBuilders;
 using Overloader.Entities;
+using Overloader.Entities.DTOs;
 using Overloader.Exceptions;
 
 namespace Overloader.Utils;
@@ -91,7 +92,7 @@ public static class SourceBuilderExtensions
 
 	public static SourceBuilder AppendAndBuildModifiers(
 		this SourceBuilder builder,
-		ParameterData parameterData,
+		ParameterDataDto parameterDataDto,
 		ParameterSyntax parameter,
 		string separator)
 	{
@@ -99,7 +100,7 @@ public static class SourceBuilderExtensions
 		{
 			bool isReplaced = false;
 			string modifierText = modifier.Text;
-			foreach (var modifierDto in parameterData.ModifierChangers)
+			foreach (var modifierDto in parameterDataDto.ModifierChangers)
 			{
 				if (modifierDto.InsteadOf is null) continue;
 				if (modifierText != modifierDto.InsteadOf) continue;
@@ -118,7 +119,7 @@ public static class SourceBuilderExtensions
 					.WhiteSpace();
 		}
 
-		foreach (var modifierDto in parameterData.ModifierChangers)
+		foreach (var modifierDto in parameterDataDto.ModifierChangers)
 		{
 			if (modifierDto.InsteadOf is not null) continue;
 			

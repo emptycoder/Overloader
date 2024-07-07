@@ -28,7 +28,7 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 		{
 			transitionIndexes[index] = -1;
 			var parameter = parameters[index];
-			var mappedParam = props.Store.MethodData.Parameters![index];
+			var mappedParam = props.Store.MethodDataDto.Parameters![index];
 			if (mappedParam.ReplacementType is not RequiredReplacement.Formatter
 			    and not RequiredReplacement.FormatterIntegrity) continue;
 			if (!mappedParam.IsCombineNotExists)
@@ -75,7 +75,7 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 		SourceBuilder body,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		if (mappedParam.IsCombineNotExists)
 			head.AppendAsConstant(",")
 				.WhiteSpace();
@@ -97,7 +97,7 @@ public sealed class CombinedCastTransitionOverloads : TransitionCastOverloader, 
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		if (mappedParam.IsCombineNotExists)
 			base.WriteParameter(
 				props,

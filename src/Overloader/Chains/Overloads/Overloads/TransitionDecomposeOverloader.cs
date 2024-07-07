@@ -20,7 +20,7 @@ public abstract class TransitionDecomposeOverloader : ArrowMethodOverloader
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 		string paramName = parameter.Identifier.ToString();
 		switch (mappedParam.ReplacementType)

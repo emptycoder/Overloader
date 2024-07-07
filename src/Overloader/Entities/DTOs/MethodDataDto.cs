@@ -1,10 +1,10 @@
 using Microsoft.CodeAnalysis;
 
-namespace Overloader.Entities;
+namespace Overloader.Entities.DTOs;
 
-public record struct MethodData
+public record struct MethodDataDto
 {
-	public ParameterData[] Parameters;
+	public ParameterDataDto[] Parameters;
 	public string[]? MethodModifiers;
 	public ITypeSymbol? ReturnType;
 	public string? MethodName;

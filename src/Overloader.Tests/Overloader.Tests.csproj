@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Overloader.Abstract\Overloader.Abstract.csproj" />
+		<ProjectReference Include="..\Overloader.Attributes\Overloader.Attributes.csproj" />
 		<ProjectReference Include="..\Overloader\Overloader.csproj" />
 	</ItemGroup>
 

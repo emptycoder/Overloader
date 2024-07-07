@@ -77,7 +77,7 @@ public sealed class RefIntegrityOverloads : ArrowMethodOverloader, IChainMember
 		Span<int> maxIndexesCount,
 		int paramIndex)
 	{
-		var mappedParam = props.Store.MethodData.Parameters[paramIndex];
+		var mappedParam = props.Store.MethodDataDto.Parameters[paramIndex];
 		var parameter = props.Store.MethodSyntax.ParameterList.Parameters[paramIndex];
 		if (indexes[paramIndex] == 0)
 			parameter = parameter.WithModifiers(parameter.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.RefKeyword)));
@@ -96,7 +96,7 @@ public sealed class RefIntegrityOverloads : ArrowMethodOverloader, IChainMember
 				head.AppendIntegrityParam(props, mappedParam, parameter);
 				break;
 			default:
-				throw new ArgumentException($"Can't find case for {props.Store.MethodData.Parameters[paramIndex]} parameterAction.")
+				throw new ArgumentException($"Can't find case for {props.Store.MethodDataDto.Parameters[paramIndex]} parameterAction.")
 					.WithLocation(props.Store.MethodSyntax);
 		}
 

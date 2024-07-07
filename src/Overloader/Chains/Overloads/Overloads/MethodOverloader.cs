@@ -21,7 +21,7 @@ public abstract class MethodOverloader
 		using var head = props.Builder.GetDependentInstance();
 		using var body = props.Builder.GetDependentInstance();
 		head
-			.AppendMethodDeclarationSpecifics(props.Store.MethodSyntax, props.Store.MethodData)
+			.AppendMethodDeclarationSpecifics(props.Store.MethodSyntax, props.Store.MethodDataDto)
 			.AppendAsConstant("(");
 
 		var parameters = props.Store.MethodSyntax.ParameterList.Parameters;

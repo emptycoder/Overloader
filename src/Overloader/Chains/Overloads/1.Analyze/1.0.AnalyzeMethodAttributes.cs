@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Overloader.Entities;
-using Overloader.Entities.Attributes;
+using Overloader.Entities.DTOs.Attributes;
 using Overloader.Enums;
 using Overloader.Utils;
 
@@ -11,12 +11,12 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 	ChainAction IChainMember.Execute(GeneratorProperties props)
 	{
 		props.Store.IsSmthChanged = false;
-		props.Store.MethodData.ReturnType = props.Store.MethodSyntax.ReturnType.GetType(props.Compilation);
-		props.Store.MethodData.MethodModifiers = new string[props.Store.MethodSyntax.Modifiers.Count];
-		props.Store.MethodData.MethodName = props.Store.MethodSyntax.Identifier.ToString();
+		props.Store.MethodDataDto.ReturnType = props.Store.MethodSyntax.ReturnType.GetType(props.Compilation);
+		props.Store.MethodDataDto.MethodModifiers = new string[props.Store.MethodSyntax.Modifiers.Count];
+		props.Store.MethodDataDto.MethodName = props.Store.MethodSyntax.Identifier.ToString();
 
-		for (int index = 0; index < props.Store.MethodData.MethodModifiers.Length; index++)
-			props.Store.MethodData.MethodModifiers[index] = props.Store.MethodSyntax.Modifiers[index].ToString();
+		for (int index = 0; index < props.Store.MethodDataDto.MethodModifiers.Length; index++)
+			props.Store.MethodDataDto.MethodModifiers[index] = props.Store.MethodSyntax.Modifiers[index].ToString();
 
 		bool isAllowForAttrSet = false;
 		foreach (var attrList in props.Store.MethodSyntax.AttributeLists)
@@ -46,7 +46,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 
 					if (tAttrDto.NewType is not null)
 					{
-						props.Store.MethodData.ReturnType = tAttrDto.NewType;
+						props.Store.MethodDataDto.ReturnType = tAttrDto.NewType;
 						props.Store.IsSmthChanged = true;
 					}
 					else if (props.TryGetFormatter(returnTypeSymbolRoot, out var formatter))
@@ -56,7 +56,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 						for (int paramIndex = 0; paramIndex < formatter.GenericParams.Length; paramIndex++)
 							@params[paramIndex] = formatter.GenericParams[paramIndex].GetType(props.Templates[tAttrDto.TemplateIndex]);
 
-						props.Store.MethodData.ReturnType = returnTypeSymbol.ConstructWithClearType(
+						props.Store.MethodDataDto.ReturnType = returnTypeSymbol.ConstructWithClearType(
 							returnTypeSymbolRoot
 								.OriginalDefinition
 								.Construct(@params),
@@ -65,7 +65,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 					}
 					else
 					{
-						props.Store.MethodData.ReturnType = props.Templates[tAttrDto.TemplateIndex];
+						props.Store.MethodDataDto.ReturnType = props.Templates[tAttrDto.TemplateIndex];
 					}
 					break;
 				case Modifier.TagName:
@@ -73,11 +73,11 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 					if (modifierDto.TemplateTypeFor is not null
 					    && !SymbolEqualityComparer.Default.Equals(modifierDto.TemplateTypeFor, props.Templates[modifierDto.TemplateIndexFor])) continue;
 
-					for (int index = 0; index < props.Store.MethodData.MethodModifiers.Length; index++)
+					for (int index = 0; index < props.Store.MethodDataDto.MethodModifiers.Length; index++)
 					{
-						if (modifierDto.InsteadOf is not null && !props.Store.MethodData.MethodModifiers[index].Equals(modifierDto.InsteadOf)) continue;
+						if (modifierDto.InsteadOf is not null && !props.Store.MethodDataDto.MethodModifiers[index].Equals(modifierDto.InsteadOf)) continue;
 
-						props.Store.MethodData.MethodModifiers[index] = modifierDto.Modifier;
+						props.Store.MethodDataDto.MethodModifiers[index] = modifierDto.Modifier;
 						props.Store.IsSmthChanged = true;
 						break;
 					}
@@ -87,7 +87,7 @@ public sealed class AnalyzeMethodAttributes : IChainMember
 					if (changeNameDto.TemplateTypeFor is not null
 					    && !SymbolEqualityComparer.Default.Equals(changeNameDto.TemplateTypeFor, props.Templates[changeNameDto.TemplateIndexFor])) continue;
 					
-					props.Store.MethodData.MethodName = changeNameDto.NewName;
+					props.Store.MethodDataDto.MethodName = changeNameDto.NewName;
 					props.Store.IsSmthChanged = true;
 					break;
 				case ForceChanged.TagName:
